@@ -20,5 +20,3 @@ genera alberi sintattici!)
 semplici e riusciamo a parsarli tutti. Le sottocartelle dont_care e unparsable_programs contengono programmi con feature che lasciam perdere (classi o lambdas) e programmi che
 non riusciamo a parsare (abbiamo semplificato la sintassi per avere alberi piu` semplici: non
 abbiam capito perche` non riusciamo ad analizzarli...)
-
-Marco Bertoni, Cosimo Laneve
