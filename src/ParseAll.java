@@ -1,31 +1,28 @@
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Objects;
-import java.util.Arrays;
 import java.io.File;
-
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.gui.TreeViewer;
-
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
 import javax.swing.*;
-
+import org.antlr.v4.gui.TreeViewer;
+import org.antlr.v4.runtime.*;
 
 public class ParseAll {
     public static void main(String[] args) {
-        for (File file: Objects.requireNonNull(new File("./progs").listFiles())) {
+        for (File file : Objects.requireNonNull(new File("./progs").listFiles())) {
             String fileStr = file.getPath();
-//			fileStr = "./progs/wrong.py";
+            // fileStr = "./progs/wrong.py";
             try {
 
-                if (!file.isFile() || !getExtension(file.getName()).equals("py")){
+                if (!file.isFile() || !getExtension(file.getName()).equals("py")) {
                     System.err.println("Wont parse: " + fileStr);
                     continue;
                 } else {
                     System.out.println(fileStr);
                 }
 
-//				System.out.println(readFile(fileStr));
+                // System.out.println(readFile(fileStr));
 
                 CharStream cs = CharStreams.fromFileName(fileStr);
                 Python3Lexer lexer = new Python3Lexer(cs);
@@ -34,7 +31,7 @@ public class ParseAll {
 
                 Python3Parser.RootContext tree = parser.root();
                 String treeStr = tree.toStringTree();
-//				System.out.println(treeStr);
+                // System.out.println(treeStr);
 
                 TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
                 viewer.setScale(1.5);
@@ -70,6 +67,7 @@ public class ParseAll {
         frame.setSize(800, 600);
         frame.setVisible(true);
     }
+
     private static void saveTree(TreeViewer viewer, String name) {
         try {
             viewer.save(name);
@@ -96,6 +94,4 @@ public class ParseAll {
             return fileName.substring(extensionIndex + 1);
         }
     }
-
 }
-
