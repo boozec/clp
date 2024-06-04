@@ -1,3 +1,5 @@
+package com.clp.project;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,6 +9,8 @@ import java.util.Objects;
 import javax.swing.*;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
+
+import com.clp.project.parser.*;
 
 public class ParseAll {
     public static void main(String[] args) {
