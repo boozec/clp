@@ -1,9 +1,10 @@
-package com.clp.project.ast;
+package com.clp.project.ast.types;
 
 import java.util.ArrayList;
 
 import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
+import com.clp.project.ast.nodes.*;
 
 public class Type implements Node {
     public boolean isEqual(Type A, Type B) {

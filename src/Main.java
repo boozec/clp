@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import com.clp.project.ast.*;
+import com.clp.project.ast.nodes.*;
 import com.clp.project.parser.*;
 import com.clp.project.semanticanalysis.*;
 
@@ -34,14 +35,25 @@ public class Main {
             Python3Parser.RootContext tree = parser.root();
 
             // DEBUG
-            {
-                tokens.fill();
-                for (Token token : tokens.getTokens()) {
-                    System.out.println(token.toString());
-                }
+            // {
+            // tokens.fill();
+            // for (Token token : tokens.getTokens()) {
+            // System.out.println(token.toString());
+            // }
+            //
+            // System.out.println("Tree: " + tree);
+            // }
 
-                System.out.println("Tree: " + tree);
-            }
+            JFrame frame = new JFrame("Parse Tree");
+            JPanel panel = new JPanel();
+            TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
+                    tree);
+            viewer.setScale(1.5); // Zoom factor
+            panel.add(viewer);
+            frame.add(panel);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+            frame.setVisible(true);
 
             if (tree == null) {
                 System.err.println("The tree is null.");
@@ -67,16 +79,6 @@ public class Main {
                 System.out.println(ast.toPrint(""));
             }
 
-            JFrame frame = new JFrame("Parse Tree");
-            JPanel panel = new JPanel();
-            TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
-                    tree);
-            viewer.setScale(1.5); // Zoom factor
-            panel.add(viewer);
-            frame.add(panel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
-            frame.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }

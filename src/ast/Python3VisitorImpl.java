@@ -3,6 +3,9 @@ package com.clp.project.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.clp.project.ast.*;
+import com.clp.project.ast.nodes.*;
+import com.clp.project.ast.types.*;
 import com.clp.project.parser.Python3ParserBaseVisitor;
 import com.clp.project.parser.Python3Parser.*;
 
@@ -32,9 +35,9 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitSimple_stmt(Simple_stmtContext ctx) {
-        Node exp = visit(ctx.expr());
+        Node exp = visit(ctx.assignment());
 
-        return exp;
+        return new SimpleStmtNode(exp);
     }
 
     public Node visitCompound_stmt(Compound_stmtContext ctx) {
@@ -48,8 +51,38 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitAssignment(AssignmentContext ctx) {
-        Node exp = visit(ctx.exprlist(1));
+        Node lhr = visit(ctx.exprlist(0));
+        Node assign = visit(ctx.augassign());
+        Node rhr = visit(ctx.exprlist(1));
+
+        return new AssignmentNode(lhr, assign, rhr);
+    }
+
+    public Node visitExprlist(ExprlistContext ctx) {
+        Node exp = visit(ctx.expr(0));
+
         return exp;
+    }
+
+    public Node visitExpr(ExprContext ctx) {
+        Node atom = visit(ctx.atom());
+
+        return atom;
+    }
+
+    public Node visitAtom(AtomContext ctx) {
+        if (ctx.NUMBER() != null) {
+            return new AtomNode(ctx.NUMBER());
+        } else if (ctx.TRUE() != null) {
+            return new AtomNode(ctx.TRUE());
+        } else if (ctx.FALSE() != null) {
+            return new AtomNode(ctx.FALSE());
+        }
+        return new AtomNode(ctx.NAME());
+    }
+
+    public Node visitAugassign(AugassignContext ctx) {
+        return new AugassignNode(ctx.ASSIGN());
     }
 
     // FIXME: add support for `elif`

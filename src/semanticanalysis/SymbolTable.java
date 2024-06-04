@@ -3,6 +3,7 @@ package com.clp.project.semanticanalysis;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.clp.project.ast.*;
+import com.clp.project.ast.types.*;
 
 public class SymbolTable {
     private ArrayList<HashMap<String, STentry>> symbol_table;

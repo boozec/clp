@@ -1,15 +1,18 @@
-package com.clp.project.ast;
+package com.clp.project.ast.nodes;
 
 import java.util.ArrayList;
 
 import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
+import com.clp.project.ast.types.*;
 
-public class SimpleStmtsNode implements Node {
+public class RootNode implements Node {
     private ArrayList<Node> stmts;
+    private ArrayList<Node> compoundStmts;
 
-    public SimpleStmtsNode(ArrayList<Node> _stmts) {
+    public RootNode(ArrayList<Node> _stmts, ArrayList<Node> _compoundStmts) {
         stmts = _stmts;
+        compoundStmts = _compoundStmts;
     }
 
     @Override
@@ -17,6 +20,9 @@ public class SimpleStmtsNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
         for (Node stmt : stmts) {
+            errors.addAll(stmt.checkSemantics(ST, _nesting));
+        }
+        for (Node stmt : compoundStmts) {
             errors.addAll(stmt.checkSemantics(ST, _nesting));
         }
 
@@ -32,8 +38,16 @@ public class SimpleStmtsNode implements Node {
     }
 
     public String toPrint(String s) {
-        // FIXME: fix
-        return "";
+        String result = "Root\n";
+
+        for (Node stmt : stmts) {
+            result += stmt.toPrint("  ");
+        }
+        for (Node stmt : compoundStmts) {
+            result += stmt.toPrint("  ");
+        }
+
+        return result;
     }
 
 }

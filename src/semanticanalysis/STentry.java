@@ -1,7 +1,7 @@
 
 package com.clp.project.semanticanalysis;
 
-import com.clp.project.ast.Type;
+import com.clp.project.ast.types.Type;
 
 public class STentry {
     private Type type;
