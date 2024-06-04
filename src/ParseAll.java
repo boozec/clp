@@ -14,6 +14,7 @@ import com.clp.project.parser.*;
 
 public class ParseAll {
     public static void main(String[] args) {
+        new File("./trees/").mkdirs();
         for (File file : Objects.requireNonNull(new File("./progs").listFiles())) {
             String fileStr = file.getPath();
             // fileStr = "./progs/wrong.py";

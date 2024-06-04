@@ -5,6 +5,7 @@ SRC_DIR = src
 PARSER_DIR = src/parser
 BIN_DIR = out
 MAIN_CLASS = com.clp.project.Main
+PARSEALL_CLASS = com.clp.project.ParseAll
 SOURCES = $(wildcard $(SRC_DIR)/*.java)
 GRAMMARS = $(PARSER_DIR)/Python3Lexer.g4 $(PARSER_DIR)/Python3Parser.g4
 ANTLR_OUTPUT = $(PARSER_DIR)/*.java
@@ -21,7 +22,7 @@ run:
 	java -cp $(ANTLR_COMPLETE):$(BIN_DIR) $(MAIN_CLASS) $(ARGS)
 
 runall:
-	java -cp $(ANTLR_COMPLETE):$(BIN_DIR) ParseAll $(ARGS)
+	java -cp $(ANTLR_COMPLETE):$(BIN_DIR) $(PARSEALL_CLASS) $(ARGS)
 
 clean:
 	rm -rf $(BIN_DIR)/* trees/*
