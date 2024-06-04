@@ -2,11 +2,12 @@ JAVAC = javac
 ANTLR_COMPLETE = lib/antlr-4.13.1-complete.jar
 JAVAC_FLAGS = -cp $(ANTLR_COMPLETE) -Xlint:deprecation -d out
 SRC_DIR = src
+PARSER_DIR = src/parser
 BIN_DIR = out
-MAIN_CLASS = Main
+MAIN_CLASS = com.clp.project.Main
 SOURCES = $(wildcard $(SRC_DIR)/*.java)
-GRAMMARS = $(SRC_DIR)/Python3Lexer.g4 $(SRC_DIR)/Python3Parser.g4
-ANTLR_OUTPUT = $(SRC_DIR)/Python3Lexer.java $(SRC_DIR)/Python3Parser.java $(SRC_DIR)/Python3ParserListener.java $(SRC_DIR)/Python3ParserBaseListener.java 
+GRAMMARS = $(PARSER_DIR)/Python3Lexer.g4 $(PARSER_DIR)/Python3Parser.g4
+ANTLR_OUTPUT = $(PARSER_DIR)/*.java
 DATE = $(shell date +%Y%m%d-%H%M%S)
 ARGS = 
 

@@ -1,3 +1,5 @@
+package com.clp.project;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,11 +11,14 @@ import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
+import com.clp.project.parser.*;
+
 public class Main {
     public static void main(String[] args) {
         for (File file : Objects.requireNonNull(new File("./progs/").listFiles())) {
             try {
                 String fileStr = file.getPath();
+                // FIXME: use the fileStr above
                 fileStr = "./progs/test.py";
                 System.out.println(fileStr);
 
