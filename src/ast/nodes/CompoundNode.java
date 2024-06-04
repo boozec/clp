@@ -31,8 +31,7 @@ public class CompoundNode implements Node {
     }
 
     public String toPrint(String s) {
-        // FIXME: fix
-        return "";
+        return s + "CompoundNode\n" + _if.toPrint(s + "  ");
     }
 
 }
