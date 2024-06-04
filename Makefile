@@ -5,7 +5,6 @@ SRC_DIR = src
 PARSER_DIR = src/parser
 BIN_DIR = out
 MAIN_CLASS = com.clp.project.Main
-PARSEALL_CLASS = com.clp.project.ParseAll
 SOURCES = $(wildcard $(SRC_DIR)/*.java)
 GRAMMARS = $(PARSER_DIR)/Python3Lexer.g4 $(PARSER_DIR)/Python3Parser.g4
 ANTLR_OUTPUT = $(PARSER_DIR)/*.java
