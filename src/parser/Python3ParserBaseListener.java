@@ -1,5 +1,5 @@
 package com.clp.project.parser;
-// Generated from src/Python3Parser.g4 by ANTLR 4.13.1
+// Generated from src/parser/Python3Parser.g4 by ANTLR 4.13.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
