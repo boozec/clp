@@ -7,10 +7,10 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class AugassignNode implements Node {
+public class CompNode implements Node {
     private TerminalNode val;
 
-    public AugassignNode(TerminalNode _val) {
+    public CompNode(TerminalNode _val) {
         val = _val;
     }
 
@@ -27,6 +27,6 @@ public class AugassignNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "Augassign(" + val + ")\n";
+        return s + "CompNode(" + val + ")\n";
     }
 }

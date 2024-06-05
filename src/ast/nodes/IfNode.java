@@ -23,7 +23,9 @@ public class IfNode implements Node {
 
         errors.addAll(guard.checkSemantics(ST, _nesting));
         errors.addAll(thenbranch.checkSemantics(ST, _nesting));
-        errors.addAll(elsebranch.checkSemantics(ST, _nesting));
+        if (elsebranch != null) {
+            errors.addAll(elsebranch.checkSemantics(ST, _nesting));
+        }
 
         return errors;
     }
@@ -49,7 +51,13 @@ public class IfNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "If\n" + guard.toPrint(s + "  ") + thenbranch.toPrint(s + "  ") + elsebranch.toPrint(s + "  ");
+        String result = s + "If\n" + guard.toPrint(s + "  ") + thenbranch.toPrint(s + "  ");
+
+        if (elsebranch != null) {
+            result += elsebranch.toPrint(s + "  ");
+        }
+
+        return result;
     }
 
 }

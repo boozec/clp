@@ -7,8 +7,8 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
 public class RootNode implements Node {
-    private ArrayList<Node> stmts;
-    private ArrayList<Node> compoundStmts;
+    protected ArrayList<Node> stmts;
+    protected ArrayList<Node> compoundStmts;
 
     public RootNode(ArrayList<Node> _stmts, ArrayList<Node> _compoundStmts) {
         stmts = _stmts;
@@ -41,10 +41,10 @@ public class RootNode implements Node {
         String result = "Root\n";
 
         for (Node stmt : stmts) {
-            result += stmt.toPrint("  ");
+            result += stmt.toPrint(s + "  ");
         }
         for (Node stmt : compoundStmts) {
-            result += stmt.toPrint("  ");
+            result += stmt.toPrint(s + "  ");
         }
 
         return result;

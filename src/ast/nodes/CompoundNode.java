@@ -7,17 +7,17 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
 public class CompoundNode implements Node {
-    private Node _if;
+    private Node ifNode;
 
-    public CompoundNode(Node _if) {
-        this._if = _if;
+    public CompoundNode(Node ifNode) {
+        this.ifNode = ifNode;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        errors.addAll(_if.checkSemantics(ST, _nesting));
+        errors.addAll(ifNode.checkSemantics(ST, _nesting));
 
         return errors;
     }
@@ -31,7 +31,7 @@ public class CompoundNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "CompoundNode\n" + _if.toPrint(s + "  ");
+        return s + "CompoundNode\n" + ifNode.toPrint(s + "  ");
     }
 
 }

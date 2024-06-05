@@ -35,9 +35,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitSimple_stmt(Simple_stmtContext ctx) {
-        Node exp = visit(ctx.assignment());
 
-        return new SimpleStmtNode(exp);
+        Node assignment = null;
+        Node expr = null;
+
+        if (ctx.assignment() != null) {
+            assignment = visit(ctx.assignment());
+        }
+
+        if (ctx.expr() != null) {
+            expr = visit(ctx.expr());
+        }
+
+        return new SimpleStmtNode(assignment, expr);
     }
 
     public Node visitCompound_stmt(Compound_stmtContext ctx) {
@@ -65,20 +75,49 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitExpr(ExprContext ctx) {
-        Node atom = visit(ctx.atom());
+        Node atom = null;
+        Node compOp = null;
+        ArrayList<Node> exprs = new ArrayList<Node>();
+        ArrayList<Node> trailers = new ArrayList<Node>();
 
-        return atom;
+        if (ctx.atom() != null) {
+            atom = visit(ctx.atom());
+        }
+
+        if (ctx.comp_op() != null) {
+            compOp = visit(ctx.comp_op());
+        }
+
+        for (ExprContext s : ctx.expr()) {
+            exprs.add(visit(s));
+        }
+
+        for (TrailerContext s : ctx.trailer()) {
+            trailers.add(visit(s));
+        }
+
+        return new ExprNode(atom, compOp, exprs, trailers);
     }
 
     public Node visitAtom(AtomContext ctx) {
         if (ctx.NUMBER() != null) {
-            return new AtomNode(ctx.NUMBER());
+            return new AtomNode(ctx.NUMBER().toString());
         } else if (ctx.TRUE() != null) {
-            return new AtomNode(ctx.TRUE());
+            return new AtomNode(ctx.TRUE().toString());
         } else if (ctx.FALSE() != null) {
-            return new AtomNode(ctx.FALSE());
+            return new AtomNode(ctx.FALSE().toString());
+        } else if (ctx.NAME() != null) {
+            return new AtomNode(ctx.NAME().toString());
+        } else if (ctx.STRING() != null) {
+
+            var varName = "";
+            for (var x : ctx.STRING()) {
+                varName += x;
+            }
+
+            return new AtomNode(varName);
         }
-        return new AtomNode(ctx.NAME());
+        return new AtomNode(ctx.NONE().toString());
     }
 
     public Node visitAugassign(AugassignContext ctx) {
@@ -96,5 +135,38 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         }
 
         return new IfNode(condExp, thenExp, elseExp);
+    }
+
+    public Node visitComp_op(Comp_opContext ctx) {
+        return new CompNode(ctx.EQUALS());
+    }
+
+    public Node visitBlock(BlockContext ctx) {
+        ArrayList<Node> stmts = new ArrayList<Node>();
+        ArrayList<Node> compStmts = new ArrayList<Node>();
+
+        for (Simple_stmtsContext s : ctx.simple_stmts()) {
+            stmts.add(visit(s));
+        }
+        for (Compound_stmtContext s : ctx.compound_stmt()) {
+            compStmts.add(visit(s));
+        }
+
+        return new BlockNode(stmts, compStmts);
+    }
+
+    public Node visitTrailer(TrailerContext ctx) {
+        Node arglist = visit(ctx.arglist());
+        return new TrailerNode(arglist);
+    }
+
+    public Node visitArglist(ArglistContext ctx) {
+        ArrayList<Node> arguments = new ArrayList<Node>();
+
+        for (ArgumentContext c : ctx.argument()) {
+            arguments.add(visit(c));
+        }
+
+        return new ArglistNode(arguments);
     }
 }

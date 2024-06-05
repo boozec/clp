@@ -6,30 +6,26 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
-public class AssignmentNode implements Node {
-    private Node lhr;
-    private Node assign;
-    private Node rhr;
+public class ArglistNode implements Node {
+    protected ArrayList<Node> arguments;
 
-    public AssignmentNode(Node _lhr, Node _assign, Node _rhr) {
-        lhr = _lhr;
-        assign = _assign;
-        rhr = _rhr;
+    public ArglistNode(ArrayList<Node> arguments) {
+        this.arguments = arguments;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        errors.addAll(lhr.checkSemantics(ST, _nesting));
-        errors.addAll(assign.checkSemantics(ST, _nesting));
-        errors.addAll(rhr.checkSemantics(ST, _nesting));
+        for (var arg : arguments) {
+            errors.addAll(arg.checkSemantics(ST, _nesting));
+        }
 
         return errors;
     }
 
     public Type typeCheck() {
-        return rhr.typeCheck();
+        return new VoidType();
     }
 
     public String codeGeneration() {
@@ -37,7 +33,13 @@ public class AssignmentNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "Assignment\n" + lhr.toPrint(s + "  ") + assign.toPrint(s + "  ") + rhr.toPrint(s + "  ");
+        String result = s + "ArglistNode\n";
+
+        for (Node arg : arguments) {
+            result += arg.toPrint(s + "  ");
+        }
+
+        return result;
     }
 
 }

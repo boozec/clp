@@ -7,17 +7,25 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
 public class SimpleStmtNode implements Node {
-    private Node stmt;
+    private Node assignment;
+    private Node expr;
 
-    public SimpleStmtNode(Node _stmt) {
-        stmt = _stmt;
+    public SimpleStmtNode(Node assignment, Node expr) {
+        this.assignment = assignment;
+        this.expr = expr;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        errors.addAll(stmt.checkSemantics(ST, _nesting));
+        if (assignment != null) {
+            errors.addAll(assignment.checkSemantics(ST, _nesting));
+        }
+
+        if (expr != null) {
+            errors.addAll(expr.checkSemantics(ST, _nesting));
+        }
 
         return errors;
     }
@@ -31,7 +39,17 @@ public class SimpleStmtNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "SimpleStmt\n" + stmt.toPrint(s + "  ");
+        String result = s + "SimpleStmt\n";
+
+        if (assignment != null) {
+            result += assignment.toPrint(s + "  ");
+        }
+
+        if (expr != null) {
+            result += expr.toPrint(s + "  ");
+        }
+
+        return result;
     }
 
 }

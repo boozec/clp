@@ -5,21 +5,25 @@ import java.util.ArrayList;
 import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class AugassignNode implements Node {
-    private TerminalNode val;
+public class TrailerNode implements Node {
+    private Node arglist;
 
-    public AugassignNode(TerminalNode _val) {
-        val = _val;
+    public TrailerNode(Node arglist) {
+        this.arglist = arglist;
     }
 
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        return new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+
+        errors.addAll(arglist.checkSemantics(ST, _nesting));
+
+        return errors;
     }
 
     public Type typeCheck() {
-        return new ErrorType();
+        return new VoidType();
     }
 
     public String codeGeneration() {
@@ -27,6 +31,7 @@ public class AugassignNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "Augassign(" + val + ")\n";
+        return s + "TrailerNode\n" + arglist.toPrint(s + "  ");
     }
+
 }

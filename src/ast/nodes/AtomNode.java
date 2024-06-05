@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class AtomNode implements Node {
-    private TerminalNode val;
+    private String val;
 
-    public AtomNode(TerminalNode _val) {
+    public AtomNode(String _val) {
         val = _val;
     }
 
@@ -27,7 +26,11 @@ public class AtomNode implements Node {
     }
 
     public String toPrint(String s) {
-        return s + "Atom(" + val.toString() + ")";
+        if (val != null) {
+            return s + "Atom(" + val + ")\n";
+        }
+
+        return s + "Atom(null)\n";
 
     }
 }
