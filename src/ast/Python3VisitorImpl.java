@@ -8,6 +8,7 @@ import com.clp.project.ast.nodes.*;
 import com.clp.project.ast.types.*;
 import com.clp.project.parser.Python3ParserBaseVisitor;
 import com.clp.project.parser.Python3Parser.*;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitRoot(RootContext ctx) {
@@ -35,9 +36,9 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitSimple_stmt(Simple_stmtContext ctx) {
-
         Node assignment = null;
         Node expr = null;
+        Node importStmt = null;
         Node returnStmt = null;
 
         if (ctx.assignment() != null) {
@@ -48,11 +49,15 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             expr = visit(ctx.expr());
         }
 
+        if (ctx.import_stm() != null) {
+            importStmt = visit(ctx.import_stm());
+        }
+
         if (ctx.return_stmt() != null) {
             returnStmt = visit(ctx.return_stmt());
         }
 
-        return new SimpleStmtNode(assignment, expr, returnStmt);
+        return new SimpleStmtNode(assignment, expr, importStmt, returnStmt);
     }
 
     public Node visitCompound_stmt(Compound_stmtContext ctx) {
@@ -62,16 +67,20 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         }
 
         Node funcDef = null;
-
         if (ctx.funcdef() != null) {
             funcDef = visit(ctx.funcdef());
         }
 
-        // FIXME: adds below
-        // Node whileStmt = visit(ctx.while_stmt());
-        // Node forStmt = visit(ctx.for_stmt());
-        //
-        return new CompoundNode(ifStmt, funcDef);
+        Node forStmt = null;
+        if (ctx.for_stmt() != null) {
+            forStmt = visit(ctx.for_stmt());
+        }
+
+        Node whileStmt = null;
+        if (ctx.while_stmt() != null) {
+            whileStmt = visit(ctx.while_stmt());
+        }
+        return new CompoundNode(ifStmt, funcDef, forStmt, whileStmt);
     }
 
     public Node visitAssignment(AssignmentContext ctx) {
@@ -94,6 +103,27 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node compOp = null;
         ArrayList<Node> exprs = new ArrayList<Node>();
         ArrayList<Node> trailers = new ArrayList<Node>();
+        String op = null;
+
+        if (ctx.ADD(0) != null) {
+            op = ctx.ADD(0).toString();
+        }
+
+        if (ctx.MINUS(0) != null) {
+            op = ctx.MINUS(0).toString();
+        }
+
+        if (ctx.NOT() != null) {
+            op = ctx.NOT().toString();
+        }
+
+        if (ctx.STAR() != null) {
+            op = ctx.STAR().toString();
+        }
+
+        if (ctx.DIV() != null) {
+            op = ctx.DIV().toString();
+        }
 
         if (ctx.atom() != null) {
             atom = visit(ctx.atom());
@@ -111,7 +141,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             trailers.add(visit(s));
         }
 
-        return new ExprNode(atom, compOp, exprs, trailers);
+        return new ExprNode(atom, compOp, exprs, op, trailers);
     }
 
     public Node visitAtom(AtomContext ctx) {
@@ -153,7 +183,29 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitComp_op(Comp_opContext ctx) {
-        return new CompNode(ctx.EQUALS());
+        Node comp = null;
+        if (ctx.LESS_THAN() != null) {
+            comp = new CompNode(ctx.LESS_THAN());
+        } else if (ctx.GREATER_THAN() != null) {
+            comp = new CompNode(ctx.GREATER_THAN());
+        } else if (ctx.EQUALS() != null) {
+            comp = new CompNode(ctx.EQUALS());
+        } else if (ctx.GT_EQ() != null) {
+            comp = new CompNode(ctx.GT_EQ());
+        } else if (ctx.LT_EQ() != null) {
+            comp = new CompNode(ctx.LT_EQ());
+        } else if (ctx.NOT_EQ_2() != null) {
+            // We're ignoring NOT_EQ_1() because no one uses `<>`
+            comp = new CompNode(ctx.NOT_EQ_2());
+        } else if (ctx.IN() != null) {
+            comp = new CompNode(ctx.IN());
+        } else if (ctx.NOT() != null) {
+            comp = new CompNode(ctx.NOT());
+        } else if (ctx.IS() != null) {
+            comp = new CompNode(ctx.IS());
+        }
+
+        return comp;
     }
 
     public Node visitBlock(BlockContext ctx) {
@@ -171,8 +223,22 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitTrailer(TrailerContext ctx) {
-        Node arglist = visit(ctx.arglist());
-        return new TrailerNode(arglist);
+        Node arglist = null;
+        if (ctx.arglist() != null) {
+            arglist = visit(ctx.arglist());
+        }
+
+        ArrayList<Node> exprs = new ArrayList<Node>();
+        for (ExprContext expr : ctx.expr()) {
+            exprs.add(visit(expr));
+        }
+
+        TerminalNode methodCall = null;
+        if (ctx.DOT() != null) {
+            methodCall = ctx.NAME();
+        }
+
+        return new TrailerNode(arglist, exprs, methodCall);
     }
 
     public Node visitArglist(ArglistContext ctx) {
@@ -207,9 +273,55 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitReturn_stmt(Return_stmtContext ctx) {
-        Node exprList = visit(ctx.exprlist());
+        Node exprList = null;
+        if (ctx.exprlist() != null) {
+        exprList = visit(ctx.exprlist());
+        }
 
         return new ReturnStmtNode(exprList);
+    }
 
+    public Node visitFor_stmt(For_stmtContext ctx) {
+        Node exprList = visit(ctx.exprlist());
+
+        // Block 1 is for the for-else statement
+        Node block = visit(ctx.block(0));
+
+        return new ForStmtNode(exprList, block);
+    }
+
+    public Node visitWhile_stmt(While_stmtContext ctx) {
+        Node expr = visit(ctx.expr());
+
+        // Block 1 is for the while-else statement
+        Node block = visit(ctx.block(0));
+
+        return new WhileStmtNode(expr, block);
+    }
+
+    public Node visitImport_stm(Import_stmContext ctx) {
+        boolean isFrom = ctx.FROM() != null;
+        boolean importAs = ctx.AS() != null;
+        boolean importAll = ctx.STAR() != null;
+
+        Node dottedName = visit(ctx.dotted_name());
+
+        ArrayList<String> names = new ArrayList<String>();
+
+        for (var s : ctx.NAME()) {
+            names.add(s.toString());
+        }
+
+        return new ImportNode(dottedName, isFrom, importAs, importAll, names);
+    }
+
+    public Node visitDotted_name(Dotted_nameContext ctx) {
+        ArrayList<TerminalNode> names = new ArrayList<TerminalNode>();
+
+        for (var name : ctx.NAME()) {
+            names.add(name);
+        }
+
+        return new DottedNameNode(names);
     }
 }

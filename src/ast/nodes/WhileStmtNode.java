@@ -6,26 +6,26 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
-public class ReturnStmtNode implements Node {
-    private Node exprList;
+public class WhileStmtNode implements Node {
+    private Node expr;
+    private Node block;
 
-    public ReturnStmtNode(Node exprList) {
-        this.exprList = exprList;
+    public WhileStmtNode(Node expr, Node block) {
+        this.expr = expr;
+        this.block = block;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        if (this.exprList != null) {
-            errors.addAll(this.exprList.checkSemantics(ST, _nesting));
-        }
+        errors.addAll(expr.checkSemantics(ST, _nesting));
+        errors.addAll(block.checkSemantics(ST, _nesting));
 
         return errors;
     }
 
     public Type typeCheck() {
-        // FIXME: wtf is that?
         return new VoidType();
     }
 
@@ -34,13 +34,7 @@ public class ReturnStmtNode implements Node {
     }
 
     public String toPrint(String s) {
-        String result = s + "ReturnStmt\n";
-
-        if (this.exprList != null) {
-            result += this.exprList.toPrint(s + "  ");
-        }
-
-        return result;
+        return s + "While\n" + expr.toPrint(s + "  ") + block.toPrint(s + "  ");
     }
 
 }

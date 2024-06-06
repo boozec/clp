@@ -9,14 +9,16 @@ import com.clp.project.ast.types.*;
 public class ExprNode implements Node {
     private Node atom;
     private Node compOp;
+    private String op;
     private ArrayList<Node> exprs;
     private ArrayList<Node> trailers;
 
-    public ExprNode(Node _atom, Node _compOp, ArrayList<Node> _exprs, ArrayList<Node> _trailers) {
-        atom = _atom;
-        compOp = _compOp;
-        exprs = _exprs;
-        trailers = _trailers;
+    public ExprNode(Node atom, Node compOp, ArrayList<Node> exprs, String op, ArrayList<Node> trailers) {
+        this.atom = atom;
+        this.compOp = compOp;
+        this.exprs = exprs;
+        this.op = op;
+        this.trailers = trailers;
     }
 
     @Override
@@ -68,6 +70,10 @@ public class ExprNode implements Node {
 
         for (var trailer : trailers) {
             result += trailer.toPrint(s + "  ");
+        }
+
+        if (op != null) {
+            result += s + "  Op(" + op + ")\n";
         }
 
         return result;

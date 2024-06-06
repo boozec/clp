@@ -10,9 +10,9 @@ public class RootNode implements Node {
     protected ArrayList<Node> stmts;
     protected ArrayList<Node> compoundStmts;
 
-    public RootNode(ArrayList<Node> _stmts, ArrayList<Node> _compoundStmts) {
-        stmts = _stmts;
-        compoundStmts = _compoundStmts;
+    public RootNode(ArrayList<Node> stmts, ArrayList<Node> compoundStmts) {
+        this.stmts = stmts;
+        this.compoundStmts = compoundStmts;
     }
 
     @Override

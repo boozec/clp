@@ -9,10 +9,14 @@ import com.clp.project.ast.types.*;
 public class CompoundNode implements Node {
     private Node ifNode;
     private Node funcDef;
+    private Node forStmt;
+    private Node whileStmt;
 
-    public CompoundNode(Node _ifNode, Node _funcDef) {
-        ifNode = _ifNode;
-        funcDef = _funcDef;
+    public CompoundNode(Node ifNode, Node funcDef, Node forStmt, Node whileStmt) {
+        this.ifNode = ifNode;
+        this.funcDef = funcDef;
+        this.forStmt = forStmt;
+        this.whileStmt = whileStmt;
     }
 
     @Override
@@ -25,6 +29,14 @@ public class CompoundNode implements Node {
 
         if (funcDef != null) {
             errors.addAll(funcDef.checkSemantics(ST, _nesting));
+        }
+
+        if (forStmt != null) {
+            errors.addAll(forStmt.checkSemantics(ST, _nesting));
+        }
+
+        if (whileStmt != null) {
+            errors.addAll(whileStmt.checkSemantics(ST, _nesting));
         }
 
         return errors;
@@ -47,6 +59,14 @@ public class CompoundNode implements Node {
 
         if (funcDef != null) {
             result += funcDef.toPrint(s + "  ");
+        }
+
+        if (forStmt != null) {
+            result += forStmt.toPrint(s + "  ");
+        }
+
+        if (whileStmt != null) {
+            result += whileStmt.toPrint(s + "  ");
         }
 
         return result;

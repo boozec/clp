@@ -5,27 +5,23 @@ import java.util.ArrayList;
 import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class ReturnStmtNode implements Node {
-    private Node exprList;
+public class DottedNameNode implements Node {
+    protected ArrayList<TerminalNode> names;
 
-    public ReturnStmtNode(Node exprList) {
-        this.exprList = exprList;
+    public DottedNameNode(ArrayList<TerminalNode> names) {
+        this.names = names;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        if (this.exprList != null) {
-            errors.addAll(this.exprList.checkSemantics(ST, _nesting));
-        }
-
         return errors;
     }
 
     public Type typeCheck() {
-        // FIXME: wtf is that?
         return new VoidType();
     }
 
@@ -34,10 +30,10 @@ public class ReturnStmtNode implements Node {
     }
 
     public String toPrint(String s) {
-        String result = s + "ReturnStmt\n";
+        String result = s + "DottedName\n";
 
-        if (this.exprList != null) {
-            result += this.exprList.toPrint(s + "  ");
+        for (var name : names) {
+            result += s + "  " + name.toString() + "\n";
         }
 
         return result;
