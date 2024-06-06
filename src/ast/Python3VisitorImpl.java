@@ -275,7 +275,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitReturn_stmt(Return_stmtContext ctx) {
         Node exprList = null;
         if (ctx.exprlist() != null) {
-        exprList = visit(ctx.exprlist());
+            exprList = visit(ctx.exprlist());
         }
 
         return new ReturnStmtNode(exprList);
