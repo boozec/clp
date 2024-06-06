@@ -11,6 +11,7 @@ public class BlockNode extends RootNode implements Node {
         super(_stmts, _compoundStmts);
     }
 
+    @Override
     public String toPrint(String s) {
         String result = s + "Block\n";
 
