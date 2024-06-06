@@ -9,10 +9,12 @@ import com.clp.project.ast.types.*;
 public class SimpleStmtNode implements Node {
     private Node assignment;
     private Node expr;
+    private Node returnStmt;
 
-    public SimpleStmtNode(Node assignment, Node expr) {
+    public SimpleStmtNode(Node assignment, Node expr, Node returnStmt) {
         this.assignment = assignment;
         this.expr = expr;
+        this.returnStmt = returnStmt;
     }
 
     @Override
@@ -25,6 +27,10 @@ public class SimpleStmtNode implements Node {
 
         if (expr != null) {
             errors.addAll(expr.checkSemantics(ST, _nesting));
+        }
+
+        if (returnStmt != null) {
+            errors.addAll(returnStmt.checkSemantics(ST, _nesting));
         }
 
         return errors;
@@ -47,6 +53,10 @@ public class SimpleStmtNode implements Node {
 
         if (expr != null) {
             result += expr.toPrint(s + "  ");
+        }
+
+        if (returnStmt != null) {
+            result += returnStmt.toPrint(s + "  ");
         }
 
         return result;

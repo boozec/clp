@@ -5,27 +5,25 @@ import java.util.ArrayList;
 import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class CompoundNode implements Node {
-    private Node ifNode;
-    private Node funcDef;
+public class FuncdefNode implements Node {
+    private TerminalNode name;
+    private Node paramlist;
+    private Node block;
 
-    public CompoundNode(Node _ifNode, Node _funcDef) {
-        ifNode = _ifNode;
-        funcDef = _funcDef;
+    public FuncdefNode(TerminalNode _name, Node _paramlist, Node _block) {
+        name = _name;
+        paramlist = _paramlist;
+        block = _block;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        if (ifNode != null) {
-            errors.addAll(ifNode.checkSemantics(ST, _nesting));
-        }
-
-        if (funcDef != null) {
-            errors.addAll(funcDef.checkSemantics(ST, _nesting));
-        }
+        errors.addAll(paramlist.checkSemantics(ST, _nesting));
+        errors.addAll(block.checkSemantics(ST, _nesting));
 
         return errors;
     }
@@ -39,15 +37,13 @@ public class CompoundNode implements Node {
     }
 
     public String toPrint(String s) {
-        String result = s + "CompoundNode\n";
+        String result = s + "Funcdef(" + name + ")\n";
 
-        if (ifNode != null) {
-            result += ifNode.toPrint(s + "  ");
+        if (paramlist != null) {
+            result += paramlist.toPrint(s + "  ");
         }
 
-        if (funcDef != null) {
-            result += funcDef.toPrint(s + "  ");
-        }
+        result += block.toPrint(s + "  ");
 
         return result;
     }

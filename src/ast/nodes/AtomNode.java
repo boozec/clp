@@ -7,7 +7,7 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
 public class AtomNode implements Node {
-    private String val;
+    protected String val;
 
     public AtomNode(String _val) {
         val = _val;

@@ -6,31 +6,26 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
-public class CompoundNode implements Node {
-    private Node ifNode;
-    private Node funcDef;
+public class ParamlistNode implements Node {
+    private ArrayList<Node> params;
 
-    public CompoundNode(Node _ifNode, Node _funcDef) {
-        ifNode = _ifNode;
-        funcDef = _funcDef;
+    public ParamlistNode(ArrayList<Node> _params) {
+        params = _params;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        if (ifNode != null) {
-            errors.addAll(ifNode.checkSemantics(ST, _nesting));
-        }
-
-        if (funcDef != null) {
-            errors.addAll(funcDef.checkSemantics(ST, _nesting));
+        for (var param : params) {
+            errors.addAll(param.checkSemantics(ST, _nesting));
         }
 
         return errors;
     }
 
     public Type typeCheck() {
+        // FIXME: wtf is that?
         return new VoidType();
     }
 
@@ -39,14 +34,10 @@ public class CompoundNode implements Node {
     }
 
     public String toPrint(String s) {
-        String result = s + "CompoundNode\n";
+        String result = s + "Paramlist\n";
 
-        if (ifNode != null) {
-            result += ifNode.toPrint(s + "  ");
-        }
-
-        if (funcDef != null) {
-            result += funcDef.toPrint(s + "  ");
+        for (var param : params) {
+            result += param.toPrint(s + "  ");
         }
 
         return result;

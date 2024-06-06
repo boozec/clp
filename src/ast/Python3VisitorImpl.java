@@ -38,6 +38,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         Node assignment = null;
         Node expr = null;
+        Node returnStmt = null;
 
         if (ctx.assignment() != null) {
             assignment = visit(ctx.assignment());
@@ -47,17 +48,30 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             expr = visit(ctx.expr());
         }
 
-        return new SimpleStmtNode(assignment, expr);
+        if (ctx.return_stmt() != null) {
+            returnStmt = visit(ctx.return_stmt());
+        }
+
+        return new SimpleStmtNode(assignment, expr, returnStmt);
     }
 
     public Node visitCompound_stmt(Compound_stmtContext ctx) {
-        Node ifStmt = visit(ctx.if_stmt());
+        Node ifStmt = null;
+        if (ctx.if_stmt() != null) {
+            ifStmt = visit(ctx.if_stmt());
+        }
+
+        Node funcDef = null;
+
+        if (ctx.funcdef() != null) {
+            funcDef = visit(ctx.funcdef());
+        }
+
         // FIXME: adds below
         // Node whileStmt = visit(ctx.while_stmt());
         // Node forStmt = visit(ctx.for_stmt());
-        // Node funcDef = visit(ctx.funcdef());
         //
-        return new CompoundNode(ifStmt);
+        return new CompoundNode(ifStmt, funcDef);
     }
 
     public Node visitAssignment(AssignmentContext ctx) {
@@ -69,6 +83,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     public Node visitExprlist(ExprlistContext ctx) {
+        // FIXME: you've used to be a list, c'mon
         Node exp = visit(ctx.expr(0));
 
         return exp;
@@ -168,5 +183,33 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         }
 
         return new ArglistNode(arguments);
+    }
+
+    public Node visitFuncdef(FuncdefContext ctx) {
+        Node paramlist = visit(ctx.paramlist());
+        Node block = visit(ctx.block());
+
+        return new FuncdefNode(ctx.NAME(), paramlist, block);
+    }
+
+    public Node visitParamlist(ParamlistContext ctx) {
+        ArrayList<Node> params = new ArrayList<Node>();
+
+        for (ParamdefContext s : ctx.paramdef()) {
+            params.add(visit(s));
+        }
+
+        return new ParamlistNode(params);
+    }
+
+    public Node visitParamdef(ParamdefContext ctx) {
+        return new ParamdefNode(ctx.NAME().toString());
+    }
+
+    public Node visitReturn_stmt(Return_stmtContext ctx) {
+        Node exprList = visit(ctx.exprlist());
+
+        return new ReturnStmtNode(exprList);
+
     }
 }
