@@ -6,15 +6,18 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `assignment` statement of the grammar.
+ */
 public class AssignmentNode implements Node {
     private Node lhr;
     private Node assign;
     private Node rhr;
 
-    public AssignmentNode(Node _lhr, Node _assign, Node _rhr) {
-        lhr = _lhr;
-        assign = _assign;
-        rhr = _rhr;
+    public AssignmentNode(Node lhr, Node assign, Node rhr) {
+        this.lhr = lhr;
+        this.assign = assign;
+        this.rhr = rhr;
     }
 
     @Override
@@ -28,16 +31,22 @@ public class AssignmentNode implements Node {
         return errors;
     }
 
+    // TODO: check it out for this type
+    @Override
     public Type typeCheck() {
         return rhr.typeCheck();
     }
 
+    // TODO: add code generation for assignment
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        return s + "Assignment\n" + lhr.toPrint(s + "  ") + assign.toPrint(s + "  ") + rhr.toPrint(s + "  ");
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + "Assignment\n" + lhr.toPrint(prefix + "  ") + assign.toPrint(prefix + "  ")
+                + rhr.toPrint(prefix + "  ");
     }
 
 }

@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `param_list` statement of the grammar.
+ */
 public class ParamlistNode implements Node {
     private ArrayList<Node> params;
 
@@ -24,23 +27,27 @@ public class ParamlistNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
-        // FIXME: wtf is that?
         return new VoidType();
     }
 
+    // TODO: code generation for param list
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "Paramlist\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "Paramlist\n";
 
+        prefix += "  ";
         for (var param : params) {
-            result += param.toPrint(s + "  ");
+            str += param.toPrint(prefix);
         }
 
-        return result;
+        return str;
     }
 
 }

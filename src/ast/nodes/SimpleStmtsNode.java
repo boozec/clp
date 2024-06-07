@@ -6,11 +6,14 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `simple_stmts` statement of the grammar.
+ */
 public class SimpleStmtsNode implements Node {
     private ArrayList<Node> stmts;
 
-    public SimpleStmtsNode(ArrayList<Node> _stmts) {
-        stmts = _stmts;
+    public SimpleStmtsNode(ArrayList<Node> stmts) {
+        this.stmts = stmts;
     }
 
     @Override
@@ -24,21 +27,28 @@ public class SimpleStmtsNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: Code generation for SimpleStmtsNode
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "SimpleStmts\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "SimpleStmts\n";
+
+        prefix += "  ";
+
         for (Node stmt : stmts) {
-            result += stmt.toPrint(s + "  ");
+            str += stmt.toPrint(prefix);
         }
 
-        return result;
+        return str;
     }
 
 }

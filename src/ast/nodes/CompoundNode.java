@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `compound_node` statement of the grammar.
+ */
 public class CompoundNode implements Node {
     private Node ifNode;
     private Node funcDef;
@@ -42,34 +45,40 @@ public class CompoundNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: add code generation for CompoundNode
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "CompoundNode\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "CompoundNode\n";
+
+        prefix += "  ";
 
         if (ifNode != null) {
-            result += ifNode.toPrint(s + "  ");
+            str += ifNode.toPrint(prefix);
         }
 
         if (funcDef != null) {
-            result += funcDef.toPrint(s + "  ");
+            str += funcDef.toPrint(prefix);
         }
 
         if (forStmt != null) {
-            result += forStmt.toPrint(s + "  ");
+            str += forStmt.toPrint(prefix);
         }
 
         if (whileStmt != null) {
-            result += whileStmt.toPrint(s + "  ");
+            str += whileStmt.toPrint(prefix);
         }
 
-        return result;
+        return str;
     }
 
 }

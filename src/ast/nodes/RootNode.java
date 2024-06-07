@@ -6,7 +6,12 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `root` statement of the grammar.
+ */
 public class RootNode implements Node {
+    // stms and compundStmts are protected because they are reused for a
+    // BlockNode
     protected ArrayList<Node> stmts;
     protected ArrayList<Node> compoundStmts;
 
@@ -29,25 +34,31 @@ public class RootNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: Code generation for RootNode
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = "Root\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = "Root\n";
+
+        prefix += "  ";
 
         for (Node stmt : stmts) {
-            result += stmt.toPrint(s + "  ");
+            str += stmt.toPrint(prefix);
         }
         for (Node stmt : compoundStmts) {
-            result += stmt.toPrint(s + "  ");
+            str += stmt.toPrint(prefix);
         }
 
-        return result;
+        return str;
     }
 
 }

@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `import_stmt` statement of the grammar.
+ */
 public class ImportNode implements Node {
     private Node dottedName;
     private boolean isFrom;
@@ -29,40 +32,45 @@ public class ImportNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // NOTE: we do not want to provide a code generation for this statement
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "Import\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "Import\n";
 
+        prefix += "  ";
         if (isFrom) {
-            result += s + "  From\n" + dottedName.toPrint(s + "    ");
+            str += prefix + "  From\n" + dottedName.toPrint(prefix + "  ");
         } else {
-            result += dottedName.toPrint(s + "  ");
+            str += dottedName.toPrint(prefix);
         }
 
         if (importAs) {
-            result += s + "  As " + names.get(0) + "\n";
+            str += prefix + "  As " + names.get(0) + "\n";
         }
 
         if (importAll) {
-            result += s + "  All\n";
+            str += prefix + "  All\n";
         }
 
         for (int i = 0; i < names.size(); ++i) {
             if (i == 0 && importAs)
                 continue;
 
-            result += s + "  " + names.get(i) + "\n";
+            str += prefix + names.get(i) + "\n";
         }
 
-        result += "\n";
-        return result;
+        str += "\n";
+        return str;
     }
 
 }

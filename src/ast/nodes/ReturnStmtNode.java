@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `return_stmt` statement of the grammar.
+ */
 public class ReturnStmtNode implements Node {
     private Node exprList;
 
@@ -24,23 +27,31 @@ public class ReturnStmtNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
-        // FIXME: wtf is that?
+        if (this.exprList != null) {
+            return this.exprList.typeCheck();
+        }
+
         return new VoidType();
     }
 
+    // TODO: add code generation for return stmt
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "ReturnStmt\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "ReturnStmt\n";
 
+        prefix += "  ";
         if (this.exprList != null) {
-            result += this.exprList.toPrint(s + "  ");
+            str += this.exprList.toPrint(prefix);
         }
 
-        return result;
+        return str;
     }
 
 }

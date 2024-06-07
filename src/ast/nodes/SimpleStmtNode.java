@@ -6,17 +6,20 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `simple_stmt` statement of the grammar.
+ */
 public class SimpleStmtNode implements Node {
     private Node assignment;
     private Node expr;
-    private Node importStmt;
     private Node returnStmt;
+    private Node importStmt;
 
-    public SimpleStmtNode(Node assignment, Node expr, Node importStmt, Node returnStmt) {
+    public SimpleStmtNode(Node assignment, Node expr, Node returnStmt, Node importStmt) {
         this.assignment = assignment;
         this.expr = expr;
-        this.importStmt = importStmt;
         this.returnStmt = returnStmt;
+        this.importStmt = importStmt;
     }
 
     @Override
@@ -31,45 +34,51 @@ public class SimpleStmtNode implements Node {
             errors.addAll(expr.checkSemantics(ST, _nesting));
         }
 
-        if (importStmt != null) {
-            errors.addAll(importStmt.checkSemantics(ST, _nesting));
-        }
-
         if (returnStmt != null) {
             errors.addAll(returnStmt.checkSemantics(ST, _nesting));
+        }
+
+        if (importStmt != null) {
+            errors.addAll(importStmt.checkSemantics(ST, _nesting));
         }
 
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: add code generation for SimpleStmtNode
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "SimpleStmt\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "SimpleStmt\n";
+
+        prefix += "  ";
 
         if (assignment != null) {
-            result += assignment.toPrint(s + "  ");
+            str += assignment.toPrint(prefix);
         }
 
         if (expr != null) {
-            result += expr.toPrint(s + "  ");
-        }
-
-        if (importStmt != null) {
-            result += importStmt.toPrint(s + "  ");
+            str += expr.toPrint(prefix);
         }
 
         if (returnStmt != null) {
-            result += returnStmt.toPrint(s + "  ");
+            str += returnStmt.toPrint(prefix);
         }
 
-        return result;
+        if (importStmt != null) {
+            str += importStmt.toPrint(prefix);
+        }
+
+        return str;
     }
 
 }

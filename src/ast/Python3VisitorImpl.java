@@ -10,21 +10,40 @@ import com.clp.project.parser.Python3ParserBaseVisitor;
 import com.clp.project.parser.Python3Parser.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+/**
+ * Implementation for the `Python3ParserBaseVisitor` class for the `Node` type.
+ * Overrides each `visitNODE` method from the base class.
+ */
 public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
+    /**
+     * Since a root can be a simple_stmts or a compound_stmt, this method
+     * returns a new `RootNode` with a list of them.
+     *
+     * ```
+     * root : NEWLINE* (simple_stmts | compound_stmt)* EOF;
+     * ```
+     */
     public Node visitRoot(RootContext ctx) {
         ArrayList<Node> stmts = new ArrayList<Node>();
         ArrayList<Node> compStmts = new ArrayList<Node>();
 
-        for (Simple_stmtsContext s : ctx.simple_stmts()) {
-            stmts.add(visit(s));
+        for (Simple_stmtsContext stm : ctx.simple_stmts()) {
+            stmts.add(visit(stm));
         }
-        for (Compound_stmtContext s : ctx.compound_stmt()) {
-            compStmts.add(visit(s));
+        for (Compound_stmtContext stm : ctx.compound_stmt()) {
+            compStmts.add(visit(stm));
         }
 
         return new RootNode(stmts, compStmts);
     }
 
+    /**
+     * Returns a `SimpleStmtsNode`, made by an array of SimpleStmtNode
+     *
+     * ```
+     * simple_stmts : simple_stmt (';' simple_stmt)* ';'? NEWLINE ;
+     * ```
+     */
     public Node visitSimple_stmts(Simple_stmtsContext ctx) {
         ArrayList<Node> stmts = new ArrayList<Node>();
 
@@ -35,11 +54,52 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new SimpleStmtsNode(stmts);
     }
 
+    /**
+     * Returns a `CompoundNode`. It can be built by a different kind of
+     * statements, so only one of theme won't be null.
+     *
+     * ```
+     * compound_stmt : if_stmt | while_stmt | for_stmt | funcdef ;
+     * ```
+     */
+    public Node visitCompound_stmt(Compound_stmtContext ctx) {
+        Node ifStmt = null;
+        Node funcDef = null;
+        Node forStmt = null;
+        Node whileStmt = null;
+
+        if (ctx.if_stmt() != null) {
+            ifStmt = visit(ctx.if_stmt());
+        }
+
+        if (ctx.funcdef() != null) {
+            funcDef = visit(ctx.funcdef());
+        }
+
+        if (ctx.for_stmt() != null) {
+            forStmt = visit(ctx.for_stmt());
+        }
+
+        if (ctx.while_stmt() != null) {
+            whileStmt = visit(ctx.while_stmt());
+        }
+
+        return new CompoundNode(ifStmt, funcDef, forStmt, whileStmt);
+    }
+
+    /**
+     * Returns a `SimpleStmtNode`. It can be built by a different kind of
+     * statements, so only one of theme won't be null.
+     *
+     * ```
+     * simple_stmt : assignment | expr | return_stmt | import_stm ;
+     * ```
+     */
     public Node visitSimple_stmt(Simple_stmtContext ctx) {
         Node assignment = null;
         Node expr = null;
-        Node importStmt = null;
         Node returnStmt = null;
+        Node importStmt = null;
 
         if (ctx.assignment() != null) {
             assignment = visit(ctx.assignment());
@@ -49,46 +109,139 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             expr = visit(ctx.expr());
         }
 
-        if (ctx.import_stm() != null) {
-            importStmt = visit(ctx.import_stm());
-        }
-
         if (ctx.return_stmt() != null) {
             returnStmt = visit(ctx.return_stmt());
         }
 
-        return new SimpleStmtNode(assignment, expr, importStmt, returnStmt);
+        if (ctx.import_stm() != null) {
+            importStmt = visit(ctx.import_stm());
+        }
+
+        return new SimpleStmtNode(assignment, expr, returnStmt, importStmt);
     }
 
-    public Node visitCompound_stmt(Compound_stmtContext ctx) {
-        Node ifStmt = null;
-        if (ctx.if_stmt() != null) {
-            ifStmt = visit(ctx.if_stmt());
-        }
-
-        Node funcDef = null;
-        if (ctx.funcdef() != null) {
-            funcDef = visit(ctx.funcdef());
-        }
-
-        Node forStmt = null;
-        if (ctx.for_stmt() != null) {
-            forStmt = visit(ctx.for_stmt());
-        }
-
-        Node whileStmt = null;
-        if (ctx.while_stmt() != null) {
-            whileStmt = visit(ctx.while_stmt());
-        }
-        return new CompoundNode(ifStmt, funcDef, forStmt, whileStmt);
-    }
-
+    /**
+     * Returns an `AssignmentNode`. It's made by left side, an assignment and a
+     * right side.
+     * 
+     * ```
+     * assignment : exprlist augassign exprlist ;
+     * ```
+     */
     public Node visitAssignment(AssignmentContext ctx) {
         Node lhr = visit(ctx.exprlist(0));
         Node assign = visit(ctx.augassign());
         Node rhr = visit(ctx.exprlist(1));
 
         return new AssignmentNode(lhr, assign, rhr);
+    }
+
+    /**
+     * Returns a `ReturnStmtNode`. The returned exprlist can be null.
+     *
+     * ```
+     * return_stmt : 'return' exprlist? ;
+     * ```
+     */
+    public Node visitReturn_stmt(Return_stmtContext ctx) {
+        Node exprList = null;
+        if (ctx.exprlist() != null) {
+            exprList = visit(ctx.exprlist());
+        }
+
+        return new ReturnStmtNode(exprList);
+    }
+
+    /**
+     * Returns a `ImportNode`. An import can be made in different ways so we
+     * check the way in a module is imported (by from, by alias or by star).
+     *
+     * ```
+     * import_stm : 'import' dotted_name ('as' NAME)?
+     * | 'from' dotted_name 'import' (NAME (',' NAME)* | '*') ;
+     * ```
+     */
+    public Node visitImport_stm(Import_stmContext ctx) {
+        boolean isFrom = ctx.FROM() != null;
+        boolean importAs = ctx.AS() != null;
+        boolean importAll = ctx.STAR() != null;
+
+        Node dottedName = visit(ctx.dotted_name());
+
+        ArrayList<String> names = new ArrayList<String>();
+
+        for (var s : ctx.NAME()) {
+            names.add(s.toString());
+        }
+
+        return new ImportNode(dottedName, isFrom, importAs, importAll, names);
+    }
+
+    /**
+     * Returns a `DottedNameNode` used in `import_stm`.
+     *
+     * ```
+     * dotted_name : NAME ('.' NAME)* ;
+     * ```
+     */
+    public Node visitDotted_name(Dotted_nameContext ctx) {
+        ArrayList<TerminalNode> names = new ArrayList<TerminalNode>();
+
+        for (var name : ctx.NAME()) {
+            names.add(name);
+        }
+
+        return new DottedNameNode(names);
+    }
+
+    /**
+     * Returns a `FuncdefNode`. A paramlist can be null.
+     *
+     * ```
+     * funcdef : 'def' NAME '(' paramlist? ')' ':' block ;
+     * ```
+     */
+    public Node visitFuncdef(FuncdefContext ctx) {
+        Node paramlist = null;
+
+        if (ctx.paramlist() != null) {
+            paramlist = visit(ctx.paramlist());
+        }
+
+        Node block = visit(ctx.block());
+
+        return new FuncdefNode(ctx.NAME(), paramlist, block);
+    }
+
+    /**
+     * Returns a `ParamlistNode`. We ignore the paramdef with default values
+     * (eg: is_used=False) because there is no test which uses this feature.
+     *
+     * ```
+     * paramlist : paramdef ('=' expr)? (',' paramdef ('=' expr)?)* ;
+     * 
+     * ```
+     */
+    public Node visitParamlist(ParamlistContext ctx) {
+        ArrayList<Node> params = new ArrayList<Node>();
+
+        for (ParamdefContext s : ctx.paramdef()) {
+            params.add(visit(s));
+        }
+
+        return new ParamlistNode(params);
+    }
+
+    /**
+     * Returns a `ParamdefNode`. We ignore the paramdef with type annotation
+     * (eg: x : int) because there is no test which uses this feature.
+     *
+     * ```
+     * paramdef : NAME (':' expr)? ;
+     * ```
+     */
+    public Node visitParamdef(ParamdefContext ctx) {
+        return new ParamdefNode(ctx.NAME().toString());
     }
 
     public Node visitExprlist(ExprlistContext ctx) {
@@ -251,36 +404,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new ArglistNode(arguments);
     }
 
-    public Node visitFuncdef(FuncdefContext ctx) {
-        Node paramlist = visit(ctx.paramlist());
-        Node block = visit(ctx.block());
-
-        return new FuncdefNode(ctx.NAME(), paramlist, block);
-    }
-
-    public Node visitParamlist(ParamlistContext ctx) {
-        ArrayList<Node> params = new ArrayList<Node>();
-
-        for (ParamdefContext s : ctx.paramdef()) {
-            params.add(visit(s));
-        }
-
-        return new ParamlistNode(params);
-    }
-
-    public Node visitParamdef(ParamdefContext ctx) {
-        return new ParamdefNode(ctx.NAME().toString());
-    }
-
-    public Node visitReturn_stmt(Return_stmtContext ctx) {
-        Node exprList = null;
-        if (ctx.exprlist() != null) {
-            exprList = visit(ctx.exprlist());
-        }
-
-        return new ReturnStmtNode(exprList);
-    }
-
     public Node visitFor_stmt(For_stmtContext ctx) {
         Node exprList = visit(ctx.exprlist());
 
@@ -299,29 +422,4 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new WhileStmtNode(expr, block);
     }
 
-    public Node visitImport_stm(Import_stmContext ctx) {
-        boolean isFrom = ctx.FROM() != null;
-        boolean importAs = ctx.AS() != null;
-        boolean importAll = ctx.STAR() != null;
-
-        Node dottedName = visit(ctx.dotted_name());
-
-        ArrayList<String> names = new ArrayList<String>();
-
-        for (var s : ctx.NAME()) {
-            names.add(s.toString());
-        }
-
-        return new ImportNode(dottedName, isFrom, importAs, importAll, names);
-    }
-
-    public Node visitDotted_name(Dotted_nameContext ctx) {
-        ArrayList<TerminalNode> names = new ArrayList<TerminalNode>();
-
-        for (var name : ctx.NAME()) {
-            names.add(name);
-        }
-
-        return new DottedNameNode(names);
-    }
 }
