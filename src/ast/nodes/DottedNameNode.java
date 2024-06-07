@@ -37,7 +37,7 @@ public class DottedNameNode implements Node {
     }
 
     @Override
-    public String toPrint(String prexif) {
+    public String toPrint(String prefix) {
         String str = prefix + "DottedName\n";
 
         prefix += "  ";
