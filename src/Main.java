@@ -18,22 +18,21 @@ import com.clp.project.parser.*;
 import com.clp.project.semanticanalysis.*;
 
 public class Main {
+
     public static void main(String[] args) {
+
         // for (File file : Objects.requireNonNull(new File("./progs/").listFiles())) {
         try {
             // String fileStr = file.getPath();
             // FIXME: use the fileStr above
             String fileStr = "./progs/test.py";
             System.out.println(fileStr);
-
             System.out.println(readFile(fileStr));
-
             CharStream cs = CharStreams.fromFileName(fileStr);
             Python3Lexer lexer = new Python3Lexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             Python3Parser parser = new Python3Parser(tokens);
             Python3Parser.RootContext tree = parser.root();
-
             // DEBUG
             // {
             // tokens.fill();
@@ -43,7 +42,6 @@ public class Main {
             //
             // System.out.println("Tree: " + tree);
             // }
-
             JFrame frame = new JFrame("Parse Tree");
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
@@ -54,31 +52,27 @@ public class Main {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
             frame.setVisible(true);
-
             if (tree == null) {
                 System.err.println("The tree is null.");
                 return;
             }
-
             if (parser.getNumberOfSyntaxErrors() > 0) {
                 System.err.println("Error on program parsing.");
                 return;
             }
-
             Python3VisitorImpl visitor = new Python3VisitorImpl();
             SymbolTable ST = new SymbolTable();
             Node ast = visitor.visit(tree);
-
             ArrayList<SemanticError> errors = ast.checkSemantics(ST, 0);
             if (errors.size() > 0) {
                 System.out.println("You had: " + errors.size() + " errors:");
-                for (SemanticError e : errors)
+                for (SemanticError e : errors) {
                     System.out.println("\t" + e);
+                }
             } else {
                 System.out.println("Visualizing AST...");
                 System.out.println(ast.toPrint(""));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

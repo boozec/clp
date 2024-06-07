@@ -6,11 +6,12 @@ import com.clp.project.ast.*;
 import com.clp.project.ast.types.*;
 
 /**
- * Class representing a symbol table. It's a list of hash table symbol table.
- * We keep track of a ArrayList of HashMap called `symbolTable` and an array of
+ * Class representing a symbol table. It's a list of hash table symbol table. We
+ * keep track of a ArrayList of HashMap called `symbolTable` and an array of
  * integer called `offset`.
  */
 public class SymbolTable {
+
     private ArrayList<HashMap<String, STentry>> symbolTable;
     private ArrayList<Integer> offset;
 
@@ -27,8 +28,10 @@ public class SymbolTable {
     }
 
     /**
-     * Check out if an `id` is into the symbol table.
-     * Returns an STentry object or null if the `id` is not found.
+     * Check out if an `id` is into the symbol table. Returns an STentry object
+     * or null if the `id` is not found.
+     *
+     * @param id is the identifier of the STentry to find.
      */
     public STentry lookup(String id) {
         int n = this.symbolTable.size() - 1;
@@ -37,24 +40,31 @@ public class SymbolTable {
         while ((n >= 0) && !found) {
             HashMap<String, STentry> H = this.symbolTable.get(n);
             T = H.get(id);
-            if (T != null)
-                found = true;
-            else
+            if (T != null) {
+                found = true; 
+            }else {
                 n = n - 1;
+            }
         }
         return T;
     }
 
-    // TODO: add doc
+    /**
+     * Return the position of a STentry given the `id`, if it exists. Otherwise
+     * return `-1`. We start the search from the last inserted hashmap.
+     *
+     * @param id is the identifier of the STentry to find.
+     */
     public Integer nslookup(String id) {
         int n = this.symbolTable.size() - 1;
         boolean found = false;
         while ((n >= 0) && !found) {
             HashMap<String, STentry> H = this.symbolTable.get(n);
-            if (H.get(id) != null)
-                found = true;
-            else
+            if (H.get(id) != null) {
+                found = true; 
+            }else {
                 n = n - 1;
+            }
         }
         return n;
     }
@@ -79,7 +89,12 @@ public class SymbolTable {
         this.offset.remove(x - 1);
     }
 
-    // TODO: add doc
+    /**
+     * Return `true` if the `id` is present in the last inseted hashmap.
+     * Otherwise return `false`.
+     *
+     * @param id is the identifier of the STentry to find.
+     */
     public boolean top_lookup(String id) {
         int n = symbolTable.size() - 1;
         STentry T = null;
