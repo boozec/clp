@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `expr` statement of the grammar.
+ */
 public class ExprNode implements Node {
     private Node atom;
     private Node compOp;
@@ -44,39 +47,44 @@ public class ExprNode implements Node {
         return errors;
     }
 
+    // FIXME: type for the expr
+    @Override
     public Type typeCheck() {
-        // FIXME: wtf is that?
         return new VoidType();
     }
 
+    // TODO: add code generation for expr
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "Expr\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "Expr\n";
 
+        prefix += "  ";
         if (atom != null) {
-            result += atom.toPrint(s + "  ");
+            str += atom.toPrint(prefix);
         }
 
         if (compOp != null) {
-            result += compOp.toPrint(s + "  ");
+            str += compOp.toPrint(prefix);
         }
 
         for (var expr : exprs) {
-            result += expr.toPrint(s + "  ");
+            str += expr.toPrint(prefix);
         }
 
         for (var trailer : trailers) {
-            result += trailer.toPrint(s + "  ");
+            str += trailer.toPrint(prefix);
         }
 
         if (op != null) {
-            result += s + "  Op(" + op + ")\n";
+            str += prefix + "Op(" + op + ")\n";
         }
 
-        return result;
+        return str;
     }
 
 }

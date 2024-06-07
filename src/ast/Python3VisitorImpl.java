@@ -244,13 +244,155 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new ParamdefNode(ctx.NAME().toString());
     }
 
-    public Node visitExprlist(ExprlistContext ctx) {
-        // FIXME: you've used to be a list, c'mon
-        Node exp = visit(ctx.expr(0));
+    /**
+     * Returns an `AugassignNode`. We don't provide all kinds of assignment
+     * below.
+     *
+     * ```
+     * augassign : '=' | '+=' | '-=' | '*=' | '@=' | '/=' | '%=' | '&=' | '|=' |
+     * '^=' | '<<=' | '>>=' | '**=' | '//='
+     * ;
+     * ```
+     */
+    public Node visitAugassign(AugassignContext ctx) {
+        Node x = null;
 
-        return exp;
+        if (ctx.ASSIGN() != null) {
+            x = new AugassignNode(ctx.ASSIGN());
+        } else if (ctx.ADD_ASSIGN() != null) {
+            x = new AugassignNode(ctx.ADD_ASSIGN());
+        } else if (ctx.SUB_ASSIGN() != null) {
+            x = new AugassignNode(ctx.SUB_ASSIGN());
+        } else if (ctx.MULT_ASSIGN() != null) {
+            x = new AugassignNode(ctx.MULT_ASSIGN());
+        } else if (ctx.DIV_ASSIGN() != null) {
+            x = new AugassignNode(ctx.DIV_ASSIGN());
+        }
+
+        return x;
     }
 
+    /**
+     * Returns a `IfNode`.
+     * FIXME: add support for elif statement.
+     *
+     * ```
+     * if_stmt : 'if' expr ':' block ('elif' expr ':' block)* ('else' ':' block)? ;
+     * ```
+     */
+    public Node visitIf_stmt(If_stmtContext ctx) {
+        var blocks = ctx.block();
+        Node condExp = visit(ctx.expr(0));
+        Node thenExp = visit(blocks.get(0));
+        Node elseExp = null;
+        if (blocks.size() > 1) {
+            elseExp = visit(blocks.get(1));
+        }
+
+        return new IfNode(condExp, thenExp, elseExp);
+    }
+
+    /**
+     * Returns a `WhileStmtNode`. We do not provide 'else' branch.
+     *
+     * ```
+     * while_stmt : 'while' expr ':' block ('else' ':' block)? ;
+     * ```
+     */
+    public Node visitWhile_stmt(While_stmtContext ctx) {
+        Node expr = visit(ctx.expr());
+
+        // Block 1 is for the while-else statement
+        Node block = visit(ctx.block(0));
+
+        return new WhileStmtNode(expr, block);
+    }
+
+    /**
+     * Returns a `ForSmtNode`. We do not provide 'else' branch.
+     *
+     * ```
+     * for_stmt : 'for' exprlist ':' block ('else' ':' block)? ;
+     * ```
+     */
+    public Node visitFor_stmt(For_stmtContext ctx) {
+        Node exprList = visit(ctx.exprlist());
+
+        // Block 1 is for the for-else statement
+        Node block = visit(ctx.block(0));
+
+        return new ForStmtNode(exprList, block);
+    }
+
+    /**
+     * Returns a `BlockNode`. A block can be be a simple_stmts or a list of
+     * simple_stms and/or compound_stmt, so we just use a list for each kind.
+     *
+     * ```
+     * block : simple_stmts
+     * | NEWLINE INDENT (simple_stmts | compound_stmt)+ DEDENT ;
+     * ```
+     */
+    public Node visitBlock(BlockContext ctx) {
+        ArrayList<Node> stmts = new ArrayList<Node>();
+        ArrayList<Node> compStmts = new ArrayList<Node>();
+
+        for (Simple_stmtsContext s : ctx.simple_stmts()) {
+            stmts.add(visit(s));
+        }
+        for (Compound_stmtContext s : ctx.compound_stmt()) {
+            compStmts.add(visit(s));
+        }
+
+        return new BlockNode(stmts, compStmts);
+    }
+
+    /**
+     * Returns a `CompNode`. It should never be null.
+     *
+     * ```
+     * comp_op : '<' | '>' | '==' | '>=' | '<=' | '<>' | '!=' | 'in' | 'not' 'in' |
+     * 'is' | 'is' 'not' ;
+     * ```
+     */
+    public Node visitComp_op(Comp_opContext ctx) {
+        Node comp = null;
+        if (ctx.LESS_THAN() != null) {
+            comp = new CompNode(ctx.LESS_THAN());
+        } else if (ctx.GREATER_THAN() != null) {
+            comp = new CompNode(ctx.GREATER_THAN());
+        } else if (ctx.EQUALS() != null) {
+            comp = new CompNode(ctx.EQUALS());
+        } else if (ctx.GT_EQ() != null) {
+            comp = new CompNode(ctx.GT_EQ());
+        } else if (ctx.LT_EQ() != null) {
+            comp = new CompNode(ctx.LT_EQ());
+        } else if (ctx.NOT_EQ_2() != null) {
+            // We're ignoring NOT_EQ_1() because no one uses `<>`
+            comp = new CompNode(ctx.NOT_EQ_2());
+        } else if (ctx.IN() != null) {
+            comp = new CompNode(ctx.IN());
+        } else if (ctx.NOT() != null) {
+            comp = new CompNode(ctx.NOT());
+        } else if (ctx.IS() != null) {
+            comp = new CompNode(ctx.IS());
+        }
+
+        return comp;
+    }
+
+    /**
+     * Returns an `ExprNode`. An expession can be a different kind of
+     * sub-expression. We do not provide all kinds of expr(s).
+     *
+     * ```
+     * expr : atom trailer* | expr '**' expr | ('+' | '-' | '~')+ expr | expr ('*' |
+     * '@' | '/' | '%' | '//') expr | expr ('+' | '-') expr | expr ('<<' | '>>')
+     * expr | expr '&' expr | expr '^' expr | expr '|' expr | 'not' expr | expr
+     * comp_op expr | expr 'and' expr | expr 'or' expr | expr 'if' expr 'else' expr
+     * ;
+     * ```
+     */
     public Node visitExpr(ExprContext ctx) {
         Node atom = null;
         Node compOp = null;
@@ -297,6 +439,15 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new ExprNode(atom, compOp, exprs, op, trailers);
     }
 
+    /**
+     * Returns an `AtomNode`.
+     * FIXME: add support for testlist_comp
+     *
+     * ```
+     * atom : '(' testlist_comp? ')' | '[' testlist_comp? ']' | '{' testlist_comp?
+     * '}' | NAME | NUMBER | STRING+ | '...' | 'None' | 'True' | 'False' ;
+     * ```
+     */
     public Node visitAtom(AtomContext ctx) {
         if (ctx.NUMBER() != null) {
             return new AtomNode(ctx.NUMBER().toString());
@@ -318,63 +469,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new AtomNode(ctx.NONE().toString());
     }
 
-    public Node visitAugassign(AugassignContext ctx) {
-        return new AugassignNode(ctx.ASSIGN());
-    }
-
-    // FIXME: add support for `elif`
-    public Node visitIf_stmt(If_stmtContext ctx) {
-        var blocks = ctx.block();
-        Node condExp = visit(ctx.expr(0));
-        Node thenExp = visit(blocks.get(0));
-        Node elseExp = null;
-        if (blocks.size() > 1) {
-            elseExp = visit(blocks.get(1));
-        }
-
-        return new IfNode(condExp, thenExp, elseExp);
-    }
-
-    public Node visitComp_op(Comp_opContext ctx) {
-        Node comp = null;
-        if (ctx.LESS_THAN() != null) {
-            comp = new CompNode(ctx.LESS_THAN());
-        } else if (ctx.GREATER_THAN() != null) {
-            comp = new CompNode(ctx.GREATER_THAN());
-        } else if (ctx.EQUALS() != null) {
-            comp = new CompNode(ctx.EQUALS());
-        } else if (ctx.GT_EQ() != null) {
-            comp = new CompNode(ctx.GT_EQ());
-        } else if (ctx.LT_EQ() != null) {
-            comp = new CompNode(ctx.LT_EQ());
-        } else if (ctx.NOT_EQ_2() != null) {
-            // We're ignoring NOT_EQ_1() because no one uses `<>`
-            comp = new CompNode(ctx.NOT_EQ_2());
-        } else if (ctx.IN() != null) {
-            comp = new CompNode(ctx.IN());
-        } else if (ctx.NOT() != null) {
-            comp = new CompNode(ctx.NOT());
-        } else if (ctx.IS() != null) {
-            comp = new CompNode(ctx.IS());
-        }
-
-        return comp;
-    }
-
-    public Node visitBlock(BlockContext ctx) {
-        ArrayList<Node> stmts = new ArrayList<Node>();
-        ArrayList<Node> compStmts = new ArrayList<Node>();
-
-        for (Simple_stmtsContext s : ctx.simple_stmts()) {
-            stmts.add(visit(s));
-        }
-        for (Compound_stmtContext s : ctx.compound_stmt()) {
-            compStmts.add(visit(s));
-        }
-
-        return new BlockNode(stmts, compStmts);
-    }
-
     public Node visitTrailer(TrailerContext ctx) {
         Node arglist = null;
         if (ctx.arglist() != null) {
@@ -394,6 +488,13 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new TrailerNode(arglist, exprs, methodCall);
     }
 
+    public Node visitExprlist(ExprlistContext ctx) {
+        // FIXME: you've used to be a list, c'mon
+        Node exp = visit(ctx.expr(0));
+
+        return exp;
+    }
+
     public Node visitArglist(ArglistContext ctx) {
         ArrayList<Node> arguments = new ArrayList<Node>();
 
@@ -403,23 +504,4 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         return new ArglistNode(arguments);
     }
-
-    public Node visitFor_stmt(For_stmtContext ctx) {
-        Node exprList = visit(ctx.exprlist());
-
-        // Block 1 is for the for-else statement
-        Node block = visit(ctx.block(0));
-
-        return new ForStmtNode(exprList, block);
-    }
-
-    public Node visitWhile_stmt(While_stmtContext ctx) {
-        Node expr = visit(ctx.expr());
-
-        // Block 1 is for the while-else statement
-        Node block = visit(ctx.block(0));
-
-        return new WhileStmtNode(expr, block);
-    }
-
 }

@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `for_stmt` statement of the grammar.
+ */
 public class ForStmtNode implements Node {
     private Node exprList;
     private Node block;
@@ -25,16 +28,20 @@ public class ForStmtNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: add code generation for while
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        return s + "For\n" + exprList.toPrint(s + "  ") + block.toPrint(s + "  ");
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + "For\n" + exprList.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
     }
 
 }

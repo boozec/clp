@@ -6,15 +6,18 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `if` statement of the grammar.
+ */
 public class IfNode implements Node {
     private Node guard;
     private Node thenbranch;
     private Node elsebranch;
 
-    public IfNode(Node _guard, Node _thenbranch, Node _elsebranch) {
-        guard = _guard;
-        thenbranch = _thenbranch;
-        elsebranch = _elsebranch;
+    public IfNode(Node guard, Node thenbranch, Node elsebranch) {
+        this.guard = guard;
+        this.thenbranch = thenbranch;
+        this.elsebranch = elsebranch;
     }
 
     @Override
@@ -30,6 +33,8 @@ public class IfNode implements Node {
         return errors;
     }
 
+    // FIXME: fix the if statement
+    @Override
     public Type typeCheck() {
         if (guard.typeCheck() instanceof BoolType) {
             Type thenexp = thenbranch.typeCheck();
@@ -46,18 +51,21 @@ public class IfNode implements Node {
         }
     }
 
+    // TODO: add code generation for if
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "If\n" + guard.toPrint(s + "  ") + thenbranch.toPrint(s + "  ");
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "If\n" + guard.toPrint(prefix + "  ") + thenbranch.toPrint(prefix + "  ");
 
         if (elsebranch != null) {
-            result += elsebranch.toPrint(s + "  ");
+            str += elsebranch.toPrint(prefix + "  ");
         }
 
-        return result;
+        return str;
     }
 
 }

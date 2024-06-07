@@ -7,26 +7,35 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+/**
+ * Node for the `comp_op` statement of the grammar.
+ */
 public class CompNode implements Node {
-    private TerminalNode val;
+    private TerminalNode op;
 
-    public CompNode(TerminalNode _val) {
-        val = _val;
+    public CompNode(TerminalNode op) {
+        this.op = op;
     }
 
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         return new ArrayList<SemanticError>();
     }
 
+    // TODO: it should be boolean, right?
+    @Override
     public Type typeCheck() {
-        return new ErrorType();
+        return new VoidType();
     }
 
+    // TODO: add code generation for CompNode
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        return s + "CompNode(" + val + ")\n";
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + "CompNode(" + op + ")\n";
     }
 }

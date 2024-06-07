@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `while_stmt` statement of the grammar.
+ */
 public class WhileStmtNode implements Node {
     private Node expr;
     private Node block;
@@ -25,16 +28,19 @@ public class WhileStmtNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: add code generation for while
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        return s + "While\n" + expr.toPrint(s + "  ") + block.toPrint(s + "  ");
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + "While\n" + expr.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
     }
-
 }
