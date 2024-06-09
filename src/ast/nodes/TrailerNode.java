@@ -7,6 +7,9 @@ import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+/**
+ * Node for the `trailer` statement of the grammar.
+ */
 public class TrailerNode implements Node {
     private Node arglist;
     private ArrayList<Node> exprs;
@@ -36,34 +39,40 @@ public class TrailerNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: add code generation for trailer node
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "TrailerNode\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "TrailerNode\n";
+
+        prefix += "  ";
 
         if (arglist != null) {
-            result += arglist.toPrint(s + "  ");
+            str += arglist.toPrint(prefix);
         }
 
         for (var expr : exprs) {
-            result += expr.toPrint(s + "  ");
+            str += expr.toPrint(prefix);
         }
 
         if (methodCall != null) {
-            result += s + "  Method(" + methodCall + ")\n";
+            str += prefix + "Method(" + methodCall + ")\n";
         }
 
         if (isEmpty) {
-            result += s + "  ()\n";
+            str += prefix + "()\n";
         }
 
-        return result;
+        return str;
     }
 
 }

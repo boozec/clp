@@ -469,6 +469,14 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new AtomNode(ctx.NONE().toString());
     }
 
+    /**
+     * Returns an `TrailerNode`.
+     *
+     * ```
+     * trailer : '(' arglist? ')' | '[' expr (',' expr)* ','? ']' | '.' NAME | '['
+     * expr? ':' expr? (':' expr? )? ']' ;
+     * ```
+     */
     public Node visitTrailer(TrailerContext ctx) {
         Node arglist = null;
         if (ctx.arglist() != null) {
@@ -480,6 +488,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             exprs.add(visit(expr));
         }
 
+        // A trailer could be `.methodName()`.
         TerminalNode methodCall = null;
         if (ctx.DOT() != null) {
             methodCall = ctx.NAME();
@@ -488,13 +497,27 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return new TrailerNode(arglist, exprs, methodCall);
     }
 
+    /**
+     * Returns a `Node`.
+     * FIXME: what to do in case of list??
+     *
+     * ```
+     * exprlist : expr (',' expr )* ','? ;
+     * ```
+     */
     public Node visitExprlist(ExprlistContext ctx) {
-        // FIXME: you've used to be a list, c'mon
         Node exp = visit(ctx.expr(0));
 
         return exp;
     }
 
+    /**
+     * Returns a `ArglistNode`.
+     *
+     * ```
+     * arglist : argument (',' argument)* ','? ;
+     * ```
+     */
     public Node visitArglist(ArglistContext ctx) {
         ArrayList<Node> arguments = new ArrayList<Node>();
 

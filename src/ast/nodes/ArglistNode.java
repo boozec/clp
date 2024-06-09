@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.types.*;
 
+/**
+ * Node for the `arglist` statement of the grammar.
+ */
 public class ArglistNode implements Node {
     protected ArrayList<Node> arguments;
 
@@ -24,22 +27,27 @@ public class ArglistNode implements Node {
         return errors;
     }
 
+    @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
+    // TODO: add code generation for arglist node
+    @Override
     public String codeGeneration() {
         return "";
     }
 
-    public String toPrint(String s) {
-        String result = s + "ArglistNode\n";
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "ArglistNode\n";
 
+        prefix += "  ";
         for (Node arg : arguments) {
-            result += arg.toPrint(s + "  ");
+            str += arg.toPrint(prefix);
         }
 
-        return result;
+        return str;
     }
 
 }
