@@ -1,7 +1,10 @@
 package com.clp.project.ast.types;
 
+/**
+ * Error type.
+ */
 public class ErrorType extends Type {
-    public String toPrint(String s) {
-        return s + "Error\n";
+    public String toPrint(String prefix) {
+        return prefix + "Error\n";
     }
 }

@@ -6,6 +6,9 @@ import com.clp.project.semanticanalysis.SemanticError;
 import com.clp.project.semanticanalysis.SymbolTable;
 import com.clp.project.ast.nodes.*;
 
+/**
+ * A node which represents a type class.
+ */
 public class Type implements Node {
     public boolean isEqual(Type A, Type B) {
         if (A.getClass().equals(B.getClass()))
