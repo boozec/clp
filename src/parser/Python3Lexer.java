@@ -1,8 +1,10 @@
 package com.clp.project.parser;
 
-// import com.clp.project.parser.Python3LexerBase;
-
-// Generated from src/Python3Lexer.g4 by ANTLR 4.13.1
+// Generated from src/parser/Python3Lexer.g4 by ANTLR 4.13.1
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;

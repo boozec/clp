@@ -1,0 +1,42 @@
+package com.clp.project.ast.nodes;
+
+import java.util.ArrayList;
+
+import com.clp.project.semanticanalysis.SemanticError;
+import com.clp.project.semanticanalysis.SymbolTable;
+
+import com.clp.project.ast.types.*;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+/**
+ * Node for the `augassign` statement of the grammar.
+ */
+public class AugassignNode implements Node {
+    private TerminalNode val;
+
+    public AugassignNode(TerminalNode val) {
+        this.val = val;
+    }
+
+    @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        return new ArrayList<SemanticError>();
+    }
+
+    // FIXME: use the right type
+    @Override
+    public Type typeCheck() {
+        return new VoidType();
+    }
+
+    // TODO: add code generation for augassign node
+    @Override
+    public String codeGeneration() {
+        return "";
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + "Augassign(" + val + ")\n";
+    }
+}
