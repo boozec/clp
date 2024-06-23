@@ -1,5 +1,3 @@
-package com.clp.project;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,9 +8,10 @@ import javax.swing.*;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
 
-import com.clp.project.parser.*;
+import parser.*;
 
 public class ParseAll {
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         new File("./trees/").mkdirs();
         for (File file : Objects.requireNonNull(new File("./progs").listFiles())) {
@@ -52,6 +51,7 @@ public class ParseAll {
         }
     }
 
+    @SuppressWarnings("unused")
     private static String readFile(String filePath) throws IOException {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -63,6 +63,7 @@ public class ParseAll {
         return content.toString();
     }
 
+    @SuppressWarnings("unused")
     private static void showTree(TreeViewer viewer) {
         JFrame frame = new JFrame("Parse Tree");
         JPanel panel = new JPanel();

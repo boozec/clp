@@ -1,4 +1,4 @@
-package com.clp.project.ast.types;
+package ast.types;
 
 /**
  * Error type.

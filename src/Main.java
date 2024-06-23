@@ -1,21 +1,16 @@
-package com.clp.project;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import javax.swing.*;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
 
-import com.clp.project.ast.*;
-import com.clp.project.ast.nodes.*;
-import com.clp.project.parser.*;
-import com.clp.project.semanticanalysis.*;
+import ast.*;
+import ast.nodes.*;
+import parser.*;
+import semanticanalysis.*;
 
 public class Main {
 

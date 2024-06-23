@@ -1,4 +1,4 @@
-package com.clp.project.parser;
+package parser;
 
 import org.antlr.v4.runtime.*;
 

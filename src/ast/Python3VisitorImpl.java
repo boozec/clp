@@ -1,13 +1,10 @@
-package com.clp.project.ast;
+package ast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import com.clp.project.ast.*;
-import com.clp.project.ast.nodes.*;
-import com.clp.project.ast.types.*;
-import com.clp.project.parser.Python3ParserBaseVisitor;
-import com.clp.project.parser.Python3Parser.*;
+import ast.nodes.*;
+import parser.Python3ParserBaseVisitor;
+import parser.Python3Parser.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**

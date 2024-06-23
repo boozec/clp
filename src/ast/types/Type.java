@@ -1,10 +1,10 @@
-package com.clp.project.ast.types;
+package ast.types;
 
 import java.util.ArrayList;
 
-import com.clp.project.semanticanalysis.SemanticError;
-import com.clp.project.semanticanalysis.SymbolTable;
-import com.clp.project.ast.nodes.*;
+import semanticanalysis.SemanticError;
+import semanticanalysis.SymbolTable;
+import ast.nodes.*;
 
 /**
  * A node which represents a type class.
