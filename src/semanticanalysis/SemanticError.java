@@ -1,4 +1,4 @@
-package com.clp.project.semanticanalysis;
+package semanticanalysis;
 
 /**
  * Class respresents a semantic error.

@@ -1,6 +1,6 @@
-package com.clp.project.semanticanalysis;
+package semanticanalysis;
 
-import com.clp.project.ast.types.Type;
+import ast.types.Type;
 
 /**
  * Entry class for the symbol table.

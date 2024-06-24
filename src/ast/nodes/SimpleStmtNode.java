@@ -1,10 +1,10 @@
-package com.clp.project.ast.nodes;
+package ast.nodes;
 
 import java.util.ArrayList;
 
-import com.clp.project.semanticanalysis.SemanticError;
-import com.clp.project.semanticanalysis.SymbolTable;
-import com.clp.project.ast.types.*;
+import semanticanalysis.SemanticError;
+import semanticanalysis.SymbolTable;
+import ast.types.*;
 
 /**
  * Node for the `simple_stmt` statement of the grammar.

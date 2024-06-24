@@ -1,4 +1,4 @@
-package com.clp.project.parser;
+package parser;
 
 // Generated from src/parser/Python3Lexer.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.Lexer;

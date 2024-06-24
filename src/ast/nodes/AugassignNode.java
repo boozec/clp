@@ -1,11 +1,11 @@
-package com.clp.project.ast.nodes;
+package ast.nodes;
 
 import java.util.ArrayList;
 
-import com.clp.project.semanticanalysis.SemanticError;
-import com.clp.project.semanticanalysis.SymbolTable;
+import semanticanalysis.SemanticError;
+import semanticanalysis.SymbolTable;
 
-import com.clp.project.ast.types.*;
+import ast.types.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**

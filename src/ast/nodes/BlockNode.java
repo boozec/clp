@@ -1,16 +1,14 @@
-package com.clp.project.ast.nodes;
+package ast.nodes;
 
 import java.util.ArrayList;
 
-import com.clp.project.semanticanalysis.SemanticError;
-import com.clp.project.semanticanalysis.SymbolTable;
-import com.clp.project.ast.types.*;
+import ast.types.*;
 
 /**
  * Node for `block` statement of the grammar.
  * It extends the `RootNode`.
  */
-public class BlockNode extends RootNode implements Node {
+public class BlockNode extends RootNode {
     public BlockNode(ArrayList<Node> stmts, ArrayList<Node> compoundStmts) {
         super(stmts, compoundStmts);
     }

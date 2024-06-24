@@ -1,9 +1,8 @@
-package com.clp.project.semanticanalysis;
+package semanticanalysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.clp.project.ast.*;
-import com.clp.project.ast.types.*;
+import ast.types.*;
 
 /**
  * Class representing a symbol table. It's a list of hash table symbol table. We
