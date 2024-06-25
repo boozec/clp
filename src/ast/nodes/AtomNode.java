@@ -1,15 +1,17 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `atom` statement of the grammar.
  */
 public class AtomNode implements Node {
+
     protected String val;
 
     public AtomNode(String val) {
@@ -23,25 +25,28 @@ public class AtomNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         var errors = new ArrayList<SemanticError>();
-        System.out.println(getId() + " " + _nesting + " " + ST.nslookup(getId()));
-        if (!(this.typeCheck() instanceof IntType) && !ST.top_lookup(this.getId())) {
-            System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
+        // System.out.println("[ATOM] id: " + getId() + " ns: " + _nesting + " top_lookup" + ST.top_lookup(this.getId()));
+        if ((this.typeCheck() instanceof AtomType) && !ST.top_lookup(this.getId())) {
+            // System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
             errors.add(new SemanticError("Undefined name `" + this.getId() + "`"));
         }
 
         return errors;
     }
 
-    // FIXME: this type for atom
+    // ENHANCE: return more specific types
     @Override
     public Type typeCheck() {
-        try {
-            Integer.parseInt(this.val);
-            System.out.println(this.val + " is int");
-            return new IntType();
-        } catch (NumberFormatException e) {
-            System.out.println(this.val + " is atom");
-            return new AtomType();
+        // this regex should match every possible atom name written in this format: CHAR (CHAR | DIGIT)*
+        Pattern pattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(this.val);
+        boolean matchFound = matcher.find();
+        if (matchFound) {
+            // System.out.println("Match found for " + this.val);
+            return new AtomType(); // could be a variable or a fuction
+        } else {
+            // System.out.println("Match not found for " + this.val);
+            return new VoidType(); // could be any type of data
         }
     }
 

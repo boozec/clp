@@ -60,7 +60,7 @@ public class Main {
             Node ast = visitor.visit(tree);
             ArrayList<SemanticError> errors = ast.checkSemantics(ST, 0);
             if (errors.size() > 0) {
-                System.out.println("You had: " + errors.size() + " errors:");
+                System.out.println("You had " + errors.size() + " errors:");
                 for (SemanticError e : errors) {
                     System.out.println("\t" + e);
                 }

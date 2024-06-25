@@ -126,15 +126,18 @@ public class SymbolTable {
         // We always increment the offset by 1 otherwise we need ad-hoc bytecode
         // operations
         // FIXME: wtf is that?
-        if (type.getClass().equals((new BoolType()).getClass())) {
-            offs = offs + 1;
-        } else if (type.getClass().equals((new IntType()).getClass())) {
-            offs = offs + 1;
-        } else {
-            offs = offs + 1;
-        }
+        // if (type.getClass().equals((new BoolType()).getClass())) {
+        //     offs = offs + 1;
+        // } else if (type.getClass().equals((new IntType()).getClass())) {
+        //     offs = offs + 1;
+        // } else {
+        //     offs = offs + 1;
+        // }
+        offs = offs + 1;
 
         this.offset.add(offs);
+
+        // System.out.println("Insert " + id + " of type " + type.toString() + " with nesting " + String.valueOf(_nesting));
     }
 
     /**

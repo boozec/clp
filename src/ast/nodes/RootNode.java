@@ -1,15 +1,15 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import semanticanalysis.*;
-import ast.types.*;
 
 /**
  * Node for the `root` statement of the grammar.
  */
 public class RootNode implements Node {
+
     // stms and compundStmts are protected because they are reused for a
     // BlockNode
     protected ArrayList<Node> stmts;
@@ -28,11 +28,11 @@ public class RootNode implements Node {
 
         ST.add(HM);
 
-        for (Node stmt : compoundStmts) {
+        for (Node stmt : stmts) {
             errors.addAll(stmt.checkSemantics(ST, _nesting));
         }
 
-        for (Node stmt : stmts) {
+        for (Node stmt : compoundStmts) {
             errors.addAll(stmt.checkSemantics(ST, _nesting));
         }
 
