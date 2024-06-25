@@ -3,8 +3,7 @@ package ast.nodes;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import semanticanalysis.SemanticError;
-import semanticanalysis.SymbolTable;
+import semanticanalysis.*;
 import ast.types.*;
 
 /**

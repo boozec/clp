@@ -1,6 +1,9 @@
 package ast.nodes;
 
+import java.util.ArrayList;
+
 import ast.types.*;
+import semanticanalysis.*;
 
 /**
  * Node for the `paramdef` statement of the grammar. Extends the `AtomNode`

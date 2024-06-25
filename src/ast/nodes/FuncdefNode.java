@@ -3,6 +3,7 @@ package ast.nodes;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 import ast.types.*;
@@ -28,7 +29,6 @@ public class FuncdefNode implements Node {
         ST.insert(this.name.toString(), this.block.typeCheck(), _nesting, "");
 
         HashMap<String, STentry> HM = new HashMap<String, STentry>();
-        ArrayList<Type> partypes = new ArrayList<Type>();
 
         ST.add(HM);
 
