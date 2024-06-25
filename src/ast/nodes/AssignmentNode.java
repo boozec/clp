@@ -10,23 +10,25 @@ import ast.types.*;
  * Node for the `assignment` statement of the grammar.
  */
 public class AssignmentNode implements Node {
-    private Node lhr;
+    private ExprNode lhr;
     private Node assign;
-    private Node rhr;
+    private ExprNode rhr;
 
     public AssignmentNode(Node lhr, Node assign, Node rhr) {
-        this.lhr = lhr;
+        this.lhr = (ExprNode) lhr;
         this.assign = assign;
-        this.rhr = rhr;
+        this.rhr = (ExprNode) rhr;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        errors.addAll(lhr.checkSemantics(ST, _nesting));
+        // errors.addAll(lhr.checkSemantics(ST, _nesting));
         errors.addAll(assign.checkSemantics(ST, _nesting));
         errors.addAll(rhr.checkSemantics(ST, _nesting));
+
+        ST.insert(lhr.getId(), rhr.typeCheck(), _nesting, "");
 
         return errors;
     }

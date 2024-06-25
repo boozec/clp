@@ -16,15 +16,33 @@ public class AtomNode implements Node {
         this.val = val;
     }
 
+    public String getId() {
+        return this.val;
+    }
+
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        return new ArrayList<SemanticError>();
+        var errors = new ArrayList<SemanticError>();
+        System.out.println(getId() + " " + _nesting + " " + ST.nslookup(getId()));
+        if (!(this.typeCheck() instanceof IntType) && !ST.top_lookup(this.getId())) {
+            System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
+            errors.add(new SemanticError("Undefined name `" + this.getId() + "`"));
+        }
+
+        return errors;
     }
 
     // FIXME: this type for atom
     @Override
     public Type typeCheck() {
-        return new AtomType();
+        try {
+            Integer.parseInt(this.val);
+            System.out.println(this.val + " is int");
+            return new IntType();
+        } catch (NumberFormatException e) {
+            System.out.println(this.val + " is atom");
+            return new AtomType();
+        }
     }
 
     // TODO: add code generation for atom node

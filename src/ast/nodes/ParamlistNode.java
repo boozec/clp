@@ -21,7 +21,7 @@ public class ParamlistNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
         for (var param : params) {
-            errors.addAll(param.checkSemantics(ST, _nesting));
+            errors.addAll(param.checkSemantics(ST, _nesting + 1));
         }
 
         return errors;

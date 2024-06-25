@@ -11,6 +11,13 @@ public class ParamdefNode extends AtomNode {
         super(val);
     }
 
+    @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        ST.insert(this.getId(), this.typeCheck(), _nesting, "");
+
+        return new ArrayList<SemanticError>();
+    }
+
     // FIXME: it should returns the param' type
     @Override
     public Type typeCheck() {

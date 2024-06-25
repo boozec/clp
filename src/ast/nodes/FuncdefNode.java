@@ -1,6 +1,7 @@
 package ast.nodes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -24,10 +25,19 @@ public class FuncdefNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ST.insert(this.name.toString(), this.block.typeCheck(), _nesting, "");
+
+        HashMap<String, STentry> HM = new HashMap<String, STentry>();
+        ArrayList<Type> partypes = new ArrayList<Type>();
+
+        ST.add(HM);
 
         if (paramlist != null) {
-            errors.addAll(paramlist.checkSemantics(ST, _nesting));
+            errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
+
+        // Offset is increased for the possible return value
+        ST.increaseoffset();
 
         errors.addAll(block.checkSemantics(ST, _nesting));
 

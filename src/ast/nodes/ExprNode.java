@@ -24,10 +24,13 @@ public class ExprNode implements Node {
         this.trailers = trailers;
     }
 
+    public String getId() {
+        return ((AtomNode) this.atom).getId();
+    }
+
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
-
         if (atom != null) {
             errors.addAll(atom.checkSemantics(ST, _nesting));
         }
@@ -50,6 +53,10 @@ public class ExprNode implements Node {
     // FIXME: type for the expr
     @Override
     public Type typeCheck() {
+        if (this.atom != null) {
+            return this.atom.typeCheck();
+        }
+
         return new VoidType();
     }
 

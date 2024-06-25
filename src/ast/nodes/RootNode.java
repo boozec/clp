@@ -1,6 +1,7 @@
 package ast.nodes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -24,12 +25,19 @@ public class RootNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        for (Node stmt : stmts) {
-            errors.addAll(stmt.checkSemantics(ST, _nesting));
-        }
+        HashMap<String, STentry> HM = new HashMap<String, STentry>();
+
+        ST.add(HM);
+
         for (Node stmt : compoundStmts) {
             errors.addAll(stmt.checkSemantics(ST, _nesting));
         }
+
+        for (Node stmt : stmts) {
+            errors.addAll(stmt.checkSemantics(ST, _nesting));
+        }
+
+        ST.remove();
 
         return errors;
     }

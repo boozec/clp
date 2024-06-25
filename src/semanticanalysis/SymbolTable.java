@@ -40,8 +40,8 @@ public class SymbolTable {
             HashMap<String, STentry> H = this.symbolTable.get(n);
             T = H.get(id);
             if (T != null) {
-                found = true; 
-            }else {
+                found = true;
+            } else {
                 n = n - 1;
             }
         }
@@ -60,8 +60,8 @@ public class SymbolTable {
         while ((n >= 0) && !found) {
             HashMap<String, STentry> H = this.symbolTable.get(n);
             if (H.get(id) != null) {
-                found = true; 
-            }else {
+                found = true;
+            } else {
                 n = n - 1;
             }
         }
@@ -125,6 +125,7 @@ public class SymbolTable {
 
         // We always increment the offset by 1 otherwise we need ad-hoc bytecode
         // operations
+        // FIXME: wtf is that?
         if (type.getClass().equals((new BoolType()).getClass())) {
             offs = offs + 1;
         } else if (type.getClass().equals((new IntType()).getClass())) {
