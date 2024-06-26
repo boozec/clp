@@ -132,6 +132,8 @@ public class ExprNode implements Node {
                     errors.addAll(trailer.checkSemantics(ST, _nesting));
                 }
             }
+        } else if (atom != null) {
+            errors.addAll(atom.checkSemantics(ST, _nesting));
         }
 
         if (compOp != null) {
