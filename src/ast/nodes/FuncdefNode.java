@@ -37,10 +37,13 @@ public class FuncdefNode implements Node {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
 
+        // TODO: think to the fucking offset
         // Offset is increased for the possible return value
         ST.increaseoffset();
 
-        errors.addAll(block.checkSemantics(ST, _nesting));
+        errors.addAll(block.checkSemantics(ST, _nesting + 1));
+
+        ST.remove();
 
         return errors;
     }

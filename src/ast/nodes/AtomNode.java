@@ -25,10 +25,13 @@ public class AtomNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         var errors = new ArrayList<SemanticError>();
-        // System.out.println("[ATOM] id: " + getId() + " ns: " + _nesting + " top_lookup" + ST.top_lookup(this.getId()));
-        if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
+        
+        // Print the symbol table
+        System.out.println(ST);
+
+        if ((this.typeCheck() instanceof AtomType) && !ST.top_lookup(this.getId())/*ST.nslookup(this.getId()) < 0*/) {
             // System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
-            errors.add(new SemanticError("Undefined name `" + this.getId() + "`"));
+            errors.add(new SemanticError("'" + this.getId() + "' is not defined."));
         }
 
         return errors;

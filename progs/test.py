@@ -1,4 +1,6 @@
 def unibo(a):
-    print("u")
+    if a == 3:
+        print("UNIBO")
     
+a = 3
 unibo(a)

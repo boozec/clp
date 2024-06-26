@@ -52,4 +52,10 @@ public class STentry {
         return label;
     }
 
+    @Override
+    public String toString() {
+        // Print all the fields of the STentry
+        return "Type: " + type + ", Offset: " + offset + ", Nesting: " + nesting + ", Label: " + label;
+    }
+
 }

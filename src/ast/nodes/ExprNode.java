@@ -106,30 +106,23 @@ public class ExprNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
-        if (atom != null && !trailers.isEmpty()) {
-            // function call
-            if (!Arrays.asList(bif).contains(atom.getId())) {
-                errors.addAll(atom.checkSemantics(ST, _nesting));
-            }
-        } else {
-            // butto tutto quello che c'era prima nell'else così non rischio di perdere niente di utile
-            if (atom != null) {
-                errors.addAll(atom.checkSemantics(ST, _nesting));
-            }
-
-            if (compOp != null) {
-                errors.addAll(compOp.checkSemantics(ST, _nesting));
-            }
-
-            for (var expr : exprs) {
-                errors.addAll(expr.checkSemantics(ST, _nesting));
-            } 
-
+        
+        if (atom != null && !Arrays.asList(bif).contains(atom.getId())) {
+            errors.addAll(atom.checkSemantics(ST, _nesting));
+            
             for (var trailer : trailers) {
                 errors.addAll(trailer.checkSemantics(ST, _nesting));
             } 
         }
+        
+        if (compOp != null) {
+            errors.addAll(compOp.checkSemantics(ST, _nesting));
+        }
 
+        for (var expr : exprs) {
+            errors.addAll(expr.checkSemantics(ST, _nesting));
+        } 
+    
         return errors;
     }
 

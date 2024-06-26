@@ -153,4 +153,19 @@ public class SymbolTable {
         this.offset.add(offs);
     }
 
+    @Override
+    public String toString() {
+        // Print the symbol table
+        String str = "";
+        for (int i = 0; i < this.symbolTable.size(); i++) {
+            str += "Level " + i + "\n";
+            HashMap<String, STentry> H = this.symbolTable.get(i);
+            for (String key : H.keySet()) {
+                STentry T = H.get(key);
+                str += key + " -> " + T.toString() + "\n";
+            }
+        }
+        return str;
+    }
+
 }

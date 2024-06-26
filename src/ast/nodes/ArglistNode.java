@@ -19,9 +19,19 @@ public class ArglistNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
-
+        
         for (var arg : arguments) {
-            errors.addAll(arg.checkSemantics(ST, _nesting));
+            ExprNode argExpr = (ExprNode) arg;
+            String argName = argExpr.getId();
+
+            // TODO: check fucking IntType for params
+            // TODO: remove fucking comments
+            if (!ST.top_lookup(argName) && argExpr.typeCheck() instanceof AtomType){
+                // System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
+                errors.add(new SemanticError("'" + argName + "' is not defined."));
+            } else {
+                errors.addAll(arg.checkSemantics(ST, _nesting));
+            }
         }
 
         return errors;
