@@ -2,3 +2,4 @@ out/
 trees/
 .project
 .vscode/
+src/parser/.antlr/
