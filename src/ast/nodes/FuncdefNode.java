@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Node for the `funcdef` statement of the grammar.
  */
 public class FuncdefNode implements Node {
+
     private TerminalNode name;
     private Node paramlist;
     private Node block;
@@ -26,14 +27,17 @@ public class FuncdefNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
-        
-        ST.insert(this.name.toString(), this.block.typeCheck(), _nesting, "");
+        int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
+        Type returnType = this.block.typeCheck();
+        FunctionType ft = new FunctionType(paramNumber, returnType);
+
+        ST.insert(this.name.toString(), ft, _nesting, "");
 
         HashMap<String, STentry> HM = new HashMap<String, STentry>();
 
         ST.add(HM);
 
-        ST.insert(this.name.toString(), this.block.typeCheck(), _nesting + 1, "");
+        ST.insert(this.name.toString(), ft, _nesting + 1, "");
 
         if (paramlist != null) {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));

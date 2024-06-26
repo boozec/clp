@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Node for the `trailer` statement of the grammar.
  */
 public class TrailerNode implements Node {
+
     private Node arglist;
     private ArrayList<Node> exprs;
     private TerminalNode methodCall;
@@ -37,6 +38,10 @@ public class TrailerNode implements Node {
         }
 
         return errors;
+    }
+
+    public int getArgumentNumber() {
+        return ((ArglistNode) arglist).getArgumentNumber();
     }
 
     @Override

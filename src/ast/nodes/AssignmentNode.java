@@ -1,15 +1,15 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `assignment` statement of the grammar.
  */
 public class AssignmentNode implements Node {
+
     private ExprNode lhr;
     private Node assign;
     private ExprNode rhr;

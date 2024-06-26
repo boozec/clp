@@ -3,6 +3,7 @@ package ast.nodes;
 import ast.types.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -100,29 +101,47 @@ public class ExprNode implements Node {
     }
 
     public String getId() {
-        return ((AtomNode) this.atom).getId();
+        if (atom != null) {
+            return ((AtomNode) this.atom).getId();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
-        
-        if (atom != null && !Arrays.asList(bif).contains(atom.getId())) {
-            errors.addAll(atom.checkSemantics(ST, _nesting));
-            
-            for (var trailer : trailers) {
-                errors.addAll(trailer.checkSemantics(ST, _nesting));
-            } 
+
+        if (atom != null && !trailers.isEmpty()) {
+            // function call
+            if (!Arrays.asList(bif).contains(atom.getId())) {
+                errors.addAll(atom.checkSemantics(ST, _nesting));
+                Node trailer = trailers.get(0);
+                String funName = atom.getId();
+                STentry s = ST.lookup(funName);
+                if (s != null) {
+                    FunctionType ft = (FunctionType) s.getType();
+                    int paramNumber = ft.getParamNumber();
+                    int argNumber = ((TrailerNode) trailer).getArgumentNumber();
+                    if (paramNumber != argNumber) {
+                        errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber) + " positional arguments but " + String.valueOf(argNumber) + " were given"));
+                    }
+                }
+            } else {
+                for (var trailer : trailers) {
+                    errors.addAll(trailer.checkSemantics(ST, _nesting));
+                }
+            }
         }
-        
+
         if (compOp != null) {
             errors.addAll(compOp.checkSemantics(ST, _nesting));
         }
 
         for (var expr : exprs) {
             errors.addAll(expr.checkSemantics(ST, _nesting));
-        } 
-    
+        }
+
         return errors;
     }
 
@@ -157,11 +176,11 @@ public class ExprNode implements Node {
 
         for (var expr : exprs) {
             str += expr.toPrint(prefix);
-        } 
+        }
 
         for (var trailer : trailers) {
             str += trailer.toPrint(prefix);
-        } 
+        }
 
         if (op != null) {
             str += prefix + "Op(" + op + ")\n";

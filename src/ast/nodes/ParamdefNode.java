@@ -1,24 +1,32 @@
 package ast.nodes;
 
-import java.util.ArrayList;
-
 import ast.types.*;
-import semanticanalysis.*;
+import java.util.ArrayList;
+import semanticanalysis.SemanticError;
+import semanticanalysis.SymbolTable;
 
 /**
  * Node for the `paramdef` statement of the grammar. Extends the `AtomNode`
  * class.
  */
 public class ParamdefNode extends AtomNode {
+
     public ParamdefNode(String val) {
         super(val);
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ST.insert(this.getId(), this.typeCheck(), _nesting, "");
+        var errors = new ArrayList<SemanticError>();
+        String paramName = this.getId();
 
-        return new ArrayList<SemanticError>();
+        if (!ST.top_lookup(paramName)) {
+            ST.insert(paramName, this.typeCheck(), _nesting, "");
+        } else {
+            errors.add(new SemanticError("Duplicate argument '" + paramName + "' in function definition."));
+        }
+
+        return errors;
     }
 
     // FIXME: it should returns the param' type

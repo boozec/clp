@@ -1,10 +1,9 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `if` statement of the grammar.

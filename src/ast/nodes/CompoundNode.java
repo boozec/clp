@@ -1,15 +1,15 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `compound_node` statement of the grammar.
  */
 public class CompoundNode implements Node {
+
     private Node ifNode;
     private Node funcDef;
     private Node forStmt;

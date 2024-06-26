@@ -20,7 +20,7 @@ public class Main {
         try {
             // String fileStr = file.getPath();
             // FIXME: use the fileStr above
-            String fileStr = "./progs/test.py";
+            String fileStr = "./progs/test2.py";
             System.out.println(fileStr);
             System.out.println(readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);

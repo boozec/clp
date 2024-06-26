@@ -10,6 +10,7 @@ import ast.types.*;
  * Node for the `param_list` statement of the grammar.
  */
 public class ParamlistNode implements Node {
+
     private ArrayList<Node> params;
 
     public ParamlistNode(ArrayList<Node> _params) {
@@ -25,6 +26,10 @@ public class ParamlistNode implements Node {
         }
 
         return errors;
+    }
+
+    public int getParamNumber() {
+        return params.size();
     }
 
     @Override
