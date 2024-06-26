@@ -33,6 +33,8 @@ public class FuncdefNode implements Node {
 
         ST.add(HM);
 
+        ST.insert(this.name.toString(), this.block.typeCheck(), _nesting + 1, "");
+
         if (paramlist != null) {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
