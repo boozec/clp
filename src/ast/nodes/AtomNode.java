@@ -26,7 +26,7 @@ public class AtomNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         var errors = new ArrayList<SemanticError>();
         // System.out.println("[ATOM] id: " + getId() + " ns: " + _nesting + " top_lookup" + ST.top_lookup(this.getId()));
-        if ((this.typeCheck() instanceof AtomType) && !ST.top_lookup(this.getId())) {
+        if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
             // System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
             errors.add(new SemanticError("Undefined name `" + this.getId() + "`"));
         }

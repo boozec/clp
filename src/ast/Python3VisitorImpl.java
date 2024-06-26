@@ -21,17 +21,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ```
      */
     public Node visitRoot(RootContext ctx) {
-        ArrayList<Node> stmts = new ArrayList<Node>();
-        ArrayList<Node> compStmts = new ArrayList<Node>();
-
-        for (Simple_stmtsContext stm : ctx.simple_stmts()) {
-            stmts.add(visit(stm));
+        ArrayList<Node> childs = new ArrayList<Node>();
+        
+        for (int i = 0; i < ctx.getChildCount(); i++){
+            var child = ctx.getChild(i);
+            
+            if (child instanceof Simple_stmtsContext) {
+                childs.add(visit((Simple_stmtsContext) child));
+            } else if (child instanceof Compound_stmtContext) {
+                childs.add(visit((Compound_stmtContext) child));
+            }
         }
-        for (Compound_stmtContext stm : ctx.compound_stmt()) {
-            compStmts.add(visit(stm));
-        }
 
-        return new RootNode(stmts, compStmts);
+        return new RootNode(childs);
     }
 
     /**
@@ -331,17 +333,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ```
      */
     public Node visitBlock(BlockContext ctx) {
-        ArrayList<Node> stmts = new ArrayList<Node>();
-        ArrayList<Node> compStmts = new ArrayList<Node>();
+        ArrayList<Node> childs = new ArrayList<Node>();
 
-        for (Simple_stmtsContext s : ctx.simple_stmts()) {
-            stmts.add(visit(s));
-        }
-        for (Compound_stmtContext s : ctx.compound_stmt()) {
-            compStmts.add(visit(s));
+        for (int i = 0; i < ctx.getChildCount(); i++){
+            var child = ctx.getChild(i);
+            
+            if (child instanceof Simple_stmtsContext) {
+                childs.add(visit((Simple_stmtsContext) child));
+            } else if (child instanceof Compound_stmtContext) {
+                childs.add(visit((Compound_stmtContext) child));
+            }
         }
 
-        return new BlockNode(stmts, compStmts);
+        return new BlockNode(childs);
     }
 
     /**

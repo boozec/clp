@@ -26,6 +26,7 @@ public class FuncdefNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        
         ST.insert(this.name.toString(), this.block.typeCheck(), _nesting, "");
 
         HashMap<String, STentry> HM = new HashMap<String, STentry>();

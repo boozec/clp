@@ -17,7 +17,9 @@ public class ExprNode implements Node {
     private ArrayList<Node> exprs;
     private ArrayList<Node> trailers;
 
-    private static final String[] bif = {"abs",
+    // built-in functions
+    private static final String[] bif = {
+        "abs",
         "aiter",
         "all",
         "anext",

@@ -12,30 +12,28 @@ public class RootNode implements Node {
 
     // stms and compundStmts are protected because they are reused for a
     // BlockNode
-    protected ArrayList<Node> stmts;
-    protected ArrayList<Node> compoundStmts;
+    protected ArrayList<Node> childs;
 
-    public RootNode(ArrayList<Node> stmts, ArrayList<Node> compoundStmts) {
-        this.stmts = stmts;
-        this.compoundStmts = compoundStmts;
+    public RootNode(ArrayList<Node> childs) {
+        this.childs = childs;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
+        // Create a new HashMap for the current scope
         HashMap<String, STentry> HM = new HashMap<String, STentry>();
 
+        // Add the HashMap to the SymbolTable
         ST.add(HM);
 
-        for (Node stmt : stmts) {
-            errors.addAll(stmt.checkSemantics(ST, _nesting));
+        // Check semantics for each child
+        for (Node child : childs) {
+            errors.addAll(child.checkSemantics(ST, _nesting));
         }
 
-        for (Node stmt : compoundStmts) {
-            errors.addAll(stmt.checkSemantics(ST, _nesting));
-        }
-
+        // Remove the HashMap from the SymbolTable
         ST.remove();
 
         return errors;
@@ -58,11 +56,8 @@ public class RootNode implements Node {
 
         prefix += "  ";
 
-        for (Node stmt : stmts) {
-            str += stmt.toPrint(prefix);
-        }
-        for (Node stmt : compoundStmts) {
-            str += stmt.toPrint(prefix);
+        for (Node child : childs) {
+            str += child.toPrint(prefix);
         }
 
         return str;

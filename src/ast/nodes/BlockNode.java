@@ -9,8 +9,8 @@ import ast.types.*;
  * It extends the `RootNode`.
  */
 public class BlockNode extends RootNode {
-    public BlockNode(ArrayList<Node> stmts, ArrayList<Node> compoundStmts) {
-        super(stmts, compoundStmts);
+    public BlockNode(ArrayList<Node> childs) {
+        super(childs);
     }
 
     @Override
@@ -23,11 +23,8 @@ public class BlockNode extends RootNode {
         String str = prefix + "Block\n";
 
         prefix += "  ";
-        for (Node stmt : stmts) {
-            str += stmt.toPrint(prefix);
-        }
-        for (Node stmt : compoundStmts) {
-            str += stmt.toPrint(prefix);
+        for (Node child : childs) {
+            str += child.toPrint(prefix);
         }
 
         return str;
