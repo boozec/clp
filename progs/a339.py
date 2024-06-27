@@ -1,5 +1,5 @@
 def heap_sort(arr):
-    heapify(arr)
+    heapify(arr)  
     end = len(arr) - 1
     while end > 0:
         arr[end], arr[0] = arr[0], arr[end]
@@ -7,14 +7,11 @@ def heap_sort(arr):
         end -= 1
     return arr
 
-
 def heapify(arr):
     start = len(arr) // 2
     while start >= 0:
         shift_down(arr, start, len(arr) - 1)
         start -= 1
-
-
 def shift_down(arr, start, end):
     root = start
     while root * 2 + 1 <= end:
