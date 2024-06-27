@@ -23,7 +23,8 @@ public class TestlistCompNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList();
 
         if (comp != null) {
-            // if comp is set, then we save the atom in the ST (we assume the first expr is an atom)
+            // if comp is set, then we save the atom in the ST (we assume the first expr is
+            // an atom)
             String id = ((ExprNode) exprs.get(0)).getId();
             Type t = ((ExprNode) exprs.get(0)).typeCheck();
             ST.insert(id, t, _nesting, "");
@@ -31,6 +32,8 @@ public class TestlistCompNode implements Node {
         } else {
             // if comp is not set, then exprs is a list of 1 or more element
             for (var param : exprs) {
+                var exp = (ExprNode) param;
+                ST.insert(exp.getId(), exp.typeCheck(), _nesting, "");
                 errors.addAll(param.checkSemantics(ST, _nesting));
             }
         }
