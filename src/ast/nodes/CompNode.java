@@ -20,7 +20,6 @@ public class CompNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        System.out.println("Comp node");
         return new ArrayList<SemanticError>();
     }
 

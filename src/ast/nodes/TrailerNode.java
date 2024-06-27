@@ -15,12 +15,14 @@ public class TrailerNode implements Node {
     private Node arglist;
     private ArrayList<Node> exprs;
     private TerminalNode methodCall;
+    private boolean isParenthesis;
     private boolean isEmpty;
 
-    public TrailerNode(Node arglist, ArrayList<Node> exprs, TerminalNode methodCall) {
+    public TrailerNode(Node arglist, ArrayList<Node> exprs, TerminalNode methodCall, boolean isParenthesis) {
         this.arglist = arglist;
         this.exprs = exprs;
         this.methodCall = methodCall;
+        this.isParenthesis = isParenthesis;
 
         this.isEmpty = (this.arglist == null && this.exprs.size() == 0 && this.methodCall == null);
     }
@@ -41,7 +43,15 @@ public class TrailerNode implements Node {
     }
 
     public int getArgumentNumber() {
+        if (arglist == null) {
+            return 0;
+        }
+
         return ((ArglistNode) arglist).getArgumentNumber();
+    }
+
+    public boolean isParenthesis() {
+        return this.isParenthesis;
     }
 
     @Override

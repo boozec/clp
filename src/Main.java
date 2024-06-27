@@ -20,7 +20,7 @@ public class Main {
         try {
             // String fileStr = file.getPath();
             // FIXME: use the fileStr above
-            String fileStr = "./test/1a.py";
+            String fileStr = "./progs/a600.py";
             System.out.println(fileStr);
             System.out.println(readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);
@@ -41,7 +41,7 @@ public class Main {
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
                     tree);
-            viewer.setScale(1.5); // Zoom factor
+            viewer.setScale(1); // Zoom factor
             panel.add(viewer);
             frame.add(panel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

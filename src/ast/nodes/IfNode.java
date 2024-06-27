@@ -41,11 +41,11 @@ public class IfNode implements Node {
             if (thenexp.getClass().equals(elseexp.getClass()))
                 return thenexp;
             else {
-                System.out.println("Type Error: incompatible types in then and else branches");
+                System.out.println("Type Error: incompatible types in then and else branches.");
                 return new ErrorType();
             }
         } else {
-            System.out.println("Type Error: non boolean condition in if");
+            System.out.println("Type Error: non boolean condition in if.");
             return new ErrorType();
         }
     }

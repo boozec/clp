@@ -21,12 +21,16 @@ public class DottedNameNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
+        for (int i = 0; i < names.size(); ++i) {
+            ST.insert(names.get(i).toString(), this.typeCheck(), _nesting, null);
+        }
+
         return errors;
     }
 
     @Override
     public Type typeCheck() {
-        return new VoidType();
+        return new ImportType();
     }
 
     // NOTE: we do not provide code generation for this node in the same way

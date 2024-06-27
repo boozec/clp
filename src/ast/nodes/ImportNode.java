@@ -29,12 +29,24 @@ public class ImportNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
+        if (isFrom) {
+            for (int i = 0; i < names.size(); ++i) {
+                ST.insert(names.get(i), this.typeCheck(), _nesting, null);
+            }
+        } else {
+            errors.addAll(dottedName.checkSemantics(ST, _nesting));
+        }
+
+        if (importAs) {
+            ST.insert(names.get(names.size() - 1), this.typeCheck(), _nesting, null);
+        }
+
         return errors;
     }
 
     @Override
     public Type typeCheck() {
-        return new VoidType();
+        return new ImportType();
     }
 
     // NOTE: we do not want to provide a code generation for this statement

@@ -22,6 +22,10 @@ public class ForStmtNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
+        ExprNode expr = (ExprNode) exprList;
+
+        ST.insert(expr.getId(), expr.typeCheck(), _nesting, "");
+
         errors.addAll(exprList.checkSemantics(ST, _nesting));
         errors.addAll(block.checkSemantics(ST, _nesting));
 

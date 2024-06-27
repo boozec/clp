@@ -3,6 +3,7 @@ package ast.nodes;
 import ast.types.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -17,80 +18,6 @@ public class ExprNode implements Node {
     private String op;
     private ArrayList<Node> exprs;
     private ArrayList<Node> trailers;
-
-    // built-in functions
-    private static final String[] bif = {
-        "abs",
-        "aiter",
-        "all",
-        "anext",
-        "any",
-        "ascii",
-        "bin",
-        "bool",
-        "breakpoint",
-        "bytearray",
-        "bytes",
-        "callable",
-        "chr",
-        "classmethod",
-        "compile",
-        "complex",
-        "delattr",
-        "dict",
-        "dir",
-        "divmod",
-        "enumerate",
-        "eval",
-        "exec",
-        "filter",
-        "float",
-        "format",
-        "frozenset",
-        "getattr",
-        "globals",
-        "hasattr",
-        "hash",
-        "help",
-        "hex",
-        "id",
-        "input",
-        "int",
-        "isinstance",
-        "issubclass",
-        "iter",
-        "len",
-        "list",
-        "locals",
-        "map",
-        "max",
-        "memoryview",
-        "min",
-        "next",
-        "object",
-        "oct",
-        "open",
-        "ord",
-        "pow",
-        "print",
-        "property",
-        "range",
-        "repr",
-        "reversed",
-        "round",
-        "set",
-        "setattr",
-        "slice",
-        "sorted",
-        "staticmethod",
-        "str",
-        "sum",
-        "super",
-        "tuple",
-        "type",
-        "vars",
-        "zip",
-        "__import__"};
 
     public ExprNode(Node atom, Node compOp, ArrayList<Node> exprs, String op, ArrayList<Node> trailers) {
         this.atom = (AtomNode) atom;
@@ -112,19 +39,38 @@ public class ExprNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
+        // check if the atom is a built-in function
         if (atom != null && !trailers.isEmpty()) {
-            // function call
+
             if (!Arrays.asList(bif).contains(atom.getId())) {
+                
                 errors.addAll(atom.checkSemantics(ST, _nesting));
-                Node trailer = trailers.get(0);
+                
+                TrailerNode trailer = (TrailerNode) trailers.get(0);
                 String funName = atom.getId();
-                STentry s = ST.lookup(funName);
-                if (s != null) {
-                    FunctionType ft = (FunctionType) s.getType();
-                    int paramNumber = ft.getParamNumber();
-                    int argNumber = ((TrailerNode) trailer).getArgumentNumber();
-                    if (paramNumber != argNumber) {
-                        errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber) + " positional arguments but " + String.valueOf(argNumber) + " were given"));
+
+                // TODO: it isnt a function, it could be a variable
+                STentry fun = ST.lookup(funName);
+
+
+
+                if (fun != null && !(fun.getType() instanceof ImportType)) {
+                    if (!(fun.getType() instanceof FunctionType)) {
+                        if (trailer.isParenthesis()) {
+                            errors.add(new SemanticError("'" + funName + "' is not a function."));
+                        } else {
+                            for (var t : trailers) {
+                                errors.addAll(t.checkSemantics(ST, _nesting));
+                            }
+                        }
+                    } else {
+                        FunctionType ft = (FunctionType) fun.getType();
+                        int paramNumber = ft.getParamNumber();
+                        int argNumber = trailer.getArgumentNumber();
+
+                        if (paramNumber != argNumber) {
+                            errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber) + " positional arguments but " + String.valueOf(argNumber) + " were given."));
+                        }
                     }
                 }
             } else {
@@ -150,7 +96,7 @@ public class ExprNode implements Node {
     // FIXME: type for the expr
     @Override
     public Type typeCheck() {
-        if (this.atom != null) {
+        if (this.atom != null ) {
             return this.atom.typeCheck();
         }
 

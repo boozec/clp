@@ -26,11 +26,7 @@ public class AtomNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         var errors = new ArrayList<SemanticError>();
 
-        // Print the symbol table
-        // System.out.println(ST);
-
         if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
-            // System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
             errors.add(new SemanticError("'" + this.getId() + "' is not defined."));
         }
 
@@ -40,15 +36,26 @@ public class AtomNode implements Node {
     // ENHANCE: return more specific types
     @Override
     public Type typeCheck() {
+        Pattern booleanVariable = Pattern.compile("^(True|False)$");
+        Pattern continueBreakVariable = Pattern.compile("^(continue|break)$");
         // this regex should match every possible atom name written in this format: CHAR (CHAR | DIGIT)*
-        Pattern pattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(this.val);
-        boolean matchFound = matcher.find();
-        if (matchFound) {
-            // System.out.println("Match found for " + this.val);
+        Pattern simpleVariable = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$", Pattern.CASE_INSENSITIVE);
+        
+        Matcher booleanVariableMatcher = booleanVariable.matcher(this.val);
+        Matcher continueBreakVariableMatcher = continueBreakVariable.matcher(this.val);
+        Matcher simpleVariableMatcher = simpleVariable.matcher(this.val);
+        
+        boolean matchFoundBoolean = booleanVariableMatcher.find();
+        boolean matchFoundContinueBreak = continueBreakVariableMatcher.find();
+        boolean matchFoundSimpleVariable = simpleVariableMatcher.find();
+
+        if (matchFoundBoolean) {
+            return new BoolType();
+        } else if (matchFoundContinueBreak) {
+            return new ContinueBreakType();
+        } else if (matchFoundSimpleVariable) {
             return new AtomType(); // could be a variable or a fuction
         } else {
-            // System.out.println("Match not found for " + this.val);
             return new VoidType(); // could be any type of data
         }
     }

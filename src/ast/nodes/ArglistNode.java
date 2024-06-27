@@ -2,6 +2,8 @@ package ast.nodes;
 
 import ast.types.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -26,9 +28,18 @@ public class ArglistNode implements Node {
 
             // TODO: check fucking IntType for params
             // TODO: remove fucking comments
-            if (argName != null && !ST.top_lookup(argName) && argExpr.typeCheck() instanceof AtomType) {
-                // System.out.println(!(this.typeCheck() instanceof IntType) + " " + !ST.top_lookup(this.getId()));
-                errors.add(new SemanticError("'" + argName + "' is not defined."));
+            if (argName != null) {
+                if (Arrays.asList(bif).contains(argName)) {
+                    continue;
+                }
+
+                if (ST.lookup(argName) != null && ST.lookup(argName).getType() instanceof ImportType) {
+                    continue;
+                }
+
+                if (!ST.top_lookup(argName) && argExpr.typeCheck() instanceof AtomType) {
+                    errors.add(new SemanticError("'" + argName + "' is not defined."));
+                }
             } else {
                 errors.addAll(arg.checkSemantics(ST, _nesting));
             }

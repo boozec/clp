@@ -264,10 +264,28 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             x = new AugassignNode(ctx.SUB_ASSIGN());
         } else if (ctx.MULT_ASSIGN() != null) {
             x = new AugassignNode(ctx.MULT_ASSIGN());
+        } else if (ctx.AT_ASSIGN() != null) {
+            x = new AugassignNode(ctx.AT_ASSIGN());
         } else if (ctx.DIV_ASSIGN() != null) {
             x = new AugassignNode(ctx.DIV_ASSIGN());
+        } else if (ctx.MOD_ASSIGN() != null) {
+            x = new AugassignNode(ctx.MOD_ASSIGN());
+        } else if (ctx.AND_ASSIGN() != null) {
+            x = new AugassignNode(ctx.AND_ASSIGN());
+        } else if (ctx.OR_ASSIGN() != null) {
+            x = new AugassignNode(ctx.OR_ASSIGN());
+        } else if (ctx.XOR_ASSIGN() != null) {
+            x = new AugassignNode(ctx.XOR_ASSIGN());
+        } else if (ctx.LEFT_SHIFT_ASSIGN() != null) {
+            x = new AugassignNode(ctx.LEFT_SHIFT_ASSIGN());
+        } else if (ctx.RIGHT_SHIFT_ASSIGN() != null) {
+            x = new AugassignNode(ctx.RIGHT_SHIFT_ASSIGN());
+        } else if (ctx.POWER_ASSIGN() != null) {
+            x = new AugassignNode(ctx.POWER_ASSIGN());
+        } else if (ctx.IDIV_ASSIGN() != null) {
+            x = new AugassignNode(ctx.IDIV_ASSIGN());
         }
-
+        
         return x;
     }
 
@@ -495,7 +513,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             methodCall = ctx.NAME();
         }
 
-        return new TrailerNode(arglist, exprs, methodCall);
+        return new TrailerNode(arglist, exprs, methodCall, ctx.OPEN_PAREN() != null);
     }
 
     /**
@@ -507,7 +525,13 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ```
      */
     public Node visitExprlist(ExprlistContext ctx) {
-        Node exp = visit(ctx.expr(0));
+        Node exp;
+
+        if (ctx.expr(0).expr(0) != null){
+            exp = visit(ctx.expr(0).expr(0));
+        } else {
+            exp = visit(ctx.expr(0));
+        }
 
         return exp;
     }

@@ -137,7 +137,6 @@ public class SymbolTable {
 
         this.offset.add(offs);
 
-        // System.out.println("Insert " + id + " of type " + type.toString() + " with nesting " + String.valueOf(_nesting));
     }
 
     /**
