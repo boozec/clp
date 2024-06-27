@@ -62,12 +62,8 @@ public class ExprNode implements Node {
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
                     if (!(fun.getType() instanceof FunctionType)) {
-                        if (trailer.isParenthesis()) {
-                            errors.add(new SemanticError("'" + funName + "' is not a function."));
-                        } else {
-                            for (var t : trailers) {
-                                errors.addAll(t.checkSemantics(ST, _nesting));
-                            }
+                        for (var t : trailers) {
+                            errors.addAll(t.checkSemantics(ST, _nesting));
                         }
                     } else {
                         FunctionType ft = (FunctionType) fun.getType();
