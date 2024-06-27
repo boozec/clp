@@ -10,11 +10,11 @@ import semanticanalysis.SymbolTable;
  */
 public class ForStmtNode implements Node {
 
-    private ExprListNode exprList;
+    private Node exprList;
     private Node block;
 
     public ForStmtNode(Node exprList, Node block) {
-        this.exprList = (ExprListNode) exprList;
+        this.exprList = exprList;
         this.block = block;
     }
 
@@ -22,7 +22,15 @@ public class ForStmtNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        // ST.insert(expr.getId(), expr.typeCheck(s), _nesting, "");
+        var l = (ExprListNode) exprList;
+        for (int i = 0; i < l.getSize() - 1; ++i) {
+            var e = (ExprNode) l.getElem(i);
+            ST.insert(e.getId(), e.typeCheck(), _nesting, "");
+        }
+
+        var left = (ExprNode) l.getElem(l.getSize() - 1);
+        var atomLeft = (ExprNode) left.getExpr(0);
+        ST.insert(atomLeft.getId(), atomLeft.typeCheck(), _nesting, "");
 
         errors.addAll(exprList.checkSemantics(ST, _nesting));
         errors.addAll(block.checkSemantics(ST, _nesting));

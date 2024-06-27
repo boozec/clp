@@ -26,6 +26,14 @@ public class ExprNode implements Node {
         this.trailers = trailers;
     }
 
+    public Node getExpr(int i) {
+        if (i >= this.exprs.size()) {
+            return null;
+        }
+
+        return this.exprs.get(i);
+    }
+
     public String getId() {
         if (atom != null) {
             return ((AtomNode) this.atom).getId();
@@ -67,7 +75,8 @@ public class ExprNode implements Node {
                         int argNumber = trailer.getArgumentNumber();
 
                         if (paramNumber != argNumber) {
-                            errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber) + " positional arguments but " + String.valueOf(argNumber) + " were given."));
+                            errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber)
+                                    + " positional arguments but " + String.valueOf(argNumber) + " were given."));
                         }
                     }
                 }
