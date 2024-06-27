@@ -15,12 +15,15 @@ import semanticanalysis.*;
 public class Main {
 
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err
+                    .println(
+                            "You must execute this program with a file parameter.\nUsage: java -cp lib/antlr-4.13.1-complete.jar:out Main <file.py>");
+            return;
+        }
 
-        // for (File file : Objects.requireNonNull(new File("./progs/").listFiles())) {
         try {
-            // String fileStr = file.getPath();
-            // FIXME: use the fileStr above
-            String fileStr = "./progs/a600.py";
+            String fileStr = args[0];
             System.out.println(fileStr);
             System.out.println(readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);
@@ -28,15 +31,7 @@ public class Main {
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             Python3Parser parser = new Python3Parser(tokens);
             Python3Parser.RootContext tree = parser.root();
-            // DEBUG
-            // {
-            // tokens.fill();
-            // for (Token token : tokens.getTokens()) {
-            // System.out.println(token.toString());
-            // }
-            //
-            // System.out.println("Tree: " + tree);
-            // }
+
             JFrame frame = new JFrame("Parse Tree");
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
@@ -71,7 +66,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // }
     }
 
     private static String readFile(String filePath) throws IOException {
