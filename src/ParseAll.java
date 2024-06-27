@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -9,8 +10,10 @@ import parser.Python3Lexer;
 import parser.Python3Parser;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
+import semanticanalysis.Share;
 
 public class ParseAll {
+
     @SuppressWarnings("unused")
     public static void main(String[] args) {
         new File("./trees/").mkdirs();
@@ -36,7 +39,8 @@ public class ParseAll {
                 Python3VisitorImpl visitor = new Python3VisitorImpl();
                 SymbolTable ST = new SymbolTable();
                 Node ast = visitor.visit(tree);
-                ArrayList<SemanticError> errors = ast.checkSemantics(ST, 0);
+                ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
+                ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
                 if (errors.size() > 0) {
                     System.out.println();
                     System.out.println(fileStr);

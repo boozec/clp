@@ -27,7 +27,7 @@ public class AtomNode implements Node {
         var errors = new ArrayList<SemanticError>();
 
         if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
-            errors.add(new SemanticError("'" + this.getId() + "' is not defined."));
+            errors.add(new SemanticError("name '" + this.getId() + "' is not defined."));
         }
 
         return errors;

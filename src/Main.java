@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import ast.*;
 import ast.nodes.*;
 import parser.*;
 import semanticanalysis.*;
+import semanticanalysis.Share;
 
 public class Main {
 
@@ -53,7 +55,8 @@ public class Main {
             Python3VisitorImpl visitor = new Python3VisitorImpl();
             SymbolTable ST = new SymbolTable();
             Node ast = visitor.visit(tree);
-            ArrayList<SemanticError> errors = ast.checkSemantics(ST, 0);
+            ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
+            ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (errors.size() > 0) {
                 System.out.println("You had " + errors.size() + " errors:");
                 for (SemanticError e : errors) {
