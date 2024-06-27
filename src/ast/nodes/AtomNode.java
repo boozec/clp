@@ -53,7 +53,8 @@ public class AtomNode implements Node {
         Pattern noneVariable = Pattern.compile("^(None)$");
         Pattern booleanVariable = Pattern.compile("^(True|False)$");
         Pattern reservedWords = Pattern.compile("^(continue|break|int|float)$");
-        // this regex should match every possible atom name written in this format: CHAR (CHAR | DIGIT)*
+        // this regex should match every possible atom name written in this format: CHAR
+        // (CHAR | DIGIT)*
         Pattern simpleVariable = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$", Pattern.CASE_INSENSITIVE);
 
         Matcher noneVariableMatcher = noneVariable.matcher(this.val);
@@ -87,6 +88,7 @@ public class AtomNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
+        // FIXME: can be a testlist_comp with two expr and two atoms
         if (val != null) {
             return prefix + "Atom(" + val + ")\n";
         }
