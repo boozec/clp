@@ -1,20 +1,20 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `for_stmt` statement of the grammar.
  */
 public class ForStmtNode implements Node {
-    private Node exprList;
+
+    private ExprListNode exprList;
     private Node block;
 
     public ForStmtNode(Node exprList, Node block) {
-        this.exprList = exprList;
+        this.exprList = (ExprListNode) exprList;
         this.block = block;
     }
 
@@ -22,9 +22,7 @@ public class ForStmtNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        ExprNode expr = (ExprNode) exprList;
-
-        ST.insert(expr.getId(), expr.typeCheck(), _nesting, "");
+        // ST.insert(expr.getId(), expr.typeCheck(s), _nesting, "");
 
         errors.addAll(exprList.checkSemantics(ST, _nesting));
         errors.addAll(block.checkSemantics(ST, _nesting));

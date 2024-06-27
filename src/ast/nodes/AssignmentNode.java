@@ -10,14 +10,14 @@ import semanticanalysis.SymbolTable;
  */
 public class AssignmentNode implements Node {
 
-    private ExprNode lhr;
+    private ExprListNode lhr;
     private Node assign;
-    private ExprNode rhr;
+    private ExprListNode rhr;
 
     public AssignmentNode(Node lhr, Node assign, Node rhr) {
-        this.lhr = (ExprNode) lhr;
+        this.lhr = (ExprListNode) lhr;
         this.assign = assign;
-        this.rhr = (ExprNode) rhr;
+        this.rhr = (ExprListNode) rhr;
     }
 
     @Override
@@ -28,7 +28,18 @@ public class AssignmentNode implements Node {
         errors.addAll(assign.checkSemantics(ST, _nesting));
         errors.addAll(rhr.checkSemantics(ST, _nesting));
 
-        ST.insert(lhr.getId(), rhr.typeCheck(), _nesting, "");
+        int lsize = lhr.getSize();
+        int rsize = rhr.getSize();
+
+        if (lsize == rsize) {
+            for (int i = 0; i < lsize; i++) {
+                ExprNode latom = (ExprNode) lhr.getElem(i);
+                ExprNode ratom = (ExprNode) rhr.getElem(i);
+                ST.insert(latom.getId(), ratom.typeCheck(), _nesting, "");
+            }
+        } else {
+            errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
+        }
 
         return errors;
     }

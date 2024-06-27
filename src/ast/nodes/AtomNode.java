@@ -13,9 +13,11 @@ import semanticanalysis.SymbolTable;
 public class AtomNode implements Node {
 
     protected String val;
+    protected TestlistCompNode exprlist;
 
-    public AtomNode(String val) {
+    public AtomNode(String val, Node exprlist) {
         this.val = val;
+        this.exprlist = (TestlistCompNode) exprlist;
     }
 
     public String getId() {
@@ -26,10 +28,16 @@ public class AtomNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         var errors = new ArrayList<SemanticError>();
 
-        if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
-            errors.add(new SemanticError("name '" + this.getId() + "' is not defined."));
-        } else {
-            // System.out.println("exist " + this.getId());
+        if (val != null) {
+            if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
+                errors.add(new SemanticError("name '" + this.getId() + "' is not defined."));
+            } else {
+                // System.out.println("exist " + this.typeCheck());
+            }
+        }
+
+        if (exprlist != null) {
+            errors.addAll(exprlist.checkSemantics(ST, _nesting));
         }
 
         return errors;
@@ -38,6 +46,10 @@ public class AtomNode implements Node {
     // ENHANCE: return more specific types
     @Override
     public Type typeCheck() {
+        if (this.val == null) {
+            return new VoidType();
+        }
+
         Pattern booleanVariable = Pattern.compile("^(True|False)$");
         Pattern continueBreakVariable = Pattern.compile("^(continue|break)$");
         // this regex should match every possible atom name written in this format: CHAR (CHAR | DIGIT)*

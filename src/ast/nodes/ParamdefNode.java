@@ -12,7 +12,7 @@ import semanticanalysis.SymbolTable;
 public class ParamdefNode extends AtomNode {
 
     public ParamdefNode(String val) {
-        super(val);
+        super(val, null);
     }
 
     @Override
