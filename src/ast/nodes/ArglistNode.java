@@ -3,7 +3,6 @@ package ast.nodes;
 import ast.types.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -37,8 +36,8 @@ public class ArglistNode implements Node {
                     continue;
                 }
 
-                if (!ST.top_lookup(argName) && argExpr.typeCheck() instanceof AtomType) {
-                    errors.add(new SemanticError("'" + argName + "' is not defined."));
+                if (ST.nslookup(argName) < 0 && argExpr.typeCheck() instanceof AtomType) {
+                    errors.add(new SemanticError("name '" + argName + "' is not defined."));
                 }
             } else {
                 errors.addAll(arg.checkSemantics(ST, _nesting));

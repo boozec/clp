@@ -3,7 +3,6 @@ package ast.nodes;
 import ast.types.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -39,20 +38,19 @@ public class ExprNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
-        // check if the atom is a built-in function
+        // check if the atom is a function
         if (atom != null && !trailers.isEmpty()) {
 
+            // check if the atom is not a built-in function
             if (!Arrays.asList(bif).contains(atom.getId())) {
-                
+
                 errors.addAll(atom.checkSemantics(ST, _nesting));
-                
+
                 TrailerNode trailer = (TrailerNode) trailers.get(0);
                 String funName = atom.getId();
 
                 // TODO: it isnt a function, it could be a variable
                 STentry fun = ST.lookup(funName);
-
-
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
                     if (!(fun.getType() instanceof FunctionType)) {
@@ -96,7 +94,7 @@ public class ExprNode implements Node {
     // FIXME: type for the expr
     @Override
     public Type typeCheck() {
-        if (this.atom != null ) {
+        if (this.atom != null) {
             return this.atom.typeCheck();
         }
 

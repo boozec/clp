@@ -28,6 +28,8 @@ public class AtomNode implements Node {
 
         if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
             errors.add(new SemanticError("name '" + this.getId() + "' is not defined."));
+        } else {
+            // System.out.println("exist " + this.getId());
         }
 
         return errors;
@@ -40,11 +42,11 @@ public class AtomNode implements Node {
         Pattern continueBreakVariable = Pattern.compile("^(continue|break)$");
         // this regex should match every possible atom name written in this format: CHAR (CHAR | DIGIT)*
         Pattern simpleVariable = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$", Pattern.CASE_INSENSITIVE);
-        
+
         Matcher booleanVariableMatcher = booleanVariable.matcher(this.val);
         Matcher continueBreakVariableMatcher = continueBreakVariable.matcher(this.val);
         Matcher simpleVariableMatcher = simpleVariable.matcher(this.val);
-        
+
         boolean matchFoundBoolean = booleanVariableMatcher.find();
         boolean matchFoundContinueBreak = continueBreakVariableMatcher.find();
         boolean matchFoundSimpleVariable = simpleVariableMatcher.find();
