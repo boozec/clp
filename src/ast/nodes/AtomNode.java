@@ -50,23 +50,28 @@ public class AtomNode implements Node {
             return new VoidType();
         }
 
+        Pattern noneVariable = Pattern.compile("^(None)$");
         Pattern booleanVariable = Pattern.compile("^(True|False)$");
-        Pattern continueBreakVariable = Pattern.compile("^(continue|break)$");
+        Pattern reservedWords = Pattern.compile("^(continue|break|int|float)$");
         // this regex should match every possible atom name written in this format: CHAR (CHAR | DIGIT)*
         Pattern simpleVariable = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$", Pattern.CASE_INSENSITIVE);
 
+        Matcher noneVariableMatcher = noneVariable.matcher(this.val);
         Matcher booleanVariableMatcher = booleanVariable.matcher(this.val);
-        Matcher continueBreakVariableMatcher = continueBreakVariable.matcher(this.val);
+        Matcher reservedWordsMatcher = reservedWords.matcher(this.val);
         Matcher simpleVariableMatcher = simpleVariable.matcher(this.val);
 
+        boolean matchFoundNone = noneVariableMatcher.find();
         boolean matchFoundBoolean = booleanVariableMatcher.find();
-        boolean matchFoundContinueBreak = continueBreakVariableMatcher.find();
+        boolean matchFoundContinueBreak = reservedWordsMatcher.find();
         boolean matchFoundSimpleVariable = simpleVariableMatcher.find();
 
         if (matchFoundBoolean) {
             return new BoolType();
         } else if (matchFoundContinueBreak) {
-            return new ContinueBreakType();
+            return new ReservedWordsType();
+        } else if (matchFoundNone) {
+            return new NoneType();
         } else if (matchFoundSimpleVariable) {
             return new AtomType(); // could be a variable or a fuction
         } else {

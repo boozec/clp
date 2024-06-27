@@ -434,6 +434,8 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Testlist_compContext tlc = ctx.testlist_comp();
         if (ctx.NUMBER() != null) {
             return new AtomNode(ctx.NUMBER().toString(), null);
+        } else if (ctx.NONE() != null) {
+            return new AtomNode(ctx.NONE().toString(), null);
         } else if (ctx.TRUE() != null) {
             return new AtomNode(ctx.TRUE().toString(), null);
         } else if (ctx.FALSE() != null) {
@@ -453,7 +455,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         } else if (ctx.OPEN_PAREN() != null && ctx.CLOSE_PAREN() != null) {
             return manageTlc(tlc);
         }
-        return new AtomNode(ctx.NONE().toString(), null);
+        return new AtomNode(null, null);
     }
 
     public AtomNode manageTlc(Testlist_compContext tlc) {
@@ -533,7 +535,45 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         for (ExprContext c : ctx.expr()) {
             exprlist.add(visit(c));
         }
+        Comp_forContext cfc = ctx.comp_for();
+        if (cfc != null) {
+            Node comp = visit(ctx.comp_for());
+            return new TestlistCompNode(exprlist, comp);
+        }
+        return new TestlistCompNode(exprlist, null);
+    }
 
-        return new TestlistCompNode(exprlist);
+    /**
+     * Returns a `CompForNode`.
+     *
+     * ``` comp_for : 'for' exprlist 'in' expr comp_iter? ;```
+     */
+    public Node visitComp_for(Comp_forContext ctx) {
+        Node exprlist = visit(ctx.exprlist());
+        Node expr = visit(ctx.expr());
+        Comp_iterContext cic = ctx.comp_iter();
+
+        if (cic != null) {
+            Node comp = visit(ctx.comp_iter());
+            return new CompForNode(exprlist, expr, comp);
+        }
+        return new CompForNode(exprlist, expr, null);
+    }
+
+    /**
+     * Returns a `CompIterNode`.
+     *
+     * ``` comp_iter : comp_for | comp_if ; ;```
+     */
+    public Node visitComp_iter(Comp_iterContext ctx) {
+        // TODO: Implement comp_if
+        // Node iter = visit(ctx.comp_if());
+        Comp_forContext cfc = ctx.comp_for();
+        if (cfc != null) {
+            Node forNode = visit(ctx.comp_for());
+            return new CompIterNode(forNode);
+
+        }
+        return new CompIterNode(null);
     }
 }

@@ -22,25 +22,27 @@ public class ArglistNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
 
         for (var arg : arguments) {
-            ExprNode argExpr = (ExprNode) arg;
-            String argName = argExpr.getId();
+            if (arg instanceof ExprNode) {
+                ExprNode argExpr = (ExprNode) arg;
+                String argName = argExpr.getId();
 
-            // TODO: check fucking IntType for params
-            // TODO: remove fucking comments
-            if (argName != null) {
-                if (Arrays.asList(bif).contains(argName)) {
-                    continue;
-                }
+                // TODO: check fucking IntType for params
+                // TODO: remove fucking comments
+                if (argName != null) {
+                    if (Arrays.asList(bif).contains(argName)) {
+                        continue;
+                    }
 
-                if (ST.lookup(argName) != null && ST.lookup(argName).getType() instanceof ImportType) {
-                    continue;
-                }
+                    if (ST.lookup(argName) != null && ST.lookup(argName).getType() instanceof ImportType) {
+                        continue;
+                    }
 
-                if (ST.nslookup(argName) < 0 && argExpr.typeCheck() instanceof AtomType) {
-                    errors.add(new SemanticError("name '" + argName + "' is not defined."));
+                    if (ST.nslookup(argName) < 0 && argExpr.typeCheck() instanceof AtomType) {
+                        errors.add(new SemanticError("name '" + argName + "' is not defined."));
+                    }
+                } else {
+                    errors.addAll(arg.checkSemantics(ST, _nesting));
                 }
-            } else {
-                errors.addAll(arg.checkSemantics(ST, _nesting));
             }
         }
 
