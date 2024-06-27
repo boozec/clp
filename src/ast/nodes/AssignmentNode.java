@@ -31,15 +31,16 @@ public class AssignmentNode implements Node {
         int lsize = lhr.getSize();
         int rsize = rhr.getSize();
 
-        if (lsize == rsize) {
-            for (int i = 0; i < lsize; i++) {
-                ExprNode latom = (ExprNode) lhr.getElem(i);
-                ExprNode ratom = (ExprNode) rhr.getElem(i);
-                ST.insert(latom.getId(), ratom.typeCheck(), _nesting, "");
-            }
-        } else {
-            errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
+        // if (lsize == rsize) {
+        for (int i = 0; i < lsize; i++) {
+            ExprNode latom = (ExprNode) lhr.getElem(i);
+            ST.insert(latom.getId(), new AtomType(), _nesting, "");
+            // ExprNode ratom = (ExprNode) rhr.getElem(i);
         }
+        // } else {
+            // FIX: sgravata da più problemi che altro
+            // errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
+        // }
 
         return errors;
     }
