@@ -424,7 +424,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     /**
-     * Returns an `AtomNode`. FIXME: add support for testlist_comp
+     * Returns an `AtomNode`.
      *
      * ``` atom : '(' testlist_comp? ')' | '[' testlist_comp? ']' | '{'
      * testlist_comp? '}' | NAME | NUMBER | STRING+ | '...' | 'None' | 'True' |
@@ -449,22 +449,26 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             }
             return new AtomNode(varName, null);
         } else if (ctx.OPEN_BRACE() != null && ctx.CLOSE_BRACE() != null) {
-            return manageTlc(tlc);
+            return manageCompListContext(tlc);
         } else if (ctx.OPEN_BRACK() != null && ctx.CLOSE_BRACK() != null) {
-            return manageTlc(tlc);
+            return manageCompListContext(tlc);
         } else if (ctx.OPEN_PAREN() != null && ctx.CLOSE_PAREN() != null) {
-            return manageTlc(tlc);
+            return manageCompListContext(tlc);
         }
         return new AtomNode(null, null);
     }
 
-    public AtomNode manageTlc(Testlist_compContext tlc) {
+    /**
+     * Supporting function for `visitAtom`. Returns an `AtomNode` with
+     * `testlist_comp` set if the context is not null. Otherwise, returns an
+     * `AtomNode` with nulls.
+     */
+    public AtomNode manageCompListContext(Testlist_compContext tlc) {
         if (tlc != null) {
             Node testlist_comp = visit(tlc);
             return new AtomNode(null, testlist_comp);
-        } else {
-            return new AtomNode(null, null);
         }
+        return new AtomNode(null, null);
     }
 
     /**
@@ -529,7 +533,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` testlist_comp : expr (comp_for | (',' expr)* ','?) ; ```
      */
     public Node visitTestlist_comp(Testlist_compContext ctx) {
-        // TODO: implement comp_for
         ArrayList<Node> exprlist = new ArrayList<Node>();
 
         for (ExprContext c : ctx.expr()) {

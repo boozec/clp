@@ -31,7 +31,14 @@ public class ExprListNode implements Node {
         return exprs.size();
     }
 
+    /**
+     * Returns the i-th expressions of `exprs` field. If the index is greater or
+     * equals than the size return `null`.
+     */
     public Node getElem(int i) {
+        if (i >= this.exprs.size()) {
+            return null;
+        }
         return exprs.get(i);
     }
 
@@ -48,7 +55,7 @@ public class ExprListNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix + "Paramlist\n";
+        String str = prefix + "ExprList\n";
 
         prefix += "  ";
         for (var param : exprs) {

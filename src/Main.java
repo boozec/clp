@@ -1,7 +1,4 @@
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.*;
@@ -27,7 +24,7 @@ public class Main {
         try {
             String fileStr = args[0];
             System.out.println(fileStr);
-            System.out.println(readFile(fileStr));
+            System.out.println(Share.readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);
             Python3Lexer lexer = new Python3Lexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -71,14 +68,4 @@ public class Main {
         }
     }
 
-    private static String readFile(String filePath) throws IOException {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-        }
-        return content.toString();
-    }
 }

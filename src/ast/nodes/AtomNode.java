@@ -20,6 +20,10 @@ public class AtomNode implements Node {
         this.exprlist = (TestlistCompNode) exprlist;
     }
 
+    /**
+     * Returns the identifier of the `AtomNode` if it's not `null`, otherwise
+     * returns `null`.
+     */
     public String getId() {
         return this.val;
     }

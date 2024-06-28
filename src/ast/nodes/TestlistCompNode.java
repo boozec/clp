@@ -10,8 +10,8 @@ import semanticanalysis.SymbolTable;
  */
 public class TestlistCompNode implements Node {
 
-    private final ArrayList<Node> exprs;
-    private final CompForNode comp;
+    private ArrayList<Node> exprs;
+    private CompForNode comp;
 
     public TestlistCompNode(ArrayList<Node> exprs, Node comp) {
         this.exprs = exprs;
@@ -45,7 +45,14 @@ public class TestlistCompNode implements Node {
         return exprs.size();
     }
 
+    /**
+     * Returns the i-th expressions of `exprs` field. If the index is greater or
+     * equals than the size return `null`.
+     */
     public Node getElem(int i) {
+        if (i >= this.exprs.size()) {
+            return null;
+        }
         return exprs.get(i);
     }
 

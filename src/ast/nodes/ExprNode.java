@@ -26,6 +26,10 @@ public class ExprNode implements Node {
         this.trailers = trailers;
     }
 
+    /**
+     * Returns the i-th expressions of `exprs` field. If the index is greater or
+     * equals than the size return `null`.
+     */
     public Node getExpr(int i) {
         if (i >= this.exprs.size()) {
             return null;
@@ -34,6 +38,10 @@ public class ExprNode implements Node {
         return this.exprs.get(i);
     }
 
+    /**
+     * Returns the identifier of the `AtomNode` if it's not `null`, otherwise
+     * returns `null`.
+     */
     public String getId() {
         if (atom != null) {
             return ((AtomNode) this.atom).getId();
@@ -65,6 +73,7 @@ public class ExprNode implements Node {
                         for (var t : trailers) {
                             errors.addAll(t.checkSemantics(ST, _nesting));
                         }
+
                     } else {
                         FunctionType ft = (FunctionType) fun.getType();
                         int paramNumber = ft.getParamNumber();
@@ -80,6 +89,7 @@ public class ExprNode implements Node {
                 for (var trailer : trailers) {
                     errors.addAll(trailer.checkSemantics(ST, _nesting));
                 }
+
             }
         } else if (atom != null) {
             errors.addAll(atom.checkSemantics(ST, _nesting));
@@ -126,11 +136,11 @@ public class ExprNode implements Node {
         }
 
         for (var expr : exprs) {
-            str += expr.toPrint(prefix);
+            str = expr.toPrint(prefix);
         }
 
         for (var trailer : trailers) {
-            str += trailer.toPrint(prefix);
+            str = trailer.toPrint(prefix);
         }
 
         if (op != null) {

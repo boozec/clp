@@ -22,7 +22,7 @@ public class ParseAll {
             // fileStr = "./progs/wrong.py";
             try {
 
-                if (!file.isFile() || !getExtension(file.getName()).equals("py")) {
+                if (!file.isFile() || !Share.getExtension(file.getName()).equals("py")) {
                     System.err.println("Wont parse: " + fileStr);
                     continue;
                 }
@@ -54,15 +54,6 @@ public class ParseAll {
                 e.printStackTrace();
                 System.err.println(fileStr);
             }
-        }
-    }
-
-    public static String getExtension(String fileName) {
-        int extensionIndex = fileName.lastIndexOf('.');
-        if (extensionIndex == -1) {
-            return fileName;
-        } else {
-            return fileName.substring(extensionIndex + 1);
         }
     }
 }

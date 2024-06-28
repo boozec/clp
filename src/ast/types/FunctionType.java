@@ -1,18 +1,19 @@
 package ast.types;
 
 /**
- * An tom type. TODO: do I need to use this one?
+ * A Function type.
  */
 public class FunctionType extends Type {
 
-    private final int paramNumber;
-    private final Type returnType;
+    private int paramNumber;
+    private Type returnType;
 
     public FunctionType(int paramNumber, Type returnType) {
         this.paramNumber = paramNumber;
         this.returnType = returnType;
     }
 
+    // Return the length of the parameters
     public int getParamNumber() {
         return paramNumber;
     }
@@ -22,6 +23,6 @@ public class FunctionType extends Type {
     }
 
     public String toPrint(String prefix) {
-        return prefix + "Atom\n";
+        return prefix + "Function\n";
     }
 }
