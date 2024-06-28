@@ -536,11 +536,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             exprlist.add(visit(c));
         }
         Comp_forContext cfc = ctx.comp_for();
+        Node comp = null;
         if (cfc != null) {
-            Node comp = visit(ctx.comp_for());
-            return new TestlistCompNode(exprlist, comp);
+            comp = visit(ctx.comp_for());
         }
-        return new TestlistCompNode(exprlist, null);
+        return new TestlistCompNode(exprlist, comp);
     }
 
     /**
