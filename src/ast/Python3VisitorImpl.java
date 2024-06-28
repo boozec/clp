@@ -569,11 +569,10 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         // TODO: Implement comp_if
         // Node iter = visit(ctx.comp_if());
         Comp_forContext cfc = ctx.comp_for();
+        Node forNode = null;
         if (cfc != null) {
-            Node forNode = visit(ctx.comp_for());
-            return new CompIterNode(forNode);
-
+            forNode = visit(ctx.comp_for());
         }
-        return new CompIterNode(null);
+        return new CompIterNode(forNode);
     }
 }
