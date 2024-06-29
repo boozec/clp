@@ -18,7 +18,7 @@ public class ExprListNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var expr : exprs) {
             errors.addAll(expr.checkSemantics(ST, _nesting));

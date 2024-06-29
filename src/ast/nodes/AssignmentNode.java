@@ -29,7 +29,9 @@ public class AssignmentNode implements Node {
         errors.addAll(rhr.checkSemantics(ST, _nesting));
 
         int lsize = lhr.getSize();
-        int rsize = rhr.getSize();
+
+        // FIXME: unused variable
+        // int rsize = rhr.getSize();
 
         // if (lsize == rsize) {
         for (int i = 0; i < lsize; i++) {

@@ -20,7 +20,7 @@ public class TestlistCompNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (comp != null) {
             // if comp is set, then we save the atom in the ST (we assume the first expr is
