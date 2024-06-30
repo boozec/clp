@@ -1,17 +1,17 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `while_stmt` statement of the grammar.
  */
 public class WhileStmtNode implements Node {
-    private Node expr;
-    private Node block;
+
+    private final Node expr;
+    private final Node block;
 
     public WhileStmtNode(Node expr, Node block) {
         this.expr = expr;
@@ -20,7 +20,7 @@ public class WhileStmtNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         errors.addAll(expr.checkSemantics(ST, _nesting));
         errors.addAll(block.checkSemantics(ST, _nesting));

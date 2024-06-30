@@ -19,7 +19,7 @@ public class CompIterNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         if (comp_for != null) {
             errors.addAll(comp_for.checkSemantics(ST, _nesting));

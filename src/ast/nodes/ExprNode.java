@@ -12,11 +12,11 @@ import semanticanalysis.SymbolTable;
  */
 public class ExprNode implements Node {
 
-    private AtomNode atom;
-    private Node compOp;
-    private String op;
-    private ArrayList<Node> exprs;
-    private ArrayList<Node> trailers;
+    private final AtomNode atom;
+    private final Node compOp;
+    private final String op;
+    private final ArrayList<Node> exprs;
+    private final ArrayList<Node> trailers;
 
     public ExprNode(Node atom, Node compOp, ArrayList<Node> exprs, String op, ArrayList<Node> trailers) {
         this.atom = (AtomNode) atom;
@@ -52,7 +52,7 @@ public class ExprNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         // check if the atom is a function
         if (atom != null && !trailers.isEmpty()) {

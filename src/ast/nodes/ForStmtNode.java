@@ -10,8 +10,8 @@ import semanticanalysis.SymbolTable;
  */
 public class ForStmtNode implements Node {
 
-    private Node exprList;
-    private Node block;
+    private final Node exprList;
+    private final Node block;
 
     public ForStmtNode(Node exprList, Node block) {
         this.exprList = exprList;
@@ -34,7 +34,7 @@ public class ForStmtNode implements Node {
      */
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         // Save every atom in the expression's list, except the last one
         var l = (ExprListNode) exprList;

@@ -1,23 +1,22 @@
 package ast.nodes;
 
-import java.util.ArrayList;
-
 import ast.types.*;
+import java.util.ArrayList;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
 /**
- * Node for `block` statement of the grammar.
- * It extends the `RootNode`.
+ * Node for `block` statement of the grammar. It extends the `RootNode`.
  */
 public class BlockNode extends RootNode {
+
     public BlockNode(ArrayList<Node> childs) {
         super(childs);
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         // Check semantics for each child
         for (Node child : childs) {
@@ -26,7 +25,6 @@ public class BlockNode extends RootNode {
 
         return errors;
     }
-
 
     @Override
     public Type typeCheck() {

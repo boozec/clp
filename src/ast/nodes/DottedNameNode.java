@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Node for the `dooted_name` statement of the grammar.
  */
 public class DottedNameNode implements Node {
+
     protected ArrayList<TerminalNode> names;
 
     public DottedNameNode(ArrayList<TerminalNode> names) {
@@ -19,7 +20,7 @@ public class DottedNameNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         for (int i = 0; i < names.size(); ++i) {
             ST.insert(names.get(i).toString(), this.typeCheck(), _nesting, null);

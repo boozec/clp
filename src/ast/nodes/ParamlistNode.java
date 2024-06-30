@@ -1,17 +1,16 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `param_list` statement of the grammar.
  */
 public class ParamlistNode implements Node {
 
-    private ArrayList<Node> params;
+    private final ArrayList<Node> params;
 
     public ParamlistNode(ArrayList<Node> _params) {
         params = _params;
@@ -19,7 +18,7 @@ public class ParamlistNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         for (var param : params) {
             errors.addAll(param.checkSemantics(ST, _nesting));

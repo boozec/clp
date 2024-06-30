@@ -5,8 +5,8 @@ package ast.types;
  */
 public class FunctionType extends Type {
 
-    private int paramNumber;
-    private Type returnType;
+    private final int paramNumber;
+    private final Type returnType;
 
     public FunctionType(int paramNumber, Type returnType) {
         this.paramNumber = paramNumber;
@@ -22,6 +22,7 @@ public class FunctionType extends Type {
         return returnType;
     }
 
+    @Override
     public String toPrint(String prefix) {
         return prefix + "Function\n";
     }

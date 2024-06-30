@@ -17,7 +17,7 @@ public class ParamdefNode extends AtomNode {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        var errors = new ArrayList<SemanticError>();
+        var errors = new ArrayList();
         String paramName = this.getId();
 
         if (!ST.top_lookup(paramName)) {

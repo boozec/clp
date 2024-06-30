@@ -12,7 +12,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Node for the `augassign` statement of the grammar.
  */
 public class AugassignNode implements Node {
-    private TerminalNode val;
+
+    private final TerminalNode val;
 
     public AugassignNode(TerminalNode val) {
         this.val = val;
@@ -20,7 +21,7 @@ public class AugassignNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        return new ArrayList<SemanticError>();
+        return new ArrayList();
     }
 
     // FIXME: use the right type

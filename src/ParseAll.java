@@ -41,7 +41,7 @@ public class ParseAll {
                 Node ast = visitor.visit(tree);
                 ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
                 ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
-                if (errors.size() > 0) {
+                if (!errors.isEmpty()) {
                     System.out.println();
                     System.out.println(fileStr);
                     System.out.println("You had " + errors.size() + " errors:");

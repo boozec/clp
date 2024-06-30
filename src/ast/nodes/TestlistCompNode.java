@@ -10,8 +10,8 @@ import semanticanalysis.SymbolTable;
  */
 public class TestlistCompNode implements Node {
 
-    private ArrayList<Node> exprs;
-    private CompForNode comp;
+    private final ArrayList<Node> exprs;
+    private final CompForNode comp;
 
     public TestlistCompNode(ArrayList<Node> exprs, Node comp) {
         this.exprs = exprs;

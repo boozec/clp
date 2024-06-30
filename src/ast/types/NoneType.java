@@ -5,6 +5,7 @@ package ast.types;
  */
 public class NoneType extends Type {
 
+    @Override
     public String toPrint(String prefix) {
         return prefix + "None\n";
     }

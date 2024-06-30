@@ -30,7 +30,7 @@ public class AtomNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        var errors = new ArrayList<SemanticError>();
+        var errors = new ArrayList();
 
         if (val != null) {
             if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {

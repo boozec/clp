@@ -19,11 +19,10 @@ public class ArglistNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         for (var arg : arguments) {
-            if (arg instanceof ExprNode) {
-                ExprNode argExpr = (ExprNode) arg;
+            if (arg instanceof ExprNode argExpr) {
                 String argName = argExpr.getId();
 
                 // TODO: check fucking IntType for params
