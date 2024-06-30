@@ -1,32 +1,47 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `assignment` statement of the grammar.
  */
 public class AssignmentNode implements Node {
-    private Node lhr;
-    private Node assign;
-    private Node rhr;
+
+    private final ExprListNode lhr;
+    private final Node assign;
+    private final ExprListNode rhr;
 
     public AssignmentNode(Node lhr, Node assign, Node rhr) {
-        this.lhr = lhr;
+        this.lhr = (ExprListNode) lhr;
         this.assign = assign;
-        this.rhr = rhr;
+        this.rhr = (ExprListNode) rhr;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
-        errors.addAll(lhr.checkSemantics(ST, _nesting));
+        // errors.addAll(lhr.checkSemantics(ST, _nesting));
         errors.addAll(assign.checkSemantics(ST, _nesting));
         errors.addAll(rhr.checkSemantics(ST, _nesting));
+
+        int lsize = lhr.getSize();
+
+        // FIXME: unused variable
+        // int rsize = rhr.getSize();
+        // if (lsize == rsize) {
+        for (int i = 0; i < lsize; i++) {
+            ExprNode latom = (ExprNode) lhr.getElem(i);
+            ST.insert(latom.getId(), new AtomType(), _nesting, "");
+            // ExprNode ratom = (ExprNode) rhr.getElem(i);
+        }
+        // } else {
+        // FIX: sgravata da più problemi che altro
+        // errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
+        // }
 
         return errors;
     }

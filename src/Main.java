@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.*;
@@ -11,6 +9,7 @@ import ast.*;
 import ast.nodes.*;
 import parser.*;
 import semanticanalysis.*;
+import semanticanalysis.Share;
 
 public class Main {
 
@@ -25,7 +24,7 @@ public class Main {
         try {
             String fileStr = args[0];
             System.out.println(fileStr);
-            System.out.println(readFile(fileStr));
+            System.out.println(Share.readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);
             Python3Lexer lexer = new Python3Lexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -36,7 +35,7 @@ public class Main {
             JPanel panel = new JPanel();
             TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
                     tree);
-            viewer.setScale(1.5);
+            viewer.setScale(1); // Zoom factor
             panel.add(viewer);
             frame.add(panel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,9 +52,10 @@ public class Main {
             Python3VisitorImpl visitor = new Python3VisitorImpl();
             SymbolTable ST = new SymbolTable();
             Node ast = visitor.visit(tree);
-            ArrayList<SemanticError> errors = ast.checkSemantics(ST, 0);
-            if (errors.size() > 0) {
-                System.out.println("You had: " + errors.size() + " errors:");
+            ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
+            ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
+            if (!errors.isEmpty()) {
+                System.out.println("You had " + errors.size() + " errors:");
                 for (SemanticError e : errors) {
                     System.out.println("\t" + e);
                 }
@@ -68,14 +68,4 @@ public class Main {
         }
     }
 
-    private static String readFile(String filePath) throws IOException {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-        }
-        return content.toString();
-    }
 }

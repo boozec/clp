@@ -1,19 +1,19 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `compound_node` statement of the grammar.
  */
 public class CompoundNode implements Node {
-    private Node ifNode;
-    private Node funcDef;
-    private Node forStmt;
-    private Node whileStmt;
+
+    private final Node ifNode;
+    private final Node funcDef;
+    private final Node forStmt;
+    private final Node whileStmt;
 
     public CompoundNode(Node ifNode, Node funcDef, Node forStmt, Node whileStmt) {
         this.ifNode = ifNode;
@@ -24,7 +24,7 @@ public class CompoundNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         if (ifNode != null) {
             errors.addAll(ifNode.checkSemantics(ST, _nesting));

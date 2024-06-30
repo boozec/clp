@@ -1,20 +1,20 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `import_stmt` statement of the grammar.
  */
 public class ImportNode implements Node {
-    private Node dottedName;
-    private boolean isFrom;
-    private boolean importAs;
-    private boolean importAll;
-    private ArrayList<String> names;
+
+    private final Node dottedName;
+    private final boolean isFrom;
+    private final boolean importAs;
+    private final boolean importAll;
+    private final ArrayList<String> names;
 
     public ImportNode(Node dottedName, boolean isFrom, boolean importAs, boolean importAll,
             ArrayList<String> names) {
@@ -27,14 +27,26 @@ public class ImportNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
+
+        if (isFrom) {
+            for (int i = 0; i < names.size(); ++i) {
+                ST.insert(names.get(i), this.typeCheck(), _nesting, null);
+            }
+        } else {
+            errors.addAll(dottedName.checkSemantics(ST, _nesting));
+        }
+
+        if (importAs) {
+            ST.insert(names.get(names.size() - 1), this.typeCheck(), _nesting, null);
+        }
 
         return errors;
     }
 
     @Override
     public Type typeCheck() {
-        return new VoidType();
+        return new ImportType();
     }
 
     // NOTE: we do not want to provide a code generation for this statement
@@ -63,8 +75,9 @@ public class ImportNode implements Node {
         }
 
         for (int i = 0; i < names.size(); ++i) {
-            if (i == 0 && importAs)
+            if (i == 0 && importAs) {
                 continue;
+            }
 
             str += prefix + names.get(i) + "\n";
         }

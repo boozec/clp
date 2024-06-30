@@ -1,7 +1,9 @@
 package ast.nodes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 import ast.types.*;
@@ -11,9 +13,10 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Node for the `funcdef` statement of the grammar.
  */
 public class FuncdefNode implements Node {
-    private TerminalNode name;
-    private Node paramlist;
-    private Node block;
+
+    private final TerminalNode name;
+    private final Node paramlist;
+    private final Node block;
 
     public FuncdefNode(TerminalNode name, Node paramlist, Node block) {
         this.name = name;
@@ -23,13 +26,30 @@ public class FuncdefNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
+        int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
+        Type returnType = this.block.typeCheck();
+        FunctionType ft = new FunctionType(paramNumber, returnType);
+
+        ST.insert(this.name.toString(), ft, _nesting, "");
+
+        HashMap<String, STentry> HM = new HashMap();
+
+        ST.add(HM);
+
+        ST.insert(this.name.toString(), ft, _nesting + 1, "");
 
         if (paramlist != null) {
-            errors.addAll(paramlist.checkSemantics(ST, _nesting));
+            errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
 
-        errors.addAll(block.checkSemantics(ST, _nesting));
+        // TODO: think to the fucking offset
+        // Offset is increased for the possible return value
+        ST.increaseoffset();
+
+        errors.addAll(block.checkSemantics(ST, _nesting + 1));
+
+        ST.remove();
 
         return errors;
     }
@@ -46,6 +66,7 @@ public class FuncdefNode implements Node {
         return "";
     }
 
+    @Override
     public String toPrint(String prefix) {
         String str = prefix + "Funcdef(" + name + ")\n";
 

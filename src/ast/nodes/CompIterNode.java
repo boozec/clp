@@ -6,25 +6,24 @@ import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
 /**
- * Node for the `while_stmt` statement of the grammar.
+ * Node for the `comp_iter` statement of the grammar.
  */
-public class WhileStmtNode implements Node {
+public class CompIterNode implements Node {
 
-    private final Node expr;
-    private final Node block;
+    protected CompForNode comp_for;
+    // protected CompIfNode compIfNode;
 
-    public WhileStmtNode(Node expr, Node block) {
-        this.expr = expr;
-        this.block = block;
+    public CompIterNode(Node comp_for) {
+        this.comp_for = (CompForNode) comp_for;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList();
 
-        errors.addAll(expr.checkSemantics(ST, _nesting));
-        errors.addAll(block.checkSemantics(ST, _nesting));
-
+        if (comp_for != null) {
+            errors.addAll(comp_for.checkSemantics(ST, _nesting));
+        }
         return errors;
     }
 
@@ -33,7 +32,7 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for while
+    // TODO: add code generation for arglist node
     @Override
     public String codeGeneration() {
         return "";
@@ -41,6 +40,11 @@ public class WhileStmtNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        return prefix + "While\n" + expr.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
+        String str = prefix + "CompIterNode\n";
+
+        prefix += "  ";
+        str += comp_for.toPrint(prefix);
+        return str;
     }
+
 }

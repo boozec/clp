@@ -6,9 +6,10 @@ import ast.types.Type;
  * Entry class for the symbol table.
  */
 public class STentry {
-    private Type type;
-    private int offset;
-    private int nesting;
+
+    private final Type type;
+    private final int offset;
+    private final int nesting;
     private String label;
 
     public STentry(Type type, int offset, int nesting) {
@@ -50,6 +51,12 @@ public class STentry {
      */
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String toString() {
+        // Print all the fields of the STentry
+        return "Type: " + type + ", Offset: " + offset + ", Nesting: " + nesting + ", Label: " + label;
     }
 
 }

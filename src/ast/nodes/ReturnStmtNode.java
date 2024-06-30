@@ -1,16 +1,16 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `return_stmt` statement of the grammar.
  */
 public class ReturnStmtNode implements Node {
-    private Node exprList;
+
+    private final Node exprList;
 
     public ReturnStmtNode(Node exprList) {
         this.exprList = exprList;
@@ -18,7 +18,7 @@ public class ReturnStmtNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         if (this.exprList != null) {
             errors.addAll(this.exprList.checkSemantics(ST, _nesting));

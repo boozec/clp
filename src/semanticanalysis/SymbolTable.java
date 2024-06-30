@@ -1,8 +1,8 @@
 package semanticanalysis;
 
+import ast.types.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import ast.types.*;
 
 /**
  * Class representing a symbol table. It's a list of hash table symbol table. We
@@ -11,12 +11,12 @@ import ast.types.*;
  */
 public class SymbolTable {
 
-    private ArrayList<HashMap<String, STentry>> symbolTable;
-    private ArrayList<Integer> offset;
+    private final ArrayList<HashMap<String, STentry>> symbolTable;
+    private final ArrayList<Integer> offset;
 
     public SymbolTable() {
-        this.symbolTable = new ArrayList<HashMap<String, STentry>>();
-        this.offset = new ArrayList<Integer>();
+        this.symbolTable = new ArrayList();
+        this.offset = new ArrayList();
     }
 
     /**
@@ -40,8 +40,8 @@ public class SymbolTable {
             HashMap<String, STentry> H = this.symbolTable.get(n);
             T = H.get(id);
             if (T != null) {
-                found = true; 
-            }else {
+                found = true;
+            } else {
                 n = n - 1;
             }
         }
@@ -60,8 +60,8 @@ public class SymbolTable {
         while ((n >= 0) && !found) {
             HashMap<String, STentry> H = this.symbolTable.get(n);
             if (H.get(id) != null) {
-                found = true; 
-            }else {
+                found = true;
+            } else {
                 n = n - 1;
             }
         }
@@ -96,7 +96,7 @@ public class SymbolTable {
      */
     public boolean top_lookup(String id) {
         int n = symbolTable.size() - 1;
-        STentry T = null;
+        STentry T;
         HashMap<String, STentry> H = symbolTable.get(n);
         T = H.get(id);
         return (T != null);
@@ -125,15 +125,10 @@ public class SymbolTable {
 
         // We always increment the offset by 1 otherwise we need ad-hoc bytecode
         // operations
-        if (type.getClass().equals((new BoolType()).getClass())) {
-            offs = offs + 1;
-        } else if (type.getClass().equals((new IntType()).getClass())) {
-            offs = offs + 1;
-        } else {
-            offs = offs + 1;
-        }
+        offs = offs + 1;
 
         this.offset.add(offs);
+
     }
 
     /**
@@ -147,6 +142,21 @@ public class SymbolTable {
         offs = offs + 1;
 
         this.offset.add(offs);
+    }
+
+    @Override
+    public String toString() {
+        // Print the symbol table
+        String str = "";
+        for (int i = 0; i < this.symbolTable.size(); i++) {
+            str += "Level " + i + "\n";
+            HashMap<String, STentry> H = this.symbolTable.get(i);
+            for (String key : H.keySet()) {
+                STentry T = H.get(key);
+                str += key + " -> " + T.toString() + "\n";
+            }
+        }
+        return str;
     }
 
 }

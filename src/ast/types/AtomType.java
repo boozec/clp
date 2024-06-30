@@ -2,9 +2,10 @@ package ast.types;
 
 /**
  * An tom type.
- * TODO: do I need to use this one?
  */
 public class AtomType extends Type {
+
+    @Override
     public String toPrint(String prefix) {
         return prefix + "Atom\n";
     }

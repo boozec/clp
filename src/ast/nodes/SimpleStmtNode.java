@@ -1,19 +1,19 @@
 package ast.nodes;
 
+import ast.types.*;
 import java.util.ArrayList;
-
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import ast.types.*;
 
 /**
  * Node for the `simple_stmt` statement of the grammar.
  */
 public class SimpleStmtNode implements Node {
-    private Node assignment;
-    private Node expr;
-    private Node returnStmt;
-    private Node importStmt;
+
+    private final Node assignment;
+    private final Node expr;
+    private final Node returnStmt;
+    private final Node importStmt;
 
     public SimpleStmtNode(Node assignment, Node expr, Node returnStmt, Node importStmt) {
         this.assignment = assignment;
@@ -24,7 +24,7 @@ public class SimpleStmtNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList<SemanticError>();
+        ArrayList<SemanticError> errors = new ArrayList();
 
         if (assignment != null) {
             errors.addAll(assignment.checkSemantics(ST, _nesting));

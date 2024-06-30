@@ -11,7 +11,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Node for the `comp_op` statement of the grammar.
  */
 public class CompNode implements Node {
-    private TerminalNode op;
+
+    private final TerminalNode op;
 
     public CompNode(TerminalNode op) {
         this.op = op;
@@ -19,7 +20,7 @@ public class CompNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        return new ArrayList<SemanticError>();
+        return new ArrayList();
     }
 
     // TODO: it should be boolean, right?

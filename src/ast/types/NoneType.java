@@ -1,17 +1,17 @@
 package ast.types;
 
 /**
- * A void type. Voids return nothing.
+ * A none type. None return unit.
  */
-public class VoidType extends Type {
+public class NoneType extends Type {
 
     @Override
     public String toPrint(String prefix) {
-        return prefix + "Void\n";
+        return prefix + "None\n";
     }
 
     @Override
     public String toString() {
-        return "Void";
+        return "None";
     }
 }
