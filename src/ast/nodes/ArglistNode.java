@@ -22,7 +22,8 @@ public class ArglistNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList();
 
         for (var arg : arguments) {
-            if (arg instanceof ExprNode argExpr) {
+            if (arg instanceof ExprNode) {
+                ExprNode argExpr = (ExprNode) arg;
                 String argName = argExpr.getId();
 
                 // TODO: check fucking IntType for params
