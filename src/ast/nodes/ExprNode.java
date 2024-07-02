@@ -126,8 +126,6 @@ public class ExprNode implements Node {
     public String toPrint(String prefix) {
         String str = prefix + "Expr\n";;
 
-        System.err.println("ExprNode: " + atom + " " + compOp + " " + exprs + " " + trailers + " " + op);
-
         prefix += "  ";
         if (atom != null) {
             str += atom.toPrint(prefix);
