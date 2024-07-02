@@ -52,7 +52,7 @@ public class ExprNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         // check if the atom is a function
         if (atom != null && !trailers.isEmpty()) {
@@ -124,25 +124,31 @@ public class ExprNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix + "Expr\n";
+        String str = prefix + "Expr\n";;
+
+        System.err.println("ExprNode: " + atom + " " + compOp + " " + exprs + " " + trailers + " " + op);
 
         prefix += "  ";
         if (atom != null) {
             str += atom.toPrint(prefix);
         }
-
+        
         if (compOp != null) {
             str += compOp.toPrint(prefix);
         }
-
-        for (var expr : exprs) {
-            str = expr.toPrint(prefix);
+        
+        if (exprs != null) {
+            for (var expr : exprs) {
+                str += expr.toPrint(prefix);
+            }
         }
-
-        for (var trailer : trailers) {
-            str = trailer.toPrint(prefix);
-        }
-
+        
+        if (trailers != null) {
+            for (var trailer : trailers) {
+                str += trailer.toPrint(prefix);
+            }
+        } 
+        
         if (op != null) {
             str += prefix + "Op(" + op + ")\n";
         }

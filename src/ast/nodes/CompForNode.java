@@ -23,7 +23,7 @@ public class CompForNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         errors.addAll(exprlist.checkSemantics(ST, _nesting));
         errors.addAll(single_expr.checkSemantics(ST, _nesting));

@@ -26,14 +26,14 @@ public class FuncdefNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
         int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
         Type returnType = this.block.typeCheck();
         FunctionType ft = new FunctionType(paramNumber, returnType);
 
         ST.insert(this.name.toString(), ft, _nesting, "");
 
-        HashMap<String, STentry> HM = new HashMap();
+        HashMap<String, STentry> HM = new HashMap<>();
 
         ST.add(HM);
 

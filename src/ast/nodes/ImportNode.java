@@ -27,7 +27,7 @@ public class ImportNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (isFrom) {
             for (int i = 0; i < names.size(); ++i) {

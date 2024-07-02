@@ -21,7 +21,7 @@ public class AugassignNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        return new ArrayList();
+        return new ArrayList<>();
     }
 
     // FIXME: use the right type

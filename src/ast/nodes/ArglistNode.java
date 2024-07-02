@@ -19,7 +19,7 @@ public class ArglistNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var arg : arguments) {
             if (arg instanceof ExprNode) {

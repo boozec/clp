@@ -20,10 +20,10 @@ public class RootNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Create a new HashMap for the current scope
-        HashMap<String, STentry> HM = new HashMap();
+        HashMap<String, STentry> HM = new HashMap<>();
 
         // Add the HashMap to the SymbolTable
         ST.add(HM);

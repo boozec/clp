@@ -20,7 +20,7 @@ public class WhileStmtNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         errors.addAll(expr.checkSemantics(ST, _nesting));
         errors.addAll(block.checkSemantics(ST, _nesting));

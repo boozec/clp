@@ -24,7 +24,7 @@ public class CompoundNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (ifNode != null) {
             errors.addAll(ifNode.checkSemantics(ST, _nesting));

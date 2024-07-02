@@ -34,7 +34,7 @@ public class ForStmtNode implements Node {
      */
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Save every atom in the expression's list, except the last one
         var l = (ExprListNode) exprList;
