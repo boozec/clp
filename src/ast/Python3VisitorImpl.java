@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import ast.nodes.*;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
+import reachingDefinition.*;
+
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
@@ -12,6 +14,12 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * Overrides each `visitNODE` method from the base class.
  */
 public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
+
+    private ControlFlowGraph cfg = new ControlFlowGraph(new CFGNode());
+
+    public ControlFlowGraph getCFG() {
+        return this.cfg;
+    }
 
     /**
      * Since a root can be a simple_stmts or a compound_stmt, this method
@@ -24,7 +32,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         for (int i = 0; i < ctx.getChildCount(); i++) {
             var child = ctx.getChild(i);
-
+            
             if (child instanceof Simple_stmtsContext) {
                 childs.add(visit((Simple_stmtsContext) child));
             } else if (child instanceof Compound_stmtContext) {

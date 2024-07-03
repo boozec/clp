@@ -1,5 +1,3 @@
-m = 10
+m = 1
 for i in range(10):
-    i += 1
-    print(i)
-    m = 11
+    m = m + i

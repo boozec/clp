@@ -1,17 +1,17 @@
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import javax.swing.*;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
 
 import ast.*;
 import ast.nodes.*;
-import parser.*;
 import parser.Python3Lexer;
 import parser.Python3Parser;
-import semanticanalysis.*;
 import reachingDefinition.*;
+import semanticanalysis.*;
 
 public class Main {
 
@@ -53,7 +53,10 @@ public class Main {
             }
             Python3VisitorImpl visitor = new Python3VisitorImpl();
             SymbolTable ST = new SymbolTable();
+
             Node ast = visitor.visit(tree);
+            ControlFlowGraph cfg = visitor.getCFG();
+
             ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
@@ -63,13 +66,7 @@ public class Main {
                 }
             } else {
                 System.out.println("Visualizing AST...");
-                //System.out.println(ast.toPrint(""));
-
-                // Ottimizzazione dell'AST
-                ReachingDefinitionAnalysis optimizer = new ReachingDefinitionAnalysis();
-                optimizer.optimize(ast);
-                System.out.println("Optimized AST:");
-                //System.out.println(ast.toPrint(""));
+                System.out.println(ast.toPrint(""));
             }
         } catch (Exception e) {
             e.printStackTrace();

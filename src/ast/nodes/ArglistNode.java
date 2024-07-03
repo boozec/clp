@@ -1,6 +1,7 @@
 package ast.nodes;
 
 import ast.types.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import semanticanalysis.SemanticError;
