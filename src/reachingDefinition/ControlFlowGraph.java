@@ -2,21 +2,19 @@ package reachingDefinition;
 
 import java.util.*;
 
-import org.antlr.v4.runtime.misc.Pair;
-
 public class ControlFlowGraph {
     private final List<CFGNode> nodes;
     private final CFGNode entryBlock;
-    private CFGNode exitBlock;
 
     public ControlFlowGraph(CFGNode entryBlock) {
-        this.nodes = new ArrayList<>();
         this.entryBlock = entryBlock;
-        this.exitBlock = null;
+        this.nodes = new ArrayList<>();
+
+        this.nodes.add(entryBlock);
     }
 
     // TODO: da testare
-    public void generateInAndOutSets() {
+    public void generateInOutSets() {
         boolean changed = true;
         while (changed) {
             changed = false;
@@ -44,7 +42,7 @@ public class ControlFlowGraph {
     }
 
     // TODO: da testare
-    public Pair<Map<CFGNode, Set<String>>, Map<CFGNode, Set<String>>> generateGenKillSets() {
+    public void generateGenKillSets() {
         Map<CFGNode, Set<String>> gen = new HashMap<>();
         Map<CFGNode, Set<String>> kill = new HashMap<>();
 
@@ -64,24 +62,19 @@ public class ControlFlowGraph {
             gen.put(node, genSet);
             kill.put(node, killSet);
         }
+    }
 
-        return new Pair<>(gen, kill);
+    public CFGNode getNodeById(int id) {
+        for (CFGNode node : this.nodes) {
+            if (node.getId() == id) {
+                return node;
+            }
+        }
+        return null;
     }
 
     public List<CFGNode> getNodes() {
         return this.nodes;
-    }
-
-    public CFGNode getEntryBlock() {
-        return this.entryBlock;
-    }
-
-    public CFGNode getExitBlock() {
-        return this.exitBlock;
-    }
-
-    public void setExitBlock(CFGNode exitBlock) {
-        this.exitBlock = exitBlock;
     }
 
     public void addNode(CFGNode node) {
@@ -95,9 +88,15 @@ public class ControlFlowGraph {
             this.nodes.remove(node);
         }
 
-        // TODO: remove from successors and predecessors
-        // TODO: remove da kill e gen di tutti i nodi
-        // TODO: remove da in e out di tutti i nodi
+        node.getPredecessors().forEach(pred -> pred.removeSuccessor(node));
+        node.getSuccessors().forEach(succ -> succ.removePredecessor(node));
+        // remove from gen, kill, in and out of all nodes
+        for (CFGNode n : this.nodes) {
+            n.getGen().removeAll(node.getGen());
+            n.getKill().removeAll(node.getKill());
+            n.getIn().removeAll(node.getIn());
+            n.getOut().removeAll(node.getOut());
+        }
     }
 
     public void addEdge(CFGNode from, CFGNode to) {
@@ -111,7 +110,19 @@ public class ControlFlowGraph {
             from.removeSuccessor(to);
         }
 
-        // TODO: capire cosa fare con i gen e kill
-        // TODO: capire cosa fare con in e out
+        if (to.getPredecessors().contains(from)) {
+            to.removePredecessor(from);
+        }
+    }
+
+    public String toPrint(String prefix) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix + "ControlFlowGraph\n");
+        sb.append(prefix + "Entry block: " + this.entryBlock.getId() + "\n");
+        sb.append(prefix + "Nodes:\n");
+        for (CFGNode node : this.nodes) {
+            sb.append(node.toPrint(prefix + "\t"));
+        }
+        return sb.toString();
     }
 }

@@ -68,6 +68,11 @@ public class Main {
                 System.out.println("Visualizing AST...");
                 System.out.println(ast.toPrint(""));
             }
+
+            cfg.generateInOutSets();
+            cfg.generateGenKillSets();
+            System.out.println("Visualizing CFG...");
+            System.out.println(cfg.toPrint(""));
         } catch (Exception e) {
             e.printStackTrace();
         }

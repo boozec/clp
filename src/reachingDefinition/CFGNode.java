@@ -17,8 +17,10 @@ public class CFGNode {
     private final Set<String> in;
     private final Set<String> out;
 
+    private final boolean isStmt;
 
-    public CFGNode() {
+
+    public CFGNode(boolean isStmt) {
         this.id = CFGNode.line++;
         this.gen = new HashSet<>();
         this.kill = new HashSet<>();
@@ -26,10 +28,19 @@ public class CFGNode {
         this.predecessors = new ArrayList<>();
         this.in = new HashSet<>();
         this.out = new HashSet<>();
+        this.isStmt = isStmt;
+    }
+
+    public boolean isStmt() {
+        return this.isStmt;
     }
 
     public int getId() {
         return this.id;
+    }
+
+    public int setId(int id) {
+        return this.id = id;
     }
 
     public Set<String> getGen() {
@@ -138,8 +149,35 @@ public class CFGNode {
         }
     }
 
-    @Override
-    public String toString() {
-        return "CFGNode [id=" + id + ", gen=" + gen + ", kill=" + kill + ", in=" + in + ", out=" + out + "]";
+    public String toPrint(String prefix) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix + "Node " + this.id + "\n");
+        sb.append(prefix + "\tGen: [ ");
+        for (String var : this.gen) {
+            sb.append(var + " ");
+        }
+        sb.append("]\n" + prefix + "\tKill: [ ");
+        for (String var : this.kill) {
+            sb.append(var + " ");
+        }
+        sb.append("]\n" + prefix + "\tSuccessors: [ ");
+        for (CFGNode node : this.successors) {
+            sb.append(node.getId() + " ");
+        }
+        sb.append("]\n" + prefix + "\tPredecessors: [ ");
+        for (CFGNode node : this.predecessors) {
+            sb.append(node.getId() + " ");
+        }
+        sb.append("]\n" + prefix + "\tIn: [ ");
+        for (String var : this.in) {
+            sb.append(var + " ");
+        }
+        sb.append("]\n" + prefix + "\tOut: [ ");
+        for (String var : this.out) {
+            sb.append(var + " ");
+        }
+        sb.append("]\n");
+
+        return sb.toString();
     }
 }

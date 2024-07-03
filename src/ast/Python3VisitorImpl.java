@@ -15,7 +15,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  */
 public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
-    private ControlFlowGraph cfg = new ControlFlowGraph(new CFGNode());
+    private ControlFlowGraph cfg = new ControlFlowGraph(new CFGNode(true));
 
     public ControlFlowGraph getCFG() {
         return this.cfg;
@@ -130,6 +130,20 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node lhr = visit(ctx.exprlist(0));
         Node assign = visit(ctx.augassign());
         Node rhr = visit(ctx.exprlist(1));
+
+        CFGNode assignNode = new CFGNode(false);
+
+        for (int i = cfg.getNodes().size(); i > 0; i--) {
+            if (cfg.getNodeById(i).isStmt()) {
+                cfg.getNodeById(i).addSuccessor(assignNode);
+                assignNode.addPredecessor(cfg.getNodeById(i));
+                break;
+            }
+        }
+        
+        assignNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
+        cfg.getNodeById(cfg.getNodes().size()).addSuccessor(assignNode);
+        cfg.addNode(assignNode);
 
         return new AssignmentNode(lhr, assign, rhr);
     }
@@ -300,6 +314,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitWhile_stmt(While_stmtContext ctx) {
         Node expr = visit(ctx.expr());
 
+        CFGNode whileNode = new CFGNode(true);
+        whileNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
+        cfg.getNodeById(cfg.getNodes().size()).addSuccessor(whileNode);
+        cfg.addNode(whileNode);
+
         // Block 1 is for the while-else statement
         Node block = visit(ctx.block(0));
 
@@ -313,6 +332,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      */
     public Node visitFor_stmt(For_stmtContext ctx) {
         Node exprList = visit(ctx.exprlist());
+
+        CFGNode forNode = new CFGNode(true);
+        forNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
+        cfg.getNodeById(cfg.getNodes().size()).addSuccessor(forNode);
+        cfg.addNode(forNode);
 
         // Block 1 is for the for-else statement
         Node block = visit(ctx.block(0));

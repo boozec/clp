@@ -20,7 +20,11 @@ public class FuncdefNode implements Node {
 
     public FuncdefNode(TerminalNode name, Node paramlist, Node block) {
         this.name = name;
-        this.paramlist = paramlist;
+        if (paramlist != null) {
+            this.paramlist = paramlist;
+        } else {
+            this.paramlist = new ParamlistNode(new ArrayList<Node>());
+        }
         this.block = block;
     }
 
