@@ -6,6 +6,7 @@ import ast.nodes.*;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
 import reachingDefinition.*;
+import reachingDefinition.CFGNode.*;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -15,7 +16,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  */
 public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
-    private ControlFlowGraph cfg = new ControlFlowGraph(new CFGNode(true));
+    private ControlFlowGraph cfg = null;
 
     public ControlFlowGraph getCFG() {
         return this.cfg;
@@ -28,7 +29,9 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` root : NEWLINE* (simple_stmts | compound_stmt)* EOF; ```
      */
     public Node visitRoot(RootContext ctx) {
-        ArrayList<Node> childs = new ArrayList<Node>();
+        ArrayList<Node> childs = new ArrayList<>();
+
+        cfg = new ControlFlowGraph(new CFGNode(ctx.getStart().getLine(), true));
 
         for (int i = 0; i < ctx.getChildCount(); i++) {
             var child = ctx.getChild(i);
@@ -49,7 +52,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` simple_stmts : simple_stmt (';' simple_stmt)* ';'? NEWLINE ; ```
      */
     public Node visitSimple_stmts(Simple_stmtsContext ctx) {
-        ArrayList<Node> stmts = new ArrayList<Node>();
+        ArrayList<Node> stmts = new ArrayList<>();
 
         for (Simple_stmtContext stm : ctx.simple_stmt()) {
             stmts.add(visit(stm));
@@ -131,18 +134,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node assign = visit(ctx.augassign());
         Node rhr = visit(ctx.exprlist(1));
 
-        CFGNode assignNode = new CFGNode(false);
+        CFGNode assignNode = new CFGNode(ctx.getStart().getLine(), false);
 
+        /*
         for (int i = cfg.getNodes().size(); i > 0; i--) {
             if (cfg.getNodeById(i).isStmt()) {
                 cfg.getNodeById(i).addSuccessor(assignNode);
                 assignNode.addPredecessor(cfg.getNodeById(i));
                 break;
             }
-        }
+        }*/
         
-        assignNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
-        cfg.getNodeById(cfg.getNodes().size()).addSuccessor(assignNode);
+        assignNode.addPredecessor(cfg.getNodeByLine(cfg.getNodes().size()));
+        cfg.getNodeByLine(cfg.getNodes().size()).addSuccessor(assignNode);
         cfg.addNode(assignNode);
 
         return new AssignmentNode(lhr, assign, rhr);
@@ -176,7 +180,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         Node dottedName = visit(ctx.dotted_name());
 
-        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<>();
 
         for (var s : ctx.NAME()) {
             names.add(s.toString());
@@ -191,7 +195,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` dotted_name : NAME ('.' NAME)* ; ```
      */
     public Node visitDotted_name(Dotted_nameContext ctx) {
-        ArrayList<TerminalNode> names = new ArrayList<TerminalNode>();
+        ArrayList<TerminalNode> names = new ArrayList<>();
 
         for (var name : ctx.NAME()) {
             names.add(name);
@@ -206,6 +210,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` funcdef : 'def' NAME '(' paramlist? ')' ':' block ; ```
      */
     public Node visitFuncdef(FuncdefContext ctx) {
+        CFGNode funcNode = new CFGNode(ctx.getStart().getLine(), true);
+        funcNode.addPredecessor(cfg.getNodeByLine(cfg.getNodes().size()));
+        cfg.getNodeByLine(cfg.getNodes().size()).addSuccessor(funcNode);
+        cfg.addNode(funcNode);
+
         Node paramlist = null;
 
         if (ctx.paramlist() != null) {
@@ -226,7 +235,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ```
      */
     public Node visitParamlist(ParamlistContext ctx) {
-        ArrayList<Node> params = new ArrayList<Node>();
+        ArrayList<Node> params = new ArrayList<>();
 
         for (ParamdefContext s : ctx.paramdef()) {
             params.add(visit(s));

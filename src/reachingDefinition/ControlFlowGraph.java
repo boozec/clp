@@ -64,9 +64,9 @@ public class ControlFlowGraph {
         }
     }
 
-    public CFGNode getNodeById(int id) {
+    public CFGNode getNodeByLine(int line) {
         for (CFGNode node : this.nodes) {
-            if (node.getId() == id) {
+            if (node.getLine() == line) {
                 return node;
             }
         }
@@ -118,7 +118,7 @@ public class ControlFlowGraph {
     public String toPrint(String prefix) {
         StringBuilder sb = new StringBuilder();
         sb.append(prefix + "ControlFlowGraph\n");
-        sb.append(prefix + "Entry block: " + this.entryBlock.getId() + "\n");
+        sb.append(prefix + "Entry block: " + this.entryBlock.getLine() + "\n");
         sb.append(prefix + "Nodes:\n");
         for (CFGNode node : this.nodes) {
             sb.append(node.toPrint(prefix + "\t"));

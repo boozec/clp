@@ -1,10 +1,12 @@
 package reachingDefinition;
 import java.util.*;
 
-public class CFGNode {
-    private static int line = 1;
+/**
+ * Class representing a node in the Control Flow Graph.
+ */
 
-    private int id;
+public class CFGNode {
+    private int line;
 
     // Set of definitions generated from this node
     private final Set<String> gen;
@@ -20,8 +22,8 @@ public class CFGNode {
     private final boolean isStmt;
 
 
-    public CFGNode(boolean isStmt) {
-        this.id = CFGNode.line++;
+    public CFGNode(int line, boolean isStmt) {
+        this.line = line; 
         this.gen = new HashSet<>();
         this.kill = new HashSet<>();
         this.successors = new ArrayList<>();
@@ -35,12 +37,12 @@ public class CFGNode {
         return this.isStmt;
     }
 
-    public int getId() {
-        return this.id;
+    public int getLine() {
+        return this.line;
     }
 
-    public int setId(int id) {
-        return this.id = id;
+    public int setLine(int line) {
+        return this.line = line;
     }
 
     public Set<String> getGen() {
@@ -151,7 +153,7 @@ public class CFGNode {
 
     public String toPrint(String prefix) {
         StringBuilder sb = new StringBuilder();
-        sb.append(prefix + "Node " + this.id + "\n");
+        sb.append(prefix + "Node " + this.line + "\n");
         sb.append(prefix + "\tGen: [ ");
         for (String var : this.gen) {
             sb.append(var + " ");
@@ -162,11 +164,11 @@ public class CFGNode {
         }
         sb.append("]\n" + prefix + "\tSuccessors: [ ");
         for (CFGNode node : this.successors) {
-            sb.append(node.getId() + " ");
+            sb.append(node.getLine() + " ");
         }
         sb.append("]\n" + prefix + "\tPredecessors: [ ");
         for (CFGNode node : this.predecessors) {
-            sb.append(node.getId() + " ");
+            sb.append(node.getLine() + " ");
         }
         sb.append("]\n" + prefix + "\tIn: [ ");
         for (String var : this.in) {
