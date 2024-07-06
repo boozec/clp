@@ -22,7 +22,7 @@ public class AssignmentNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         // errors.addAll(lhr.checkSemantics(ST, _nesting));
         errors.addAll(assign.checkSemantics(ST, _nesting));

@@ -29,7 +29,7 @@ public class TrailerNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (arglist != null) {
             errors.addAll(arglist.checkSemantics(ST, _nesting));

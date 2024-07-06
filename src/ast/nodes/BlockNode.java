@@ -16,7 +16,7 @@ public class BlockNode extends RootNode {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Check semantics for each child
         for (Node child : childs) {

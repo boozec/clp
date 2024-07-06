@@ -18,7 +18,7 @@ public class ParamlistNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var param : params) {
             errors.addAll(param.checkSemantics(ST, _nesting));

@@ -15,8 +15,8 @@ public class SymbolTable {
     private final ArrayList<Integer> offset;
 
     public SymbolTable() {
-        this.symbolTable = new ArrayList();
-        this.offset = new ArrayList();
+        this.symbolTable = new ArrayList<>();
+        this.offset = new ArrayList<>();
     }
 
     /**

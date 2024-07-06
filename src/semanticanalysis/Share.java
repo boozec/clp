@@ -10,7 +10,7 @@ public class Share {
      * generic because it's used a custom contains function.
      */
     public static ArrayList<SemanticError> removeDuplicates(ArrayList<SemanticError> list) {
-        ArrayList<SemanticError> newList = new ArrayList();
+        ArrayList<SemanticError> newList = new ArrayList<>();
 
         for (SemanticError element : list) {
             if (!customContains(newList, element)) {

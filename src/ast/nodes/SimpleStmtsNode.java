@@ -18,7 +18,7 @@ public class SimpleStmtsNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (Node stmt : stmts) {
             errors.addAll(stmt.checkSemantics(ST, _nesting));

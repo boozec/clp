@@ -20,7 +20,7 @@ public class DottedNameNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (int i = 0; i < names.size(); ++i) {
             ST.insert(names.get(i).toString(), this.typeCheck(), _nesting, null);

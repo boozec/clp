@@ -22,7 +22,7 @@ public class IfNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         errors.addAll(guard.checkSemantics(ST, _nesting));
         errors.addAll(thenbranch.checkSemantics(ST, _nesting));

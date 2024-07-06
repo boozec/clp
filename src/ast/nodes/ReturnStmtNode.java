@@ -18,7 +18,7 @@ public class ReturnStmtNode implements Node {
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
-        ArrayList<SemanticError> errors = new ArrayList();
+        ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (this.exprList != null) {
             errors.addAll(this.exprList.checkSemantics(ST, _nesting));
