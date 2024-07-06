@@ -81,4 +81,19 @@ public class CompoundNode implements Node {
         return str;
     }
 
+    public Node getForStmt() {
+        return forStmt;
+    }
+
+    public Node getFuncDef() {
+        return funcDef;
+    }
+
+    public Node getIfNode() {
+        return ifNode;
+    }
+
+    public Node getWhileStmt() {
+        return whileStmt;
+    }
 }

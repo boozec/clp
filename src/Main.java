@@ -8,8 +8,10 @@ import org.antlr.v4.runtime.*;
 import ast.*;
 import ast.nodes.*;
 import parser.*;
+import parser.Python3Lexer;
+import parser.Python3Parser;
 import semanticanalysis.*;
-import semanticanalysis.Share;
+import reachingDefinition.*;
 
 public class Main {
 
@@ -61,7 +63,13 @@ public class Main {
                 }
             } else {
                 System.out.println("Visualizing AST...");
-                System.out.println(ast.toPrint(""));
+                //System.out.println(ast.toPrint(""));
+
+                // Ottimizzazione dell'AST
+                ReachingDefinitionAnalysis optimizer = new ReachingDefinitionAnalysis();
+                optimizer.optimize(ast);
+                System.out.println("Optimized AST:");
+                //System.out.println(ast.toPrint(""));
             }
         } catch (Exception e) {
             e.printStackTrace();

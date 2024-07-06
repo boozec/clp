@@ -63,4 +63,11 @@ public class RootNode implements Node {
         return str;
     }
 
+    public ArrayList<Node> getChilds() {
+        return childs;
+    }
+
+    public Node getChild(int i) {
+        return childs.get(i);
+    }
 }

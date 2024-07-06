@@ -81,4 +81,20 @@ public class SimpleStmtNode implements Node {
         return str;
     }
 
+    public Node getImportStmt() {
+        return importStmt;
+    }
+
+    public Node getReturnStmt() {
+        return returnStmt;
+    }
+    
+    public Node getAssignment() {
+        return assignment;
+    }
+
+    public Node getExpr() {
+        return expr;
+    }
+
 }

@@ -43,4 +43,14 @@ public class WhileStmtNode implements Node {
     public String toPrint(String prefix) {
         return prefix + "While\n" + expr.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
     }
+
+    public Node getBlock() {
+        return block;
+    }
+
+    public Node getExpr() {
+        return expr;
+    }
+
+    
 }

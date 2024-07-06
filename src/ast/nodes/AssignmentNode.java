@@ -64,4 +64,11 @@ public class AssignmentNode implements Node {
                 + rhr.toPrint(prefix + "  ");
     }
 
+    public ExprListNode getLhr() {
+        return lhr;
+    }
+
+    public ExprListNode getRhr() {
+        return rhr;
+    }
 }

@@ -38,6 +38,10 @@ public class ExprNode implements Node {
         return this.exprs.get(i);
     }
 
+    public void setExpr(int i, Node expr) {
+        this.exprs.set(i, expr);
+    }
+
     /**
      * Returns the identifier of the `AtomNode` if it's not `null`, otherwise
      * returns `null`.
@@ -48,6 +52,26 @@ public class ExprNode implements Node {
         } else {
             return null;
         }
+    }
+
+    public Node getCompOp() {
+        return compOp;
+    }
+
+    public String getOp() {
+        return op;
+    }
+
+    public ArrayList<Node> getTrailers() {
+        return trailers;
+    }
+
+    public ArrayList<Node> getExprs() {
+        return exprs;
+    }
+
+    public AtomNode getAtom() {
+        return atom;
     }
 
     @Override
@@ -151,6 +175,21 @@ public class ExprNode implements Node {
         }
 
         return str;
+    }
+
+    @Override
+    public String toString() {
+        if (atom != null) {
+            return atom.toString();
+        } else if (compOp != null) {
+            return compOp.toString();
+        } else if (exprs != null) {
+            return exprs.toString();
+        } else if (trailers != null) {
+            return trailers.toString();
+        } else {
+            return "";
+        }
     }
 
 }

@@ -51,4 +51,8 @@ public class SimpleStmtsNode implements Node {
         return str;
     }
 
+    public ArrayList<Node> getStmts() {
+        return stmts;
+    }
+
 }

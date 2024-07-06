@@ -28,6 +28,10 @@ public class AtomNode implements Node {
         return this.val;
     }
 
+    public void setId(String id) {
+        this.val = id;
+    }
+
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
@@ -35,8 +39,6 @@ public class AtomNode implements Node {
         if (val != null) {
             if ((this.typeCheck() instanceof AtomType) && ST.nslookup(this.getId()) < 0) {
                 errors.add(new SemanticError("name '" + this.getId() + "' is not defined."));
-            } else {
-                // System.out.println("exist " + this.typeCheck());
             }
         }
 
@@ -99,5 +101,10 @@ public class AtomNode implements Node {
 
         return prefix + "Atom(null)\n";
 
+    }
+
+    @Override
+    public String toString() {
+        return "AtomNode(" + val + ")";
     }
 }

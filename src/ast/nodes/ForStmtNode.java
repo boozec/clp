@@ -74,4 +74,11 @@ public class ForStmtNode implements Node {
         return prefix + "For\n" + exprList.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
     }
 
+    public Node getBlock() {
+        return block;
+    }
+
+    public Node getExprList() {
+        return exprList;
+    }
 }
