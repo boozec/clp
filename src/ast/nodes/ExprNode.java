@@ -124,7 +124,7 @@ public class ExprNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix + "Expr\n";;
+        String str = prefix + "Expr\n";
 
         prefix += "  ";
         if (atom != null) {
