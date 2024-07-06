@@ -57,10 +57,33 @@ public class CompoundNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "CompoundNode\n";
 
         prefix += "  ";
+
+        if (ifNode != null) {
+            str += ifNode.printAST(prefix);
+        }
+
+        if (funcDef != null) {
+            str += funcDef.printAST(prefix);
+        }
+
+        if (forStmt != null) {
+            str += forStmt.printAST(prefix);
+        }
+
+        if (whileStmt != null) {
+            str += whileStmt.printAST(prefix);
+        }
+
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
 
         if (ifNode != null) {
             str += ifNode.toPrint(prefix);
@@ -79,6 +102,7 @@ public class CompoundNode implements Node {
         }
 
         return str;
+        
     }
 
     public Node getForStmt() {

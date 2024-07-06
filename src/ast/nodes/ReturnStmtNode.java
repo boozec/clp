@@ -43,15 +43,24 @@ public class ReturnStmtNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "ReturnStmt\n";
 
         prefix += "  ";
         if (this.exprList != null) {
-            str += this.exprList.toPrint(prefix);
+            str += this.exprList.printAST(prefix);
         }
 
         return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "return ";
+        if (this.exprList != null) {
+            str += this.exprList.toPrint("");
+        }
+        return str + "\n";
     }
 
 }

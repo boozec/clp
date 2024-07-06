@@ -58,13 +58,25 @@ public class IfNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
-        String str = prefix + "If\n" + guard.toPrint(prefix + "  ") + thenbranch.toPrint(prefix + "  ");
+    public String printAST(String prefix) {
+        String str = prefix + "If\n" + guard.printAST(prefix + "  ") + thenbranch.printAST(prefix + "  ");
 
         if (elsebranch != null) {
-            str += elsebranch.toPrint(prefix + "  ");
+            str += elsebranch.printAST(prefix + "  ");
         }
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "if ";
+        str += guard.toPrint("") + ":\n";
+        str += thenbranch.toPrint(prefix + "\t") + "\n";
+        if (elsebranch != null) {
+            str += prefix + "else:\n";
+            str += elsebranch.toPrint(prefix + "\t") + "\n";
+        }
         return str;
     }
 

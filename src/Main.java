@@ -66,7 +66,7 @@ public class Main {
                 }
             } else {
                 System.out.println("Visualizing AST...");
-                System.out.println(ast.toPrint(""));
+                System.out.println(ast.printAST(""));
             }
 
             cfg.generateInOutSets();

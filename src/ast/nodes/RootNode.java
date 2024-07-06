@@ -51,15 +51,24 @@ public class RootNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = "Root\n";
 
         prefix += "  ";
 
         for (Node child : childs) {
-            str += child.toPrint(prefix);
+            str += child.printAST(prefix);
         }
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
+        for (Node child : childs) {
+            str += child.toPrint("");
+        }
         return str;
     }
 

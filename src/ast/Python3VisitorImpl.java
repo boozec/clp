@@ -6,7 +6,6 @@ import ast.nodes.*;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
 import reachingDefinition.*;
-import reachingDefinition.CFGNode.*;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -31,7 +30,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitRoot(RootContext ctx) {
         ArrayList<Node> childs = new ArrayList<>();
 
-        cfg = new ControlFlowGraph(new CFGNode(ctx.getStart().getLine(), true));
+        //cfg = new ControlFlowGraph(new CFGNode(ctx.getStart().getLine(), true));
 
         for (int i = 0; i < ctx.getChildCount(); i++) {
             var child = ctx.getChild(i);
@@ -134,7 +133,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node assign = visit(ctx.augassign());
         Node rhr = visit(ctx.exprlist(1));
 
-        CFGNode assignNode = new CFGNode(ctx.getStart().getLine(), false);
+        //CFGNode assignNode = new CFGNode(ctx.getStart().getLine(), false);
 
         /*
         for (int i = cfg.getNodes().size(); i > 0; i--) {
@@ -143,11 +142,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                 assignNode.addPredecessor(cfg.getNodeById(i));
                 break;
             }
-        }*/
+        }
         
         assignNode.addPredecessor(cfg.getNodeByLine(cfg.getNodes().size()));
         cfg.getNodeByLine(cfg.getNodes().size()).addSuccessor(assignNode);
-        cfg.addNode(assignNode);
+        cfg.addNode(assignNode);*/
 
         return new AssignmentNode(lhr, assign, rhr);
     }
@@ -210,10 +209,10 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` funcdef : 'def' NAME '(' paramlist? ')' ':' block ; ```
      */
     public Node visitFuncdef(FuncdefContext ctx) {
-        CFGNode funcNode = new CFGNode(ctx.getStart().getLine(), true);
+        /*CFGNode funcNode = new CFGNode(ctx.getStart().getLine(), true);
         funcNode.addPredecessor(cfg.getNodeByLine(cfg.getNodes().size()));
         cfg.getNodeByLine(cfg.getNodes().size()).addSuccessor(funcNode);
-        cfg.addNode(funcNode);
+        cfg.addNode(funcNode);*/
 
         Node paramlist = null;
 
@@ -323,10 +322,12 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitWhile_stmt(While_stmtContext ctx) {
         Node expr = visit(ctx.expr());
 
+        /*
         CFGNode whileNode = new CFGNode(true);
         whileNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
         cfg.getNodeById(cfg.getNodes().size()).addSuccessor(whileNode);
         cfg.addNode(whileNode);
+        */
 
         // Block 1 is for the while-else statement
         Node block = visit(ctx.block(0));
@@ -342,10 +343,12 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitFor_stmt(For_stmtContext ctx) {
         Node exprList = visit(ctx.exprlist());
 
+        /*
         CFGNode forNode = new CFGNode(true);
         forNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
         cfg.getNodeById(cfg.getNodes().size()).addSuccessor(forNode);
         cfg.addNode(forNode);
+        */
 
         // Block 1 is for the for-else statement
         Node block = visit(ctx.block(0));
@@ -385,24 +388,24 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitComp_op(Comp_opContext ctx) {
         Node comp = null;
         if (ctx.LESS_THAN() != null) {
-            comp = new CompNode(ctx.LESS_THAN());
+            comp = new CompOpNode(ctx.LESS_THAN());
         } else if (ctx.GREATER_THAN() != null) {
-            comp = new CompNode(ctx.GREATER_THAN());
+            comp = new CompOpNode(ctx.GREATER_THAN());
         } else if (ctx.EQUALS() != null) {
-            comp = new CompNode(ctx.EQUALS());
+            comp = new CompOpNode(ctx.EQUALS());
         } else if (ctx.GT_EQ() != null) {
-            comp = new CompNode(ctx.GT_EQ());
+            comp = new CompOpNode(ctx.GT_EQ());
         } else if (ctx.LT_EQ() != null) {
-            comp = new CompNode(ctx.LT_EQ());
+            comp = new CompOpNode(ctx.LT_EQ());
         } else if (ctx.NOT_EQ_2() != null) {
             // We're ignoring NOT_EQ_1() because no one uses `<>`
-            comp = new CompNode(ctx.NOT_EQ_2());
+            comp = new CompOpNode(ctx.NOT_EQ_2());
         } else if (ctx.IN() != null) {
-            comp = new CompNode(ctx.IN());
+            comp = new CompOpNode(ctx.IN());
         } else if (ctx.NOT() != null) {
-            comp = new CompNode(ctx.NOT());
+            comp = new CompOpNode(ctx.NOT());
         } else if (ctx.IS() != null) {
-            comp = new CompNode(ctx.IS());
+            comp = new CompOpNode(ctx.IS());
         }
 
         return comp;
@@ -425,40 +428,37 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         ArrayList<Node> trailers = new ArrayList<Node>();
         String op = null;
 
-        if (ctx.ADD(0) != null) {
-            op = ctx.ADD(0).toString();
-        }
-
-        if (ctx.MINUS(0) != null) {
-            op = ctx.MINUS(0).toString();
-        }
-
-        if (ctx.NOT() != null) {
-            op = ctx.NOT().toString();
-        }
-
-        if (ctx.STAR() != null) {
-            op = ctx.STAR().toString();
-        }
-
-        if (ctx.DIV() != null) {
-            op = ctx.DIV().toString();
-        }
-
         if (ctx.atom() != null) {
             atom = visit(ctx.atom());
-        }
 
-        if (ctx.comp_op() != null) {
-            compOp = visit(ctx.comp_op());
-        }
+            for (TrailerContext s : ctx.trailer()) {
+                trailers.add(visit(s));
+            }
+        } else {
+            if (ctx.ADD(0) != null) {
+                op = ctx.ADD(0).toString();
+            
+            } else if (ctx.MINUS(0) != null) {
+                op = ctx.MINUS(0).toString();
+            
+            } else if (ctx.NOT() != null) {
+                op = ctx.NOT().toString();
+            
+            } else if (ctx.STAR() != null) {
+                op = ctx.STAR().toString();
+            
+            } else if (ctx.DIV() != null) {
+                op = ctx.DIV().toString();
+            
+            }
 
-        for (ExprContext s : ctx.expr()) {
-            exprs.add(visit(s));
-        }
+            if (ctx.comp_op() != null) {
+                compOp = visit(ctx.comp_op());
+            }
 
-        for (TrailerContext s : ctx.trailer()) {
-            trailers.add(visit(s));
+            for (ExprContext s : ctx.expr()) {
+                exprs.add(visit(s));
+            }
         }
 
         return new ExprNode(atom, compOp, exprs, op, trailers);
@@ -490,11 +490,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             }
             return new AtomNode(varName, null);
         } else if (ctx.OPEN_BRACE() != null && ctx.CLOSE_BRACE() != null) {
-            return manageCompListContext(tlc);
+            return manageCompListContext(tlc, "{", "}");
         } else if (ctx.OPEN_BRACK() != null && ctx.CLOSE_BRACK() != null) {
-            return manageCompListContext(tlc);
+            return manageCompListContext(tlc, "[", "]");
         } else if (ctx.OPEN_PAREN() != null && ctx.CLOSE_PAREN() != null) {
-            return manageCompListContext(tlc);
+            return manageCompListContext(tlc, "(", ")");
         }
         return new AtomNode(null, null);
     }
@@ -504,12 +504,12 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * `testlist_comp` set if the context is not null. Otherwise, returns an
      * `AtomNode` with nulls.
      */
-    public AtomNode manageCompListContext(Testlist_compContext tlc) {
+    public AtomNode manageCompListContext(Testlist_compContext tlc, String prefix, String suffix) {
         if (tlc != null) {
             Node testlist_comp = visit(tlc);
-            return new AtomNode(null, testlist_comp);
+            return new AtomNode(null, testlist_comp, prefix, suffix);
         }
-        return new AtomNode(null, null);
+        return new AtomNode(null, null, prefix, suffix);
     }
 
     /**
@@ -520,6 +520,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      */
     public Node visitTrailer(TrailerContext ctx) {
         Node arglist = null;
+        String prefix = "";
+        String suffix = "";
+
+        if (ctx.OPEN_BRACK() != null) {
+            prefix = "[";
+            suffix = "]";
+        } else if (ctx.OPEN_PAREN() != null) {
+            prefix = "(";
+            suffix = ")";
+        } else if (ctx.DOT() != null) {
+            prefix = ".";
+        }
+            
         if (ctx.arglist() != null) {
             arglist = visit(ctx.arglist());
         }
@@ -535,7 +548,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             methodCall = ctx.NAME();
         }
 
-        return new TrailerNode(arglist, exprs, methodCall, ctx.OPEN_PAREN() != null);
+        return new TrailerNode(arglist, exprs, methodCall, prefix, suffix);
     }
 
     /**

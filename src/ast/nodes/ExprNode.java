@@ -147,49 +147,58 @@ public class ExprNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Expr\n";
 
         prefix += "  ";
         if (atom != null) {
             str += atom.toPrint(prefix);
-        }
-        if (compOp != null) {
-            str += compOp.toPrint(prefix);
-        }
-        
-        if (exprs != null) {
-            for (var expr : exprs) {
-                str += expr.toPrint(prefix);
-            }
-        }
-        
-        if (trailers != null) {
+            
             for (var trailer : trailers) {
                 str += trailer.toPrint(prefix);
             }
-        } 
-        
-        if (op != null) {
-            str += prefix + "Op(" + op + ")\n";
+        } else {
+            if (compOp != null) {
+                str += compOp.toPrint(prefix);
+            }
+            
+            if (exprs != null) {
+                for (var expr : exprs) {
+                    str += expr.toPrint(prefix);
+                }
+            }
+            
+            if (op != null) {
+                str += prefix + "Op(" + op + ")\n";
+            }
         }
 
         return str;
     }
 
     @Override
-    public String toString() {
+    public String toPrint(String prefix) {
+        String str = prefix;
+
         if (atom != null) {
-            return atom.toString();
-        } else if (compOp != null) {
-            return compOp.toString();
-        } else if (exprs != null) {
-            return exprs.toString();
-        } else if (trailers != null) {
-            return trailers.toString();
+            str += atom.toPrint(prefix);
+            for (var trailer : trailers) {
+                str += trailer.toPrint(prefix);
+            }
         } else {
-            return "";
+            if (op == "+" || op == "-" || op == "~") {
+                str += prefix + op + exprs.get(0).toPrint("");
+            } else {
+                str += prefix + exprs.get(0).toPrint("") + " ";
+                if (compOp != null) {
+                    str += compOp.toPrint("") + " " + exprs.get(1).toPrint("");
+                } else {
+                    str += op + " " + exprs.get(1).toPrint("");
+                }
+            }
         }
+
+        return str;
     }
 
 }

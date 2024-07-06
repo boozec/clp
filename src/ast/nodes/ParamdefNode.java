@@ -36,7 +36,12 @@ public class ParamdefNode extends AtomNode {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         return prefix + "Paramdef(" + val + ")\n";
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + val;
     }
 }

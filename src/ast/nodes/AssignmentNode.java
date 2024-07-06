@@ -59,9 +59,16 @@ public class AssignmentNode implements Node {
     }
 
     @Override
+    public String printAST(String prefix) {
+        return prefix + "Assignment\n" + lhr.printAST(prefix + "  ") + assign.printAST(prefix + "  ")
+                + rhr.printAST(prefix + "  ");
+    }
+
+    @Override
     public String toPrint(String prefix) {
-        return prefix + "Assignment\n" + lhr.toPrint(prefix + "  ") + assign.toPrint(prefix + "  ")
-                + rhr.toPrint(prefix + "  ");
+        String str = prefix;
+        str += lhr.toPrint(prefix) + " " + assign.toPrint("") + " " + rhr.toPrint("");
+        return str;
     }
 
     public ExprListNode getLhr() {

@@ -56,14 +56,14 @@ public class ImportNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Import\n";
 
         prefix += "  ";
         if (isFrom) {
-            str += prefix + "  From\n" + dottedName.toPrint(prefix + "  ");
+            str += prefix + "  From\n" + dottedName.printAST(prefix + "  ");
         } else {
-            str += dottedName.toPrint(prefix);
+            str += dottedName.printAST(prefix);
         }
 
         if (importAs) {
@@ -83,6 +83,29 @@ public class ImportNode implements Node {
         }
 
         str += "\n";
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix;
+
+        if (isFrom) {
+            str += "from " + dottedName.toPrint("") + " import ";
+            if (importAll) {
+                str += "*";
+            } else {
+                str += names.get(0);
+                for (int i = 1; i < names.size(); ++i) {
+                    str += ", " + names.get(i);
+                }
+            }
+        } else {
+            str += "import " + dottedName.toPrint("");
+            if (importAs) {
+                str += " as " + names.get(0);
+            }
+        }
         return str;
     }
 

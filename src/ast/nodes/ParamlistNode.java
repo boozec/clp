@@ -12,15 +12,15 @@ public class ParamlistNode implements Node {
 
     private final ArrayList<Node> params;
 
-    public ParamlistNode(ArrayList<Node> _params) {
-        params = _params;
+    public ParamlistNode(ArrayList<Node> params) {
+        this.params = params;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        for (var param : params) {
+        for (Node param : params) {
             errors.addAll(param.checkSemantics(ST, _nesting));
         }
 
@@ -43,14 +43,28 @@ public class ParamlistNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Paramlist\n";
 
         prefix += "  ";
-        for (var param : params) {
-            str += param.toPrint(prefix);
+        for (Node param : params) {
+            str += param.printAST(prefix);
         }
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
+
+        for (int i = 0; i < params.size(); i++) {
+            str += params.get(i).toPrint(prefix);
+            if (i != params.size() - 1) {
+                str += ", ";
+            }
+        }
+        
         return str;
     }
 

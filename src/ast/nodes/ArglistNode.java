@@ -65,13 +65,28 @@ public class ArglistNode implements Node {
         return "";
     }
 
+
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "ArglistNode\n";
 
         prefix += "  ";
         for (Node arg : arguments) {
-            str += arg.toPrint(prefix);
+            str += arg.printAST(prefix);
+        }
+
+        return str;
+    }
+    
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix;
+        str += arguments.get(0).toPrint("");
+        
+        if (arguments.size() > 1) {
+            for (int i = 1; i < arguments.size(); i++) {
+                str += ", " + arguments.get(i).toPrint("");
+            }
         }
 
         return str;

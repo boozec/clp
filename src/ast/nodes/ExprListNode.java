@@ -59,12 +59,25 @@ public class ExprListNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "ExprList\n";
 
         prefix += "  ";
         for (var param : exprs) {
-            str += param.toPrint(prefix);
+            str += param.printAST(prefix);
+        }
+
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+
+        // TODO: Diamo per assodato che rimuova le , alla fine
+        String str = exprs.get(0).toPrint(prefix);
+
+        for (int i = 1; i < exprs.size(); ++i) {
+            str += ", " + exprs.get(i).toPrint(prefix);
         }
 
         return str;

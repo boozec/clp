@@ -68,12 +68,29 @@ public class TestlistCompNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Testlist_comp\n";
 
         prefix += "  ";
         for (var param : exprs) {
-            str += param.toPrint(prefix);
+            str += param.printAST(prefix);
+        }
+
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix;
+
+        str += exprs.get(0).toPrint("");
+
+        if (comp != null) {
+            str += comp.toPrint("");
+        } else {
+            for (int i = 1; i < exprs.size(); i++) {
+                str += ", " + exprs.get(i).toPrint("");
+            }
         }
 
         return str;

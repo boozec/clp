@@ -42,12 +42,23 @@ public class DottedNameNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "DottedName\n";
 
         prefix += "  ";
         for (var name : names) {
             str += prefix + name.toString() + "\n";
+        }
+
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + names.get(0);
+        
+        for (int i = 1; i < names.size(); ++i) {
+            str += "." + names.get(i);
         }
 
         return str;

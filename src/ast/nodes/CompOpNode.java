@@ -10,11 +10,11 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 /**
  * Node for the `comp_op` statement of the grammar.
  */
-public class CompNode implements Node {
+public class CompOpNode implements Node {
 
     private final TerminalNode op;
 
-    public CompNode(TerminalNode op) {
+    public CompOpNode(TerminalNode op) {
         this.op = op;
     }
 
@@ -36,7 +36,12 @@ public class CompNode implements Node {
     }
 
     @Override
+    public String printAST(String prefix) {
+        return prefix + "CompOpNode(" + op + ")\n";
+    }
+
+    @Override
     public String toPrint(String prefix) {
-        return prefix + "CompNode(" + op + ")\n";
+        return prefix + op;
     }
 }

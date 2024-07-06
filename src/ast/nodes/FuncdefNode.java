@@ -71,17 +71,29 @@ public class FuncdefNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Funcdef(" + name + ")\n";
 
         prefix += "  ";
 
         if (paramlist != null) {
-            str += paramlist.toPrint(prefix);
+            str += paramlist.printAST(prefix);
         }
 
-        str += block.toPrint(prefix);
+        str += block.printAST(prefix);
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "def " + this.name + '(';
+        if (paramlist != null) {
+            str += paramlist.toPrint("");
+        }
+
+        str += "):\n";
+        str += block.toPrint(prefix + "\t");
         return str;
     }
 

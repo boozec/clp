@@ -37,7 +37,13 @@ public class AugassignNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         return prefix + "Augassign(" + val + ")\n";
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = val.toString();
+        return str;
     }
 }

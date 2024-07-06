@@ -28,17 +28,11 @@ public class SimpleStmtNode implements Node {
 
         if (assignment != null) {
             errors.addAll(assignment.checkSemantics(ST, _nesting));
-        }
-
-        if (expr != null) {
+        } else if (expr != null) {
             errors.addAll(expr.checkSemantics(ST, _nesting));
-        }
-
-        if (returnStmt != null) {
+        } else if (returnStmt != null) {
             errors.addAll(returnStmt.checkSemantics(ST, _nesting));
-        }
-
-        if (importStmt != null) {
+        } else if (importStmt != null) {
             errors.addAll(importStmt.checkSemantics(ST, _nesting));
         }
 
@@ -57,25 +51,37 @@ public class SimpleStmtNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "SimpleStmt\n";
 
         prefix += "  ";
 
         if (assignment != null) {
-            str += assignment.toPrint(prefix);
+            str += assignment.printAST(prefix);
+        } else if (expr != null) {
+            str += expr.printAST(prefix);
+        } else if (returnStmt != null) {
+            str += returnStmt.printAST(prefix);
+        } else if (importStmt != null) {
+            str += importStmt.printAST(prefix);
         }
 
-        if (expr != null) {
-            str += expr.toPrint(prefix);
-        }
+        return str;
+    }
 
-        if (returnStmt != null) {
-            str += returnStmt.toPrint(prefix);
-        }
+    @Override
+    public String toPrint(String prefix) {
+        
+        String str = "";
 
-        if (importStmt != null) {
-            str += importStmt.toPrint(prefix);
+        if (assignment != null) {
+            str += assignment.toPrint("");
+        } else if (expr != null) {
+            str += expr.toPrint("");
+        } else if (returnStmt != null) {
+            str += returnStmt.toPrint("");
+        } else if (importStmt != null) {
+            str += importStmt.toPrint("");
         }
 
         return str;

@@ -1,7 +1,7 @@
 import sys
 import os
 
-def test():
+def test(a, b):
     print("Hello World")
 
 m = 1
