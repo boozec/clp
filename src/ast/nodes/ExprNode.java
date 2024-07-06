@@ -130,7 +130,6 @@ public class ExprNode implements Node {
         if (atom != null) {
             str += atom.toPrint(prefix);
         }
-        
         if (compOp != null) {
             str += compOp.toPrint(prefix);
         }
