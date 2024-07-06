@@ -72,7 +72,7 @@ public class Main {
             System.out.println("Visualizing CFG...");
             System.out.println(cfg);
 
-            System.out.println(ast.toPrint(""));
+            //System.out.println(ast.toPrint(""));
         } catch (Exception e) {
             e.printStackTrace();
         }

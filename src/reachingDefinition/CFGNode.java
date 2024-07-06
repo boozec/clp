@@ -22,4 +22,9 @@ public class CFGNode {
     public String getCode() {
         return code;
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

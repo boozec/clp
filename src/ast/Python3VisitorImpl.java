@@ -297,7 +297,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         Node thenExp = visit(blocks.get(0));
         CFGNode thenNode = new CFGNode("then");
-        thenNode.addCode(thenExp.toPrint(""));
+        thenNode.addCode(thenExp.toPrint("\t"));
         cfg.addNode(thenNode);
         cfg.addEdge(thenNode);
         
@@ -307,7 +307,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         if (blocks.size() > 1) {
             elseExp = visit(blocks.get(1));
             CFGNode elseNode = new CFGNode("else");
-            elseNode.addCode(elseExp.toPrint(""));
+            elseNode.addCode(elseExp.toPrint("\t"));
             cfg.addNode(elseNode);
             cfg.addEdge(elseNode);
             entryNodes.add(elseNode);
@@ -336,7 +336,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node block = visit(ctx.block(0));
 
         CFGNode blockNode = new CFGNode("while_block");
-        blockNode.addCode(block.toPrint(""));
+        blockNode.addCode(block.toPrint("\t"));
         cfg.addNode(blockNode);
         cfg.addEdge(blockNode);
         cfg.addEdge(blockNode, whileNode);
@@ -363,7 +363,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node block = visit(ctx.block(0));
 
         CFGNode blockNode = new CFGNode("for_block");
-        blockNode.addCode(block.toPrint(""));
+        blockNode.addCode(block.toPrint("\t"));
         cfg.addNode(blockNode);
         cfg.addEdge(blockNode);
         cfg.addEdge(blockNode, forNode);
