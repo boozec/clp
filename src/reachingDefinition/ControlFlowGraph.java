@@ -3,126 +3,79 @@ package reachingDefinition;
 import java.util.*;
 
 public class ControlFlowGraph {
-    private final List<CFGNode> nodes;
-    private final CFGNode entryBlock;
+    private Set<CFGNode> entryNodes;
+    private Map<CFGNode, List<CFGNode>> nodes;
+    private CFGNode exitNode;
 
-    public ControlFlowGraph(CFGNode entryBlock) {
-        this.entryBlock = entryBlock;
-        this.nodes = new ArrayList<>();
-
-        this.nodes.add(entryBlock);
+    public ControlFlowGraph() {
+        this.nodes = new HashMap<>();
+        this.entryNodes = new HashSet<>();
+        this.exitNode = new CFGNode("exit");
+        addNode(exitNode);
     }
 
-    // TODO: da testare
-    public void generateInOutSets() {
-        boolean changed = true;
-        while (changed) {
-            changed = false;
-            for (CFGNode node : this.nodes) {
-                Set<String> in = new HashSet<>();
-                Set<String> out = new HashSet<>();
-                for (CFGNode pred : node.getPredecessors()) {
-                    in.addAll(pred.getOut());
-                }
-                Set<String> oldIn = new HashSet<>(node.getIn());
-                Set<String> oldOut = new HashSet<>(node.getOut());
-                node.setIn(in);
-                out.addAll(node.getGen());
-                for (String var : node.getOut()) {
-                    if (!node.getKill().contains(var)) {
-                        out.add(var);
-                    }
-                }
-                node.setOut(out);
-                if (!oldIn.equals(node.getIn()) || !oldOut.equals(node.getOut())) {
-                    changed = true;
-                }
+    public void setEntryNodes(Set<CFGNode> entryNodes) {
+        this.entryNodes = entryNodes;
+    }
+
+    public Set<CFGNode> getEntryNodes() {
+        return entryNodes;
+    }
+
+    public CFGNode getExitNode() {
+        return exitNode;
+    }
+
+    public void addNode(CFGNode node) {
+        nodes.putIfAbsent(node, new ArrayList<>());
+    }
+
+    public List<CFGNode> getEdges(CFGNode node) {
+        return nodes.get(node);
+    }
+
+    public void addEdge(CFGNode to) throws IllegalArgumentException {
+        if (nodes.containsKey(to)) {
+            for (CFGNode from : entryNodes) {
+                nodes.get(from).add(to);
             }
+        } else {
+            throw new IllegalArgumentException("Node must be present in the graph");
         }
     }
 
-    // TODO: da testare
-    public void generateGenKillSets() {
-        Map<CFGNode, Set<String>> gen = new HashMap<>();
-        Map<CFGNode, Set<String>> kill = new HashMap<>();
-
-        for (CFGNode node : this.nodes) {
-            Set<String> genSet = new HashSet<>();
-            Set<String> killSet = new HashSet<>();
-            for (String var : node.getGen()) {
-                if (!genSet.contains(var)) {
-                    genSet.add(var);
-                }
-            }
-            for (String var : node.getKill()) {
-                if (!killSet.contains(var)) {
-                    killSet.add(var);
-                }
-            }
-            gen.put(node, genSet);
-            kill.put(node, killSet);
+    public void addEdge(CFGNode from, CFGNode to) throws IllegalArgumentException {
+        if (nodes.containsKey(from) && nodes.containsKey(to)) {
+            nodes.get(from).add(to);
+        } else {
+            throw new IllegalArgumentException("Nodes must be present in the graph");
         }
     }
 
-    public CFGNode getNodeByLine(int line) {
-        for (CFGNode node : this.nodes) {
-            if (node.getLine() == line) {
+    public List<CFGNode> getNodes() {
+        return List.copyOf(nodes.keySet());
+    }
+
+    public CFGNode getNode(String id) {
+        for (CFGNode node : nodes.keySet()) {
+            if (node.equals(id)) {
                 return node;
             }
         }
         return null;
     }
 
-    public List<CFGNode> getNodes() {
-        return this.nodes;
-    }
-
-    public void addNode(CFGNode node) {
-        if (!this.nodes.contains(node)) {
-            this.nodes.add(node);
-        }
-    }
-
-    public void removeNode(CFGNode node) {
-        if (this.nodes.contains(node)) {
-            this.nodes.remove(node);
-        }
-
-        node.getPredecessors().forEach(pred -> pred.removeSuccessor(node));
-        node.getSuccessors().forEach(succ -> succ.removePredecessor(node));
-        // remove from gen, kill, in and out of all nodes
-        for (CFGNode n : this.nodes) {
-            n.getGen().removeAll(node.getGen());
-            n.getKill().removeAll(node.getKill());
-            n.getIn().removeAll(node.getIn());
-            n.getOut().removeAll(node.getOut());
-        }
-    }
-
-    public void addEdge(CFGNode from, CFGNode to) {
-        if (!from.getSuccessors().contains(to)) {
-            from.addSuccessor(to);
-        }
-    }
-
-    public void removeEdge(CFGNode from, CFGNode to) {
-        if (from.getSuccessors().contains(to)) {
-            from.removeSuccessor(to);
-        }
-
-        if (to.getPredecessors().contains(from)) {
-            to.removePredecessor(from);
-        }
-    }
-
-    public String toPrint(String prefix) {
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(prefix + "ControlFlowGraph\n");
-        sb.append(prefix + "Entry block: " + this.entryBlock.getLine() + "\n");
-        sb.append(prefix + "Nodes:\n");
-        for (CFGNode node : this.nodes) {
-            sb.append(node.toPrint(prefix + "\t"));
+        for (CFGNode node : nodes.keySet()) {
+            sb.append(node.getId()).append(" -> ");
+            for (CFGNode edge : nodes.get(node)) {
+                sb.append(edge.getId()).append(", ");
+            }
+            sb.append("\n");
         }
         return sb.toString();
     }
+
 }

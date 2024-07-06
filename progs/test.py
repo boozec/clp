@@ -1,10 +1,4 @@
-import sys
-import os
-
-def test(a, b):
-    print("Hello World")
-
-m = 1
-for i in range(10):
-    m = i + 1
-    None
+for i in range(3):
+    a = 1
+    if i == 0:
+        print("First iteration")

@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import ast.nodes.*;
 import parser.Python3ParserBaseVisitor;
@@ -30,7 +31,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitRoot(RootContext ctx) {
         ArrayList<Node> childs = new ArrayList<>();
 
-        //cfg = new ControlFlowGraph(new CFGNode(ctx.getStart().getLine(), true));
+        cfg = new ControlFlowGraph();
+        CFGNode startNode = new CFGNode("start");
+        cfg.addNode(startNode);
+        cfg.setEntryNodes(new HashSet<>(){{ add(startNode); }});
+
 
         for (int i = 0; i < ctx.getChildCount(); i++) {
             var child = ctx.getChild(i);
@@ -41,6 +46,8 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                 childs.add(visit((Compound_stmtContext) child));
             }
         }
+
+        cfg.addEdge(cfg.getExitNode());
 
         return new RootNode(childs);
     }
@@ -74,21 +81,17 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         if (ctx.if_stmt() != null) {
             ifStmt = visit(ctx.if_stmt());
-        }
-
-        if (ctx.funcdef() != null) {
+        } else if (ctx.funcdef() != null) {
             funcDef = visit(ctx.funcdef());
-        }
-
-        if (ctx.for_stmt() != null) {
+        } else if (ctx.for_stmt() != null) {
             forStmt = visit(ctx.for_stmt());
-        }
-
-        if (ctx.while_stmt() != null) {
+        } else if (ctx.while_stmt() != null) {
             whileStmt = visit(ctx.while_stmt());
         }
 
-        return new CompoundNode(ifStmt, funcDef, forStmt, whileStmt);
+        CompoundNode compoundNode = new CompoundNode(ifStmt, funcDef, forStmt, whileStmt);
+
+        return compoundNode;
     }
 
     /**
@@ -132,21 +135,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         Node lhr = visit(ctx.exprlist(0));
         Node assign = visit(ctx.augassign());
         Node rhr = visit(ctx.exprlist(1));
-
-        //CFGNode assignNode = new CFGNode(ctx.getStart().getLine(), false);
-
-        /*
-        for (int i = cfg.getNodes().size(); i > 0; i--) {
-            if (cfg.getNodeById(i).isStmt()) {
-                cfg.getNodeById(i).addSuccessor(assignNode);
-                assignNode.addPredecessor(cfg.getNodeById(i));
-                break;
-            }
-        }
-        
-        assignNode.addPredecessor(cfg.getNodeByLine(cfg.getNodes().size()));
-        cfg.getNodeByLine(cfg.getNodes().size()).addSuccessor(assignNode);
-        cfg.addNode(assignNode);*/
 
         return new AssignmentNode(lhr, assign, rhr);
     }
@@ -209,11 +197,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      * ``` funcdef : 'def' NAME '(' paramlist? ')' ':' block ; ```
      */
     public Node visitFuncdef(FuncdefContext ctx) {
-        /*CFGNode funcNode = new CFGNode(ctx.getStart().getLine(), true);
-        funcNode.addPredecessor(cfg.getNodeByLine(cfg.getNodes().size()));
-        cfg.getNodeByLine(cfg.getNodes().size()).addSuccessor(funcNode);
-        cfg.addNode(funcNode);*/
-
         Node paramlist = null;
 
         if (ctx.paramlist() != null) {
@@ -305,11 +288,32 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitIf_stmt(If_stmtContext ctx) {
         var blocks = ctx.block();
         Node condExp = visit(ctx.expr(0));
+
+        CFGNode ifNode = new CFGNode("if");
+        ifNode.addCode("if " + condExp.toPrint("") + ":\n");
+        cfg.addNode(ifNode);
+        cfg.addEdge(ifNode);
+        cfg.setEntryNodes(new HashSet<>(){{ add(ifNode); }});
+
         Node thenExp = visit(blocks.get(0));
+        CFGNode thenNode = new CFGNode("then");
+        thenNode.addCode(thenExp.toPrint(""));
+        cfg.addNode(thenNode);
+        cfg.addEdge(thenNode);
+        
+        HashSet<CFGNode> entryNodes = new HashSet<>(){{ add(thenNode); }};
+
         Node elseExp = null;
         if (blocks.size() > 1) {
             elseExp = visit(blocks.get(1));
+            CFGNode elseNode = new CFGNode("else");
+            elseNode.addCode(elseExp.toPrint(""));
+            cfg.addNode(elseNode);
+            cfg.addEdge(elseNode);
+            entryNodes.add(elseNode);
         }
+
+        cfg.setEntryNodes(entryNodes);
 
         return new IfNode(condExp, thenExp, elseExp);
     }
@@ -322,15 +326,21 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitWhile_stmt(While_stmtContext ctx) {
         Node expr = visit(ctx.expr());
 
-        /*
-        CFGNode whileNode = new CFGNode(true);
-        whileNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
-        cfg.getNodeById(cfg.getNodes().size()).addSuccessor(whileNode);
+        CFGNode whileNode = new CFGNode("while");
+        whileNode.addCode("while " + expr.toPrint("") + ":\n");
         cfg.addNode(whileNode);
-        */
+        cfg.addEdge(whileNode);
+        cfg.setEntryNodes(new HashSet<>(){{ add(whileNode); }});
 
         // Block 1 is for the while-else statement
         Node block = visit(ctx.block(0));
+
+        CFGNode blockNode = new CFGNode("while_block");
+        blockNode.addCode(block.toPrint(""));
+        cfg.addNode(blockNode);
+        cfg.addEdge(blockNode);
+        cfg.addEdge(blockNode, whileNode);
+        cfg.setEntryNodes(new HashSet<>(){{ add(blockNode); }});
 
         return new WhileStmtNode(expr, block);
     }
@@ -343,15 +353,21 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitFor_stmt(For_stmtContext ctx) {
         Node exprList = visit(ctx.exprlist());
 
-        /*
-        CFGNode forNode = new CFGNode(true);
-        forNode.addPredecessor(cfg.getNodeById(cfg.getNodes().size()));
-        cfg.getNodeById(cfg.getNodes().size()).addSuccessor(forNode);
+        CFGNode forNode = new CFGNode("for");
+        forNode.addCode("for " + exprList.toPrint("") + ":\n");
         cfg.addNode(forNode);
-        */
+        cfg.addEdge(forNode);
+        cfg.setEntryNodes(new HashSet<>(){{ add(forNode); }});
 
         // Block 1 is for the for-else statement
         Node block = visit(ctx.block(0));
+
+        CFGNode blockNode = new CFGNode("for_block");
+        blockNode.addCode(block.toPrint(""));
+        cfg.addNode(blockNode);
+        cfg.addEdge(blockNode);
+        cfg.addEdge(blockNode, forNode);
+        cfg.setEntryNodes(new HashSet<>(){{ add(blockNode); }});
 
         return new ForStmtNode(exprList, block);
     }

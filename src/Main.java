@@ -66,13 +66,13 @@ public class Main {
                 }
             } else {
                 System.out.println("Visualizing AST...");
-                System.out.println(ast.printAST(""));
+                //System.out.println(ast.printAST(""));
             }
 
-            cfg.generateInOutSets();
-            cfg.generateGenKillSets();
             System.out.println("Visualizing CFG...");
-            System.out.println(cfg.toPrint(""));
+            System.out.println(cfg);
+
+            System.out.println(ast.toPrint(""));
         } catch (Exception e) {
             e.printStackTrace();
         }

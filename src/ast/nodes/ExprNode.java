@@ -152,19 +152,19 @@ public class ExprNode implements Node {
 
         prefix += "  ";
         if (atom != null) {
-            str += atom.toPrint(prefix);
+            str += atom.printAST(prefix);
             
             for (var trailer : trailers) {
-                str += trailer.toPrint(prefix);
+                str += trailer.printAST(prefix);
             }
         } else {
             if (compOp != null) {
-                str += compOp.toPrint(prefix);
+                str += compOp.printAST(prefix);
             }
             
             if (exprs != null) {
                 for (var expr : exprs) {
-                    str += expr.toPrint(prefix);
+                    str += expr.printAST(prefix);
                 }
             }
             

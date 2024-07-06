@@ -87,13 +87,13 @@ public class FuncdefNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix + "def " + this.name + '(';
+        String str = "\n" + prefix + "def " + this.name + '(';
         if (paramlist != null) {
             str += paramlist.toPrint("");
         }
 
         str += "):\n";
-        str += block.toPrint(prefix + "\t");
+        str += block.toPrint(prefix + "\t") + "\n";
         return str;
     }
 
