@@ -74,10 +74,10 @@ public class ExprListNode implements Node {
     public String toPrint(String prefix) {
 
         // TODO: Diamo per assodato che rimuova le , alla fine
-        String str = exprs.get(0).toPrint(prefix);
+        String str = prefix + exprs.get(0).toPrint("");
 
         for (int i = 1; i < exprs.size(); ++i) {
-            str += ", " + exprs.get(i).toPrint(prefix);
+            str += ", " + exprs.get(i).toPrint("");
         }
 
         return str;

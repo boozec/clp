@@ -27,4 +27,14 @@ public class CFGNode {
     public String toString() {
         return id;
     }
+
+    // Method to see if the node's code is contained in a given code.
+    public boolean codeContainedIn(String str) {
+        str = str.replaceAll("\\s", "");
+        if ((!code.isEmpty()) && str.contains(code.replaceAll("\\s", ""))) {
+            return true;
+        }
+
+        return false;
+    }
 }

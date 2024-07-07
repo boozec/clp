@@ -67,7 +67,7 @@ public class AssignmentNode implements Node {
     @Override
     public String toPrint(String prefix) {
         String str = prefix;
-        str += lhr.toPrint(prefix) + " " + assign.toPrint("") + " " + rhr.toPrint("");
+        str += lhr.toPrint("") + " " + assign.toPrint("") + " " + rhr.toPrint("");
         return str;
     }
 

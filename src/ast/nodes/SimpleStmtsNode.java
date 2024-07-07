@@ -53,7 +53,7 @@ public class SimpleStmtsNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix;
+        String str = "";
         
         for (Node stmt : stmts) {
             str += stmt.toPrint(prefix) + "\n";

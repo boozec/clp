@@ -72,7 +72,7 @@ public class SimpleStmtNode implements Node {
     @Override
     public String toPrint(String prefix) {
         
-        String str = "";
+        String str = prefix;
 
         if (assignment != null) {
             str += assignment.toPrint("");

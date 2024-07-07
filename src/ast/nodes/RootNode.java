@@ -65,7 +65,7 @@ public class RootNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = "";
+        String str = prefix;
         for (Node child : childs) {
             str += child.toPrint("");
         }

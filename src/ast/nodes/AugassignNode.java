@@ -43,7 +43,7 @@ public class AugassignNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = val.toString();
+        String str = prefix + val.toString();
         return str;
     }
 }

@@ -49,7 +49,7 @@ public class CompIterNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix;
+        String str = "";
         str += comp_for.toPrint(prefix);
         return str;
     }

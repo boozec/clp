@@ -56,10 +56,10 @@ public class ParamlistNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        String str = "";
+        String str = prefix;
 
         for (int i = 0; i < params.size(); i++) {
-            str += params.get(i).toPrint(prefix);
+            str += params.get(i).toPrint("");
             if (i != params.size() - 1) {
                 str += ", ";
             }

@@ -181,9 +181,9 @@ public class ExprNode implements Node {
         String str = prefix;
 
         if (atom != null) {
-            str += atom.toPrint(prefix);
+            str += atom.toPrint("");
             for (var trailer : trailers) {
-                str += trailer.toPrint(prefix);
+                str += trailer.toPrint("");
             }
         } else {
             if (op == "+" || op == "-" || op == "~") {

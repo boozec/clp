@@ -25,8 +25,8 @@ public class Main {
 
         try {
             String fileStr = args[0];
-            System.out.println(fileStr);
-            System.out.println(Share.readFile(fileStr));
+            //System.out.println(fileStr);
+            //System.out.println(Share.readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);
             Python3Lexer lexer = new Python3Lexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -70,6 +70,13 @@ public class Main {
             }
 
             System.out.println("Visualizing CFG...");
+            //System.out.println(cfg.printCode());
+
+            /*
+             * FIXME: Come puoi vedere da questa stampa, il CFG viene creato correttamente ma non viene visualizzato correttamente il codice
+             *        del CFG. Questo è dovuto al fatto che la visita avviene in profondità e non in ampiezza. Quindi si prende prima il codice
+             *        nei nodi più profondi e poi si risale, senza quindi analizzare le tabulazioni. 
+             */
             System.out.println(cfg);
 
             //System.out.println(ast.toPrint(""));

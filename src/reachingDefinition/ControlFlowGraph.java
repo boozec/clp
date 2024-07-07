@@ -67,22 +67,32 @@ public class ControlFlowGraph {
 
     @Override
     public String toString() {
-        return foo(getNode("start"));
+        StringBuilder sb = new StringBuilder();
+        for (CFGNode node : nodes.keySet()) {
+            sb.append(node.getId()).append(" -> ");
+            for (CFGNode edge : nodes.get(node)) {
+                sb.append(edge.getId()).append(", ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
-    private String foo(CFGNode entry) {
-        String result = "";
-    
-        if (entry != null) {
-            result += entry.getCode();
-            for (CFGNode node : nodes.get(entry)) {
-                // Avoid printing the for and while after the blocks
-                if (!((node.getId().equals("for_block") && this.nodes.get(node).get(0).getId().equals("for")) || (node.getId().equals("while_block") && this.nodes.get(node).get(0).getId().equals("while")))){
-                    result += foo(node);
-                }
-            }
-        }
+    public String printCode() {
+        return this.printCode(getNode("start"));
+    }
 
+    private String printCode(CFGNode entry) {
+        String result = entry.getCode();
+
+        for (CFGNode node : getEdges(entry)) {
+            if (entry.getId().equals("for_block")) {
+                //System.out.println(node.getCode());
+            }
+            if (!((entry.getId().equals("for_block") && node.getId().equals("for")) || (entry.getId().equals("while_block") && node.getId().equals("while"))))
+                result += this.printCode(node);
+        }
+        
         return result;
     }
 
