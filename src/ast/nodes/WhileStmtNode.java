@@ -34,20 +34,20 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
-    // Non necessario, ma lo faccio lo stesso
     @Override
     public String codeGeneration() {
-        String startLabel = Label.newBasic("start");
-        String endLabel = Label.newBasic("end");
+        return "";
+        // String startLabel = Label.newBasic("start");
+        // String endLabel = Label.newBasic("end");
 
-        String exprS = expr.codeGeneration();
-        String blockS = block.codeGeneration();
+        // String exprS = expr.codeGeneration();
+        // String blockS = block.codeGeneration();
 
-        // Assumo che l'espressione sia un dato booleano o una operazione booleana che mette in AO il valore true (1) o false (0)
-        return  startLabel + ":\n" +
-                exprS + "\njeq AO 0 " + endLabel + "\n" +   // Controllo che A0 sia false (0). Se vero faccio jump alla fine,
-                blockS + "\nb " + startLabel +  "\n" +      // altrimenti eseguo la blockBranch e, finito, jumpo alla all'inzio
-                endLabel + ":\n";
+        // // Assumo che l'espressione sia un dato booleano o una operazione booleana che mette in AO il valore true (1) o false (0)
+        // return  startLabel + ":\n" +
+        //         exprS + "\njeq A0 0 " + endLabel + "\n" +   // Controllo che A0 sia false (0). Se vero faccio jump alla fine,
+        //         blockS + "\nb " + startLabel +  "\n" +      // altrimenti eseguo la blockBranch e, finito, jumpo alla all'inzio
+        //         endLabel + ":\n";
     }
 
     @Override

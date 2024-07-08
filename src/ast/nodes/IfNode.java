@@ -61,8 +61,8 @@ public class IfNode implements Node {
         String thenS = thenBranch.codeGeneration();
         String elseS = elseBranch.codeGeneration();
 
-        // Assumo che la guardia sia un dato booleano o una operazione booleana che mette in AO il valore true (1) o false (0)
-        return  guardS + "jeq AO 1 " + thenLabel + "\n" +     // Controllo che A0 sia true (1). Se vero faccio jump alla
+        // Assumo che la guardia sia un dato booleano o una operazione booleana che mette in A0 il valore true (1) o false (0)
+        return  guardS + "storei T1 1\nbeq A0 T1 " + thenLabel + "\n" +     // Controllo che A0 sia true (1). Se vero faccio jump alla
                 elseS + "b " + endLabel + "\n" +                // thenBranch, altrimenti eseguo la elseBranch e jumpo alla fine
                 thenLabel + ":\n" + thenS + endLabel + ":\n";
     }

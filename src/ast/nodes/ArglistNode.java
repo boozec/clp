@@ -40,9 +40,8 @@ public class ArglistNode implements Node {
                     if (ST.nslookup(argName) < 0 && argExpr.typeCheck() instanceof AtomType) {
                         errors.add(new SemanticError("name '" + argName + "' is not defined."));
                     }
-                } else {
-                    errors.addAll(arg.checkSemantics(ST, _nesting));
                 }
+                errors.addAll(arg.checkSemantics(ST, _nesting));
             }
         }
 

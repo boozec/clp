@@ -147,7 +147,7 @@ public class SymbolTable {
     @Override
     public String toString() {
         // Print the symbol table
-        String str = "";
+        String str = "ST ";
         for (int i = 0; i < this.symbolTable.size(); i++) {
             str += "Level " + i + "\n";
             HashMap<String, STentry> H = this.symbolTable.get(i);
@@ -159,4 +159,10 @@ public class SymbolTable {
         return str;
     }
 
+
+    @Override
+    public SymbolTable clone() throws CloneNotSupportedException {
+        Object obj = super.clone();
+        return (SymbolTable) obj;
+    }
 }

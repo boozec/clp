@@ -1,7 +1,11 @@
 package ast.nodes;
 
 import ast.types.*;
+import codegen.Label;
+
 import java.util.ArrayList;
+
+import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -12,6 +16,9 @@ public class ReturnStmtNode implements Node {
 
     private final Node exprList;
 
+    // VERY scatchy
+    private int pm;
+
     public ReturnStmtNode(Node exprList) {
         this.exprList = exprList;
     }
@@ -20,6 +27,10 @@ public class ReturnStmtNode implements Node {
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
+        String id = Label.getFuntrace();
+        STentry ftEntry = ST.lookup(id);
+        FunctionType ft = (FunctionType) ftEntry.getType();
+        this.pm = ft.getParamNumber();
         if (this.exprList != null) {
             errors.addAll(this.exprList.checkSemantics(ST, _nesting));
         }
@@ -36,12 +47,11 @@ public class ReturnStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for return stmt
     @Override
     public String codeGeneration() {
-        // dovrei mettere paramNumberString ma non so come recuperarlo
-        // "popr RA\naddi SP " + paramNS come sfaccimma facciamo + "\npopr FP\nrsub RA\n"
-        return "popr RA\naddi SP 1\npopr FP\nrsub RA\n";
+        String expS = exprList.codeGeneration();
+        String paramNS = String.valueOf(pm);
+        return expS + "popr RA\naddi SP " + paramNS + "\npopr FP\nrsub RA\n";
     }
 
     @Override

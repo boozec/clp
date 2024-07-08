@@ -1,21 +1,35 @@
 package codegen;
 
 public class Label {
-	
-	private static int labelCounter = 0; 
-	private static int functionLabelCounter = 0; 
+
+	private static String funtrace = "root";
+	private static int labelCounter = 0;
+	private static int functionLabelCounter = 0;
+
+	public Label() {
+		funtrace = "root";
+	}
+
+	public static void setFuntrace(String funtrace) {
+		Label.funtrace = funtrace;
+	}
+
+	public static String getFuntrace() {
+		return funtrace;
+	}
 
 	/**
-	 * Create a new basic label. Use this method to define labels for if, while and for statemests.
+	 * Create a new basic label. Use this method to define labels for if, while and
+	 * for statemests.
 	 */
-	public static String newBasic(String base) { 
+	public static String newBasic(String base) {
 		return base + (labelCounter++);
 	}
 
 	/**
 	 * Create a new label for a function definition.
 	 */
-	public static String newFun(String base) { 
+	public static String newFun(String base) {
 		return base + (functionLabelCounter++);
 	}
 

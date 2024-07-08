@@ -24,7 +24,7 @@ public class FuncdefNode implements Node {
         this.name = name;
         this.paramlist = paramlist;
         this.block = block;
-        this.funLabel = Label.newFun("fun");
+        this.funLabel = Label.newFun("FUN");
     }
 
     @Override
@@ -34,24 +34,28 @@ public class FuncdefNode implements Node {
         Type returnType = this.block.typeCheck();
         FunctionType ft = new FunctionType(paramNumber, returnType, funLabel);
 
-        ST.insert(this.name.toString(), ft, _nesting, "");
+        String funName = this.name.toString();
+        Label.setFuntrace(funName);
+        ST.insert(funName, ft, _nesting, "");
 
         HashMap<String, STentry> HM = new HashMap<>();
 
         ST.add(HM);
 
-        ST.insert(this.name.toString(), ft, _nesting + 1, "");
+        ST.insert(funName, ft, _nesting + 1, "");
 
         if (paramlist != null) {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
 
-        // TODO: think to the fucking offset
+        // TODO: think to the offset
         // Offset is increased for the possible return value
         ST.increaseoffset();
 
         errors.addAll(block.checkSemantics(ST, _nesting + 1));
 
+        // return to the outer block
+        Label.setFuntrace("root"); // only one level considered
         ST.remove();
 
         return errors;
@@ -66,8 +70,7 @@ public class FuncdefNode implements Node {
     // taken from slide 56 of CodeGeneration.pdf 
     @Override
     public String codeGeneration() {
-        int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
-        String paramNS = String.valueOf(paramNumber);
+        Label.setFuntrace(this.name.toString());
         String blockS = block.codeGeneration();
         String skipL = Label.newBasic("skip");
         // nel block c'è il return che mette a posto l'RA

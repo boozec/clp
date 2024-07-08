@@ -20,7 +20,8 @@ public class ExprNode implements Node {
     private final ArrayList<Node> trailers;
 
     // VERY scatchy
-    private FunctionType ft;
+    private int paramNumber;
+    private String funL;
 
     public ExprNode(Node atom, Node compOp, ArrayList<Node> exprs, String op, ArrayList<Node> trailers) {
         this.atom = (AtomNode) atom;
@@ -74,13 +75,15 @@ public class ExprNode implements Node {
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
                     if (!(fun.getType() instanceof FunctionType)) {
+                        System.out.println("ERROR: not a function type");
                         for (var t : trailers) {
                             errors.addAll(t.checkSemantics(ST, _nesting));
                         }
 
                     } else {
-                        ft = (FunctionType) fun.getType();
-                        int paramNumber = ft.getParamNumber();
+                        FunctionType ft = (FunctionType) fun.getType();
+                        paramNumber = ft.getParamNumber();
+                        funL = ft.getLabel();
                         int argNumber = trailer.getArgumentNumber();
 
                         if (paramNumber != argNumber) {
@@ -122,29 +125,24 @@ public class ExprNode implements Node {
 
     @Override
     public String codeGeneration() {
-
         // check function call
         if (atom != null && !trailers.isEmpty()) {
             TrailerNode trailer = (TrailerNode) trailers.get(0);
             String trailerS = trailer.codeGeneration();
             // check if the atom is a built-in function
             if (Arrays.asList(bif).contains(atom.getId())) {
-                return "Error: todo bif\n" + trailerS;
+                // TODO: AGGIUNGERE COMMENTI PER SPIEGARE GESTIONE PRINT
+                return trailerS;
             }
 
-            if (ft != null) {
-                String funL = ft.getLabel();
-                // taken from slide 56 of CodeGeneration.pdf 
-                String parNum = String.valueOf(ft.getParamNumber() + 1);
-                return "pushr FP\n" +  trailerS + "move SP FP\naddi FP " + parNum + "\njsub " + funL + "\n";
-            } else {
-                return "Error: function type not set\n";
-            }
+            // taken from slide 56 of CodeGeneration.pdf
+            String parNum = String.valueOf(paramNumber + 1);
+            return "pushr FP\n" + trailerS + "move SP FP\naddi FP " + parNum + "\njsub " + funL + "\n";
         }
 
         // check operation
         if (op != null) {
-            switch(op) {
+            switch (op) {
                 case "+":
                 case "-":
                 case "*":
@@ -163,14 +161,13 @@ public class ExprNode implements Node {
             }
 
         }
-        
+
         // check comp operation
         if (compOp != null) {
             CompOpNode cmpOp = (CompOpNode) compOp;
             String op = cmpOp.getOp();
             return boolOpCodeGen(exprs.get(0), exprs.get(1), op);
         }
-        
 
         if (atom != null) {
             return atom.codeGeneration();
@@ -184,10 +181,8 @@ public class ExprNode implements Node {
             return str;
         }
 
-
         return "Error: cannot recognize the expression\n";
     }
-
 
     @Override
     public String toPrint(String prefix) {
@@ -200,19 +195,19 @@ public class ExprNode implements Node {
         if (compOp != null) {
             str += compOp.toPrint(prefix);
         }
-        
+
         if (exprs != null) {
             for (var expr : exprs) {
                 str += expr.toPrint(prefix);
             }
         }
-        
+
         if (trailers != null) {
             for (var trailer : trailers) {
                 str += trailer.toPrint(prefix);
             }
-        } 
-        
+        }
+
         if (op != null) {
             str += prefix + "Op(" + op + ")\n";
         }
@@ -237,18 +232,21 @@ public class ExprNode implements Node {
             case "/":
                 ops = "div"; // TODO: controllare che sia divisione intera
                 break;
+            default:
+                ops = "Error: cannot manage op " + op;
         }
-        return ls + "pushr AO\n" + rs + "popr T1\n" + op + " T1 A0\npopr A0\n";
+        return ls + "pushr A0\n" + rs + "popr T1\n" + ops + " T1 A0\npopr A0\n";
     }
 
     public String modCodeGen(Node leftE, Node rightE) {
-        String ls = leftE.codeGeneration();
-        String rs = rightE.codeGeneration();
-        
+        // String ls = leftE.codeGeneration();
+        // String rs = rightE.codeGeneration();
+
         return "TODO: operazione modulo";
     }
 
-    // ATTENZIONE: per le operazioni booleane assumiammo che False sia sempre 0 e che True sia sempre 1
+    // ATTENZIONE: per le operazioni booleane assumiammo che False sia sempre 0 e
+    // che True sia sempre 1
 
     // Ottimizzazione: se il valore a sinistra è falso (0), l'espressione è
     // sicuramente falsa, altrimenti sarà il valore della espressione a destra
@@ -256,7 +254,7 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("endAnd");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls + "jeq A0 0 " + endl + "\n" + rs + endl + "\n";
+        return ls + "storei T1 0\nbeq A0 T1 " + endl + "\n" + rs + endl + "\n";
     }
 
     // Ottimizzazione: se il valore a sinistra è vera (1), l'espressione è
@@ -265,7 +263,7 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("endOr");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls + "jeq A0 1 " + endl + "\n" + rs + endl + "\n";
+        return ls + "storei T1 1\nbeq A0 T1 " + endl + "\n" + rs + endl + "\n";
     }
 
     // Viene usata l'operazione SUB
@@ -301,16 +299,16 @@ public class ExprNode implements Node {
                 break;
             case "!=":
                 // inverse of ==
-                return  ls + "pushr AO\n" + 
-                        rs + "popr T1\n" + 
-                        "beq T1 A0 " + truel + "\nstorei A0 1\nb " + endl + "\n" +  // storei A0 1 instead of storei A0 0
-                        truel + ":\nstorei A0 0\n" + endl + ":\n";                  // storei A0 0 instead of storei A0 1
+                return ls + "pushr A0\n" +
+                        rs + "popr T1\n" +
+                        "beq T1 A0 " + truel + "\nstorei A0 1\nb " + endl + "\n" + // storei A0 1 instead of storei A0 0
+                        truel + ":\nstorei A0 0\n" + endl + ":\n"; // storei A0 0 instead of storei A0 1
             default:
                 return "Error: operation " + op + " not supported\n";
         }
-        return  ls + "pushr AO\n" + 
-                rs + "popr T1\n" + 
-                ops + " T1 A0 " + truel + "\nstorei A0 0\nb " + endl + "\n" + 
+        return ls + "pushr A0\n" +
+                rs + "popr T1\n" +
+                ops + " T1 A0 " + truel + "\nstorei A0 0\nb " + endl + "\n" +
                 truel + ":\nstorei A0 1\n" + endl + ":\n";
     }
 

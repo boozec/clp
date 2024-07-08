@@ -10,8 +10,6 @@ import semanticanalysis.*;
  */
 public class RootNode implements Node {
 
-    static final int maxValue = 100;
-
     // stms and compundStmts are protected because they are reused for a
     // BlockNode
     protected ArrayList<Node> childs;
@@ -48,9 +46,7 @@ public class RootNode implements Node {
 
     @Override
     public String codeGeneration() {
-        String fpVal = String.valueOf(this.maxValue);
-        String spVal = String.valueOf(this.maxValue - 1);
-        String str = "storei FP " + fpVal + "\nstorei SP " + spVal + "\n";
+        String str = "";
 
         for (Node child : childs) {
             str += child.codeGeneration();

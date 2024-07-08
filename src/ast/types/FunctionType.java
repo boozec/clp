@@ -1,7 +1,5 @@
 package ast.types;
 
-import codegen.Label;
-
 /**
  * A Function type.
  */
@@ -17,7 +15,7 @@ public class FunctionType extends Type {
         this.label = label;
     }
 
-    // Return the length of the parameters
+    // Return the number of the parameters
     public int getParamNumber() {
         return paramNumber;
     }

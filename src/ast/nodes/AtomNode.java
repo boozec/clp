@@ -4,7 +4,6 @@ import ast.types.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -14,13 +13,14 @@ import semanticanalysis.SymbolTable;
 public class AtomNode implements Node {
 
     protected String val;
-    protected STentry entry;
     protected TestlistCompNode exprlist;
+    
+    // very scatchy
+    protected int offset;
 
     public AtomNode(String val, Node exprlist) {
         this.val = val;
         this.exprlist = (TestlistCompNode) exprlist;
-        this.entry = null;
     }
 
     /**
@@ -39,8 +39,10 @@ public class AtomNode implements Node {
             if ((typeCheck() instanceof AtomType) && ST.nslookup(getId()) < 0) {
                 errors.add(new SemanticError("name '" + getId() + "' is not defined."));
             } else {
-                // System.out.println("exist " + typeCheck());
-                entry = ST.lookup(getId());
+                // System.out.println("exist " + getId());
+                if ((typeCheck() instanceof AtomType)){
+                    offset = ST.lookup(getId()).getOffset();
+                }
             }
         }
 
@@ -95,25 +97,26 @@ public class AtomNode implements Node {
 
     @Override
     public String codeGeneration() {
-        String base = "storei A0 ";
+        String baseData = "storei A0 ";
+        String baseAccess = "load A0 ";
 
         if(exprlist != null) {
             return exprlist.codeGeneration();
         }
         if (typeCheck() instanceof IntType) {
-            return base + getId() + "\n";
+            return baseData + getId() + "\n";
         }
         if (typeCheck() instanceof BoolType) {
-            return base + boolValue(getId()) + "\n";
+            return baseData + boolValue(getId()) + "\n";
         }
         if (typeCheck() instanceof AtomType) {
-            return base + "-" + String.valueOf(entry.getOffset()) + "(FP)\n" ;
+            return baseAccess + String.valueOf(offset) + "(FP)\n" ;
         }
         return "Error: could not parse an atom\n";
     }
 
     public static String boolValue(String id) {
-        return id == "True" ? "1" : "0";
+        return id.equals("True") ? "1" : "0";
     }
 
     @Override
