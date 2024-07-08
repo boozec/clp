@@ -3,3 +3,4 @@ trees/
 .project
 .vscode/
 src/parser/.antlr/
+code.asm

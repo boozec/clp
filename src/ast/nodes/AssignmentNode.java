@@ -39,7 +39,7 @@ public class AssignmentNode implements Node {
             // ExprNode ratom = (ExprNode) rhr.getElem(i);
         }
         // } else {
-        // FIX: sgravata da più problemi che altro
+        // FIX: sgravata, da più problemi che altro
         // errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
         // }
 

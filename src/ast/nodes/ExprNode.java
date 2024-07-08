@@ -6,6 +6,7 @@ import java.util.Arrays;
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
+import codegen.Label;
 
 /**
  * Node for the `expr` statement of the grammar.
@@ -17,6 +18,9 @@ public class ExprNode implements Node {
     private final String op;
     private final ArrayList<Node> exprs;
     private final ArrayList<Node> trailers;
+
+    // VERY scatchy
+    private FunctionType ft;
 
     public ExprNode(Node atom, Node compOp, ArrayList<Node> exprs, String op, ArrayList<Node> trailers) {
         this.atom = (AtomNode) atom;
@@ -75,7 +79,7 @@ public class ExprNode implements Node {
                         }
 
                     } else {
-                        FunctionType ft = (FunctionType) fun.getType();
+                        ft = (FunctionType) fun.getType();
                         int paramNumber = ft.getParamNumber();
                         int argNumber = trailer.getArgumentNumber();
 
@@ -116,11 +120,74 @@ public class ExprNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for expr
     @Override
     public String codeGeneration() {
-        return "";
+
+        // check function call
+        if (atom != null && !trailers.isEmpty()) {
+            TrailerNode trailer = (TrailerNode) trailers.get(0);
+            String trailerS = trailer.codeGeneration();
+            // check if the atom is a built-in function
+            if (Arrays.asList(bif).contains(atom.getId())) {
+                return "Error: todo bif\n" + trailerS;
+            }
+
+            if (ft != null) {
+                String funL = ft.getLabel();
+                // taken from slide 56 of CodeGeneration.pdf 
+                String parNum = String.valueOf(ft.getParamNumber() + 1);
+                return "pushr FP\n" +  trailerS + "move SP FP\naddi FP " + parNum + "\njsub " + funL + "\n";
+            } else {
+                return "Error: function type not set\n";
+            }
+        }
+
+        // check operation
+        if (op != null) {
+            switch(op) {
+                case "+":
+                case "-":
+                case "*":
+                case "/": // divisione intera
+                    return intOpCodeGen(exprs.get(0), exprs.get(1), op);
+                case "%":
+                    return modCodeGen(exprs.get(0), exprs.get(1));
+                case "and":
+                    return andCodeGen(exprs.get(0), exprs.get(1));
+                case "or":
+                    return orCodeGen(exprs.get(0), exprs.get(1));
+                case "not":
+                    return notCodeGen(exprs.get(0));
+                default:
+                    return "Error: operation " + op + " not supported\n";
+            }
+
+        }
+        
+        // check comp operation
+        if (compOp != null) {
+            CompOpNode cmpOp = (CompOpNode) compOp;
+            String op = cmpOp.getOp();
+            return boolOpCodeGen(exprs.get(0), exprs.get(1), op);
+        }
+        
+
+        if (atom != null) {
+            return atom.codeGeneration();
+        }
+
+        if (!exprs.isEmpty()) {
+            String str = "";
+            for (var expr : exprs) {
+                str += expr.codeGeneration();
+            }
+            return str;
+        }
+
+
+        return "Error: cannot recognize the expression\n";
     }
+
 
     @Override
     public String toPrint(String prefix) {
@@ -151,6 +218,100 @@ public class ExprNode implements Node {
         }
 
         return str;
+    }
+
+    public String intOpCodeGen(Node leftE, Node rightE, String op) {
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        String ops;
+        switch (op) {
+            case "+":
+                ops = "add";
+                break;
+            case "-":
+                ops = "sub";
+                break;
+            case "*":
+                ops = "mul";
+                break;
+            case "/":
+                ops = "div"; // TODO: controllare che sia divisione intera
+                break;
+        }
+        return ls + "pushr AO\n" + rs + "popr T1\n" + op + " T1 A0\npopr A0\n";
+    }
+
+    public String modCodeGen(Node leftE, Node rightE) {
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        
+        return "TODO: operazione modulo";
+    }
+
+    // ATTENZIONE: per le operazioni booleane assumiammo che False sia sempre 0 e che True sia sempre 1
+
+    // Ottimizzazione: se il valore a sinistra è falso (0), l'espressione è
+    // sicuramente falsa, altrimenti sarà il valore della espressione a destra
+    public String andCodeGen(Node leftE, Node rightE) {
+        String endl = Label.newBasic("endAnd");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls + "jeq A0 0 " + endl + "\n" + rs + endl + "\n";
+    }
+
+    // Ottimizzazione: se il valore a sinistra è vera (1), l'espressione è
+    // sicuramente vera, altrimenti sarà il valore della espressione a destra
+    public String orCodeGen(Node leftE, Node rightE) {
+        String endl = Label.newBasic("endOr");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls + "jeq A0 1 " + endl + "\n" + rs + endl + "\n";
+    }
+
+    // Viene usata l'operazione SUB
+    // not True = 1 - 1 = 0 = False
+    // not False = 1 - 0 = 1 = True
+    // Stessa tabella di verità dell'NOT
+    public String notCodeGen(Node expr) {
+        String exprs = expr.codeGeneration();
+        return exprs + "storei T1 1\nsub T1 A0\npopr A0\n";
+    }
+
+    public String boolOpCodeGen(Node leftE, Node rightE, String op) {
+        String truel = Label.newBasic("true");
+        String endl = Label.newBasic("end");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        String ops;
+        switch (op) {
+            case ">":
+                ops = "bgt";
+                break;
+            case "<":
+                ops = "blt";
+                break;
+            case ">=":
+                ops = "bge";
+                break;
+            case "<=":
+                ops = "ble";
+                break;
+            case "==":
+                ops = "beq";
+                break;
+            case "!=":
+                // inverse of ==
+                return  ls + "pushr AO\n" + 
+                        rs + "popr T1\n" + 
+                        "beq T1 A0 " + truel + "\nstorei A0 1\nb " + endl + "\n" +  // storei A0 1 instead of storei A0 0
+                        truel + ":\nstorei A0 0\n" + endl + ":\n";                  // storei A0 0 instead of storei A0 1
+            default:
+                return "Error: operation " + op + " not supported\n";
+        }
+        return  ls + "pushr AO\n" + 
+                rs + "popr T1\n" + 
+                ops + " T1 A0 " + truel + "\nstorei A0 0\nb " + endl + "\n" + 
+                truel + ":\nstorei A0 1\n" + endl + ":\n";
     }
 
 }

@@ -336,7 +336,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     /**
-     * Returns a `CompNode`. It should never be null.
+     * Returns a `CompOpNode`. It should never be null.
      *
      * ``` comp_op : '<' | '>' | '==' | '>=' | '<=' | '<>' | '!=' | 'in' | 'not'
      * 'in' | 'is' | 'is' 'not' ; ```
@@ -344,24 +344,24 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitComp_op(Comp_opContext ctx) {
         Node comp = null;
         if (ctx.LESS_THAN() != null) {
-            comp = new CompNode(ctx.LESS_THAN());
+            comp = new CompOpNode(ctx.LESS_THAN());
         } else if (ctx.GREATER_THAN() != null) {
-            comp = new CompNode(ctx.GREATER_THAN());
+            comp = new CompOpNode(ctx.GREATER_THAN());
         } else if (ctx.EQUALS() != null) {
-            comp = new CompNode(ctx.EQUALS());
+            comp = new CompOpNode(ctx.EQUALS());
         } else if (ctx.GT_EQ() != null) {
-            comp = new CompNode(ctx.GT_EQ());
+            comp = new CompOpNode(ctx.GT_EQ());
         } else if (ctx.LT_EQ() != null) {
-            comp = new CompNode(ctx.LT_EQ());
+            comp = new CompOpNode(ctx.LT_EQ());
         } else if (ctx.NOT_EQ_2() != null) {
             // We're ignoring NOT_EQ_1() because no one uses `<>`
-            comp = new CompNode(ctx.NOT_EQ_2());
+            comp = new CompOpNode(ctx.NOT_EQ_2());
         } else if (ctx.IN() != null) {
-            comp = new CompNode(ctx.IN());
+            comp = new CompOpNode(ctx.IN());
         } else if (ctx.NOT() != null) {
-            comp = new CompNode(ctx.NOT());
+            comp = new CompOpNode(ctx.NOT());
         } else if (ctx.IS() != null) {
-            comp = new CompNode(ctx.IS());
+            comp = new CompOpNode(ctx.IS());
         }
 
         return comp;

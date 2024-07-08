@@ -62,7 +62,10 @@ public class TrailerNode implements Node {
     // TODO: add code generation for trailer node
     @Override
     public String codeGeneration() {
-        return "";
+        if (arglist != null) {
+            return arglist.codeGeneration();
+        }
+        return "Error: todo trailers";
     }
 
     @Override

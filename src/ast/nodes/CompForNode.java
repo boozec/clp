@@ -38,7 +38,7 @@ public class CompForNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for arglist node
+    // TODO: add code generation for comp_for node
     @Override
     public String codeGeneration() {
         return "";

@@ -32,7 +32,7 @@ public class CompIterNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for arglist node
+    // TODO: add code generation for comp_iter node
     @Override
     public String codeGeneration() {
         return "";

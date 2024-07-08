@@ -32,10 +32,15 @@ public class SimpleStmtsNode implements Node {
         return new VoidType();
     }
 
-    // TODO: Code generation for SimpleStmtsNode
     @Override
     public String codeGeneration() {
-        return "";
+        String str = "";
+
+        for (Node stmt : stmts) {
+            str += stmt.codeGeneration();
+        }
+
+        return str;
     }
 
     @Override

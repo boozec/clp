@@ -5,6 +5,11 @@ import javax.swing.*;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
 
+import java.nio.file.StandardOpenOption;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import ast.*;
 import ast.nodes.*;
 import parser.*;
@@ -62,6 +67,14 @@ public class Main {
             } else {
                 System.out.println("Visualizing AST...");
                 System.out.println(ast.toPrint(""));
+                System.out.println("Creating VM code...");
+                String prog = ast.codeGeneration();
+                Path file = Paths.get("code.asm");
+                if(!Files.exists(file)) {
+                    Files.createFile(file);
+                }
+                Files.write(file, prog.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+                System.out.println("Done!");
             }
         } catch (Exception e) {
             e.printStackTrace();

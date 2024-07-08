@@ -61,10 +61,13 @@ public class TestlistCompNode implements Node {
         return new VoidType();
     }
 
-    // TODO: code generation for expr list
     @Override
     public String codeGeneration() {
-        return "";
+        String str = "";
+        for (var param : exprs) {
+            str += param.codeGeneration();
+        }
+        return str;
     }
 
     @Override

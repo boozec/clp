@@ -58,10 +58,13 @@ public class ArglistNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for arglist node
     @Override
     public String codeGeneration() {
-        return "";
+        String str = "";
+        for (Node arg : arguments) {
+            str += arg.codeGeneration() + "pushr A0\n";
+        }
+        return str;
     }
 
     @Override

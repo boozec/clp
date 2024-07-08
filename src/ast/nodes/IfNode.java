@@ -4,6 +4,7 @@ import ast.types.*;
 import java.util.ArrayList;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
+import codegen.Label;
 
 /**
  * Node for the `if` statement of the grammar.
@@ -11,13 +12,13 @@ import semanticanalysis.SymbolTable;
 public class IfNode implements Node {
 
     private final Node guard;
-    private final Node thenbranch;
-    private final Node elsebranch;
+    private final Node thenBranch;
+    private final Node elseBranch;
 
-    public IfNode(Node guard, Node thenbranch, Node elsebranch) {
+    public IfNode(Node guard, Node thenBranch, Node elseBranch) {
         this.guard = guard;
-        this.thenbranch = thenbranch;
-        this.elsebranch = elsebranch;
+        this.thenBranch = thenBranch;
+        this.elseBranch = elseBranch;
     }
 
     @Override
@@ -25,9 +26,9 @@ public class IfNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         errors.addAll(guard.checkSemantics(ST, _nesting));
-        errors.addAll(thenbranch.checkSemantics(ST, _nesting));
-        if (elsebranch != null) {
-            errors.addAll(elsebranch.checkSemantics(ST, _nesting));
+        errors.addAll(thenBranch.checkSemantics(ST, _nesting));
+        if (elseBranch != null) {
+            errors.addAll(elseBranch.checkSemantics(ST, _nesting));
         }
 
         return errors;
@@ -37,8 +38,8 @@ public class IfNode implements Node {
     @Override
     public Type typeCheck() {
         if (guard.typeCheck() instanceof BoolType) {
-            Type thenexp = thenbranch.typeCheck();
-            Type elseexp = elsebranch.typeCheck();
+            Type thenexp = thenBranch.typeCheck();
+            Type elseexp = elseBranch.typeCheck();
             if (thenexp.getClass().equals(elseexp.getClass())) {
                 return thenexp; 
             }else {
@@ -51,18 +52,27 @@ public class IfNode implements Node {
         }
     }
 
-    // TODO: add code generation for if
     @Override
     public String codeGeneration() {
-        return "";
+        String thenLabel = Label.newBasic("then");
+        String endLabel = Label.newBasic("end");
+
+        String guardS = guard.codeGeneration();
+        String thenS = thenBranch.codeGeneration();
+        String elseS = elseBranch.codeGeneration();
+
+        // Assumo che la guardia sia un dato booleano o una operazione booleana che mette in AO il valore true (1) o false (0)
+        return  guardS + "jeq AO 1 " + thenLabel + "\n" +     // Controllo che A0 sia true (1). Se vero faccio jump alla
+                elseS + "b " + endLabel + "\n" +                // thenBranch, altrimenti eseguo la elseBranch e jumpo alla fine
+                thenLabel + ":\n" + thenS + endLabel + ":\n";
     }
 
     @Override
     public String toPrint(String prefix) {
-        String str = prefix + "If\n" + guard.toPrint(prefix + "  ") + thenbranch.toPrint(prefix + "  ");
+        String str = prefix + "If\n" + guard.toPrint(prefix + "  ") + thenBranch.toPrint(prefix + "  ");
 
-        if (elsebranch != null) {
-            str += elsebranch.toPrint(prefix + "  ");
+        if (elseBranch != null) {
+            str += elseBranch.toPrint(prefix + "  ");
         }
 
         return str;

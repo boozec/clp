@@ -8,6 +8,7 @@ import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 import ast.types.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import codegen.Label;
 
 /**
  * Node for the `funcdef` statement of the grammar.
@@ -17,11 +18,13 @@ public class FuncdefNode implements Node {
     private final TerminalNode name;
     private final Node paramlist;
     private final Node block;
+    private final String funLabel;
 
     public FuncdefNode(TerminalNode name, Node paramlist, Node block) {
         this.name = name;
         this.paramlist = paramlist;
         this.block = block;
+        this.funLabel = Label.newFun("fun");
     }
 
     @Override
@@ -29,7 +32,7 @@ public class FuncdefNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList<>();
         int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
         Type returnType = this.block.typeCheck();
-        FunctionType ft = new FunctionType(paramNumber, returnType);
+        FunctionType ft = new FunctionType(paramNumber, returnType, funLabel);
 
         ST.insert(this.name.toString(), ft, _nesting, "");
 
@@ -60,10 +63,15 @@ public class FuncdefNode implements Node {
         return new VoidType();
     }
 
-    // TODO: code generation for funcdef
+    // taken from slide 56 of CodeGeneration.pdf 
     @Override
     public String codeGeneration() {
-        return "";
+        int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
+        String paramNS = String.valueOf(paramNumber);
+        String blockS = block.codeGeneration();
+        String skipL = Label.newBasic("skip");
+        // nel block c'è il return che mette a posto l'RA
+        return  "b " + skipL + "\n" + funLabel + ":\npushr RA\n" + blockS + skipL + ":\n";
     }
 
     @Override

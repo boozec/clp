@@ -39,7 +39,9 @@ public class ReturnStmtNode implements Node {
     // TODO: add code generation for return stmt
     @Override
     public String codeGeneration() {
-        return "";
+        // dovrei mettere paramNumberString ma non so come recuperarlo
+        // "popr RA\naddi SP " + paramNS come sfaccimma facciamo + "\npopr FP\nrsub RA\n"
+        return "popr RA\naddi SP 1\npopr FP\nrsub RA\n";
     }
 
     @Override

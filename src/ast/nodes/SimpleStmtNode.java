@@ -50,10 +50,26 @@ public class SimpleStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for SimpleStmtNode
     @Override
     public String codeGeneration() {
-        return "";
+        if (assignment != null) {
+            return assignment.codeGeneration();
+        }
+
+        if (expr != null) {
+            return expr.codeGeneration();
+        }
+
+        if (returnStmt != null) {
+            return returnStmt.codeGeneration();
+        }
+
+        // not supported
+        // if (importStmt != null) {
+        //     return importStmt.codeGeneration();
+        // }
+
+        return "Error: everything is null in Compound node";
     }
 
     @Override

@@ -32,6 +32,17 @@ public class BlockNode extends RootNode {
     }
 
     @Override
+    public String codeGeneration() {
+        String str = "";
+        
+        for (Node child : childs) {
+            str += child.codeGeneration();
+        }
+
+        return str;
+    }
+
+    @Override
     public String toPrint(String prefix) {
         String str = prefix + "Block\n";
 

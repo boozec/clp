@@ -50,10 +50,25 @@ public class CompoundNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for CompoundNode
     @Override
     public String codeGeneration() {
-        return "";
+        if (ifNode != null) {
+            return ifNode.codeGeneration();
+        }
+
+        if (funcDef != null) {
+            return funcDef.codeGeneration();
+        }
+
+        if (forStmt != null) {
+            return forStmt.codeGeneration();
+        }
+
+        if (whileStmt != null) {
+            return whileStmt.codeGeneration();
+        }
+
+        return "Error: everything is null in Compound node\n";
     }
 
     @Override
