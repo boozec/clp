@@ -73,7 +73,7 @@ public class ExprNode implements Node {
                 String funName = atom.getId();
 
                 // TODO: it isnt a function, it could be a variable
-                System.out.println("vacca" + ST); 
+                System.out.println("vacca" + ST);
                 STentry fun = ST.lookup(funName);
                 System.out.println(fun);
 
@@ -258,19 +258,34 @@ public class ExprNode implements Node {
                 ops = "mul";
                 break;
             case "/":
-                ops = "div"; // TODO: controllare che sia divisione intera
+                ops = "div";
                 break;
             default:
                 ops = "Error: cannot manage op " + op;
         }
-        return ls + "pushr A0\n" + rs + "popr T1\n" + ops + " T1 A0\npopr A0\n";
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                ops + " T1 A0\n" +
+                "popr A0\n";
     }
 
     public String modCodeGen(Node leftE, Node rightE) {
-        // String ls = leftE.codeGeneration();
-        // String rs = rightE.codeGeneration();
-
-        return "TODO: operazione modulo";
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls +
+                "pushr A0\n" +
+                "pushr A0\n" + // lo metto due volte perché mi serve per dopo
+                rs +
+                "popr T1\n" +
+                "div T1 A0\n" + // divido i due numeri
+                "popr T1\n" +
+                "mul T1 A0\n" + // moltiplico il risultato della divisione con il numero a
+                "popr A0\n" + // destra dell'operazione e lo metto in A0
+                "popr T1\n" + // recupero il numero a sinistra messo nella stack in precedenza
+                "sub T1 A0\n" + // sottraggo i due numeri ottenendo il modulo
+                "popr A0\n";
     }
 
     // ATTENZIONE: per le operazioni booleane assumiammo che False sia sempre 0 e
