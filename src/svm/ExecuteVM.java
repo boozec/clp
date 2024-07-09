@@ -1,5 +1,7 @@
 package svm;
 
+import java.util.concurrent.TimeUnit;
+
 public class ExecuteVM {
     
     public static final int CODESIZE = 1000 ;
@@ -27,7 +29,7 @@ public class ExecuteVM {
     		for (int i = MEMSIZE-1; i > sp ; i--){
     			System.out.print("\t" + memory[i]) ; 			
     		}
-    		System.out.println("\t ------" + "SP = " + sp + ", FP = " + fp + ", AL = " + al + ", RA = " + ra + ", A0 = " + a0 + ", T1 = " + t1  ) ;
+    		System.out.println(" ----- " + "SP = " + sp + ", FP = " + fp + ", AL = " + al + ", RA = " + ra + ", A0 = " + a0 + ", T1 = " + t1  ) ;
     }
   
     public int read(String _strg) {
@@ -100,6 +102,12 @@ public class ExecuteVM {
     	int j = 0 ;
  
     	while ( true ) {
+			// try {
+			// 	TimeUnit.SECONDS.sleep(1);
+			// } catch (InterruptedException e) {
+			// 	// TODO Auto-generated catch block
+			// 	e.printStackTrace();
+			// }
     	    StampaMem(j) ; j=j+1 ;
     	  	AssemblyClass bytecode = code[ip] ; // fetch
             int tmp ;
@@ -118,7 +126,7 @@ public class ExecuteVM {
             	  		ip = ip+1 ;
             	  		break;
                 case SVMParser.LOAD:
-                	tmp = read(bytecode.getArg3()) - Integer.parseInt(bytecode.getArg2()) ;	 // was +
+                	tmp = read(bytecode.getArg3()) + Integer.parseInt(bytecode.getArg2()) ;	 // was +
                     if ((tmp < 0) || (tmp >= MEMSIZE)) {
                         System.out.println("\nError: Null pointer exception1");
                         return;
@@ -132,7 +140,7 @@ public class ExecuteVM {
                       ip = ip+1 ;
                     break;
                 case SVMParser.STORE:
-                	tmp = read(bytecode.getArg3()) - Integer.parseInt(bytecode.getArg2()) ;	// was +
+                	tmp = read(bytecode.getArg3()) + Integer.parseInt(bytecode.getArg2()) ;	// was +
                     if ((tmp < 0) || (tmp >= MEMSIZE)) {
                         System.out.println("\nError: Null pointer exception2");
                         return;

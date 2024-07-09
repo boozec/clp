@@ -14,8 +14,9 @@ public class AtomNode implements Node {
 
     protected String val;
     protected TestlistCompNode exprlist;
-    
+
     // very scatchy
+    protected int ns;
     protected int offset;
 
     public AtomNode(String val, Node exprlist) {
@@ -40,7 +41,9 @@ public class AtomNode implements Node {
                 errors.add(new SemanticError("name '" + getId() + "' is not defined."));
             } else {
                 // System.out.println("exist " + getId());
-                if ((typeCheck() instanceof AtomType)){
+                if ((typeCheck() instanceof AtomType)) {
+                    int varNs = ST.lookup(getId()).getNesting();
+                    ns = _nesting - varNs;
                     offset = ST.lookup(getId()).getOffset();
                 }
             }
@@ -98,9 +101,9 @@ public class AtomNode implements Node {
     @Override
     public String codeGeneration() {
         String baseData = "storei A0 ";
-        String baseAccess = "load A0 ";
+        // String baseAccess = "load A0 ";
 
-        if(exprlist != null) {
+        if (exprlist != null) {
             return exprlist.codeGeneration();
         }
         if (typeCheck() instanceof IntType) {
@@ -110,7 +113,12 @@ public class AtomNode implements Node {
             return baseData + boolValue(getId()) + "\n";
         }
         if (typeCheck() instanceof AtomType) {
-            return baseAccess + String.valueOf(offset) + "(FP)\n" ;
+            String str = "move AL T1\n";
+            for (int i = 0; i < ns; i++) {
+                str += "store T1 0(T1)\n";
+            }
+            str += "subi T1 " + (offset - 1) + "\nstore A0 0(T1)\n";
+            return str;
         }
         return "Error: could not parse an atom\n";
     }

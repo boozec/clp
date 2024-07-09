@@ -61,7 +61,8 @@ public class ExprNode implements Node {
 
         // check if the atom is a function
         if (atom != null && !trailers.isEmpty()) {
-
+            
+            System.out.println("EVAL ATOM " + atom.getId());
             // check if the atom is not a built-in function
             if (!Arrays.asList(bif).contains(atom.getId())) {
 
@@ -84,19 +85,22 @@ public class ExprNode implements Node {
                         FunctionType ft = (FunctionType) fun.getType();
                         paramNumber = ft.getParamNumber();
                         funL = ft.getLabel();
+                        System.out.println("FUN " + funL);
                         int argNumber = trailer.getArgumentNumber();
 
                         if (paramNumber != argNumber) {
                             errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber)
                                     + " positional arguments but " + String.valueOf(argNumber) + " were given."));
                         }
+                        for (var t : trailers) {
+                            errors.addAll(t.checkSemantics(ST, _nesting));
+                        } 
                     }
                 }
             } else {
                 for (var trailer : trailers) {
                     errors.addAll(trailer.checkSemantics(ST, _nesting));
                 }
-
             }
         } else if (atom != null) {
             errors.addAll(atom.checkSemantics(ST, _nesting));
@@ -126,18 +130,29 @@ public class ExprNode implements Node {
     @Override
     public String codeGeneration() {
         // check function call
+
         if (atom != null && !trailers.isEmpty()) {
             TrailerNode trailer = (TrailerNode) trailers.get(0);
             String trailerS = trailer.codeGeneration();
             // check if the atom is a built-in function
-            if (Arrays.asList(bif).contains(atom.getId())) {
-                // TODO: AGGIUNGERE COMMENTI PER SPIEGARE GESTIONE PRINT
-                return trailerS;
-            }
+            // if (Arrays.asList(bif).contains(atom.getId())) {
+            //     // TODO: AGGIUNGERE COMMENTI PER SPIEGARE GESTIONE PRINT
+            //     return trailerS;
+            // }
 
             // taken from slide 56 of CodeGeneration.pdf
-            String parNum = String.valueOf(paramNumber + 1);
-            return "pushr FP\n" + trailerS + "move SP FP\naddi FP " + parNum + "\njsub " + funL + "\n";
+            // String parNum = String.valueOf(paramNumber + 1);
+            System.out.println("LABEL " + funL);
+            return "pushr FP\n" +
+                    "move SP FP\n" +
+                    "addi FP 1\n" +
+                    "move AL T1\n" +
+                    "pushr T1\n" + // slide 62, non implementiamo il for loop perché non supportiamo funzioni
+                                   // annidate
+                    trailerS +
+                    "move FP AL\n" +
+                    "subi AL 1\n" +
+                    "jsub " + funL + "\n";
         }
 
         // check operation
@@ -159,14 +174,28 @@ public class ExprNode implements Node {
                 default:
                     return "Error: operation " + op + " not supported\n";
             }
-
         }
 
         // check comp operation
         if (compOp != null) {
             CompOpNode cmpOp = (CompOpNode) compOp;
             String op = cmpOp.getOp();
-            return boolOpCodeGen(exprs.get(0), exprs.get(1), op);
+            switch (op) {
+                case "==":
+                    return eqCodeGen(exprs.get(0), exprs.get(1));
+                case "!=":
+                    return neqCodeGen(exprs.get(0), exprs.get(1));
+                case "<":
+                    return lsCodeGen(exprs.get(0), exprs.get(1));
+                case "<=":
+                    return leqCodeGen(exprs.get(0), exprs.get(1));
+                case ">":
+                    return gtCodeGen(exprs.get(0), exprs.get(1));
+                case ">=":
+                    return gteCodeGen(exprs.get(0), exprs.get(1));
+                default:
+                    return "Error: operation " + op + " not supported\n";
+            }
         }
 
         if (atom != null) {
@@ -275,41 +304,118 @@ public class ExprNode implements Node {
         return exprs + "storei T1 1\nsub T1 A0\npopr A0\n";
     }
 
-    public String boolOpCodeGen(Node leftE, Node rightE, String op) {
+    public String eqCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        String ops;
-        switch (op) {
-            case ">":
-                ops = "bgt";
-                break;
-            case "<":
-                ops = "blt";
-                break;
-            case ">=":
-                ops = "bge";
-                break;
-            case "<=":
-                ops = "ble";
-                break;
-            case "==":
-                ops = "beq";
-                break;
-            case "!=":
-                // inverse of ==
-                return ls + "pushr A0\n" +
-                        rs + "popr T1\n" +
-                        "beq T1 A0 " + truel + "\nstorei A0 1\nb " + endl + "\n" + // storei A0 1 instead of storei A0 0
-                        truel + ":\nstorei A0 0\n" + endl + ":\n"; // storei A0 0 instead of storei A0 1
-            default:
-                return "Error: operation " + op + " not supported\n";
-        }
-        return ls + "pushr A0\n" +
-                rs + "popr T1\n" +
-                ops + " T1 A0 " + truel + "\nstorei A0 0\nb " + endl + "\n" +
-                truel + ":\nstorei A0 1\n" + endl + ":\n";
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                "beq T1 A0 " + truel + "\n" +
+                "storei A0 0\n" +
+                "b " + endl + "\n" +
+                truel + ":\n" +
+                "storei A0 1\n" +
+                endl + ":\n";
+    }
+
+    public String neqCodeGen(Node leftE, Node rightE) {
+        String truel = Label.newBasic("true");
+        String endl = Label.newBasic("end");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                "beq T1 A0 " + truel + "\n" +
+                "storei A0 1\n" +
+                "b " + endl + "\n" + // storei A0 1 instead of storei A0 0
+                truel + ":\n" +
+                "storei A0 0\n" + // storei A0 0 instead of storei A0 1
+                endl + ":\n";
+    }
+
+    public String lsCodeGen(Node leftE, Node rightE) {
+        String truel = Label.newBasic("true");
+        String truel2 = Label.newBasic("true");
+        String endl = Label.newBasic("end");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                "bleq T1 A0 " + truel + "\n" +
+                "storei A0 0\n" +
+                "b " + endl + "\n" +
+                truel + ":\n" +
+                "beq T1 A0 " + truel2 + "\n" +
+                "storei A0 1\n" +
+                "b " + endl + "\n" +
+                truel2 + ":\n" +
+                "storei A0 0\n" +
+                "b " + endl + "\n" +
+                endl + ":\n";
+    }
+
+    public String leqCodeGen(Node leftE, Node rightE) {
+        String truel = Label.newBasic("true");
+        String endl = Label.newBasic("end");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                "bleq T1 A0 " + truel + "\n" +
+                "storei A0 0\n" +
+                "b " + endl + "\n" +
+                truel + ":\n" +
+                "storei A0 1\n" +
+                endl + ":\n";
+    }
+
+    public String gtCodeGen(Node leftE, Node rightE) {
+        String truel = Label.newBasic("true");
+        String endl = Label.newBasic("end");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                "bleq A0 T1 " + truel + "\n" + // inverto A0 e T1 rispetto a leq
+                "storei A0 0\n" +
+                "b " + endl + "\n" +
+                truel + ":\n" +
+                "storei A0 1\n" +
+                endl + ":\n";
+    }
+
+    public String gteCodeGen(Node leftE, Node rightE) {
+        String truel = Label.newBasic("true");
+        String truel2 = Label.newBasic("true");
+        String endl = Label.newBasic("end");
+        String ls = leftE.codeGeneration();
+        String rs = rightE.codeGeneration();
+        return ls +
+                "pushr A0\n" +
+                rs +
+                "popr T1\n" +
+                "bleq T1 A0 " + truel + "\n" +
+                "storei A0 1\n" +
+                "b " + endl + "\n" +
+                truel + ":\n" +
+                "beq T1 A0 " + truel2 + "\n" +
+                "storei A0 0\n" +
+                "b " + endl + "\n" +
+                truel2 + ":\n" +
+                "storei A0 1\n" +
+                "b " + endl + "\n" +
+                endl + ":\n";
     }
 
 }

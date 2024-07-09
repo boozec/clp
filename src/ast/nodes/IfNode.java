@@ -41,8 +41,8 @@ public class IfNode implements Node {
             Type thenexp = thenBranch.typeCheck();
             Type elseexp = elseBranch.typeCheck();
             if (thenexp.getClass().equals(elseexp.getClass())) {
-                return thenexp; 
-            }else {
+                return thenexp;
+            } else {
                 System.out.println("Type Error: incompatible types in then and else branches.");
                 return new ErrorType();
             }
@@ -59,12 +59,22 @@ public class IfNode implements Node {
 
         String guardS = guard.codeGeneration();
         String thenS = thenBranch.codeGeneration();
-        String elseS = elseBranch.codeGeneration();
+        String elseS = "";
+        if (elseBranch != null) {
+            elseS = elseBranch.codeGeneration();
+        }
 
-        // Assumo che la guardia sia un dato booleano o una operazione booleana che mette in A0 il valore true (1) o false (0)
-        return  guardS + "storei T1 1\nbeq A0 T1 " + thenLabel + "\n" +     // Controllo che A0 sia true (1). Se vero faccio jump alla
-                elseS + "b " + endLabel + "\n" +                // thenBranch, altrimenti eseguo la elseBranch e jumpo alla fine
-                thenLabel + ":\n" + thenS + endLabel + ":\n";
+        // Assumo che la guardia sia un dato booleano o una operazione booleana che
+        // mette in A0 il valore true (1) o false (0)
+        return guardS +
+                "storei T1 1\n" +
+                "beq A0 T1 " + thenLabel + "\n" + // Controllo che A0 sia true (1). Se vero faccio jump alla
+                                                  // thenBranch, altrimenti eseguo la elseBranch e jumpo alla fine
+                elseS +
+                "b " + endLabel + "\n" +
+                thenLabel + ":\n" +
+                thenS +
+                endLabel + ":\n";
     }
 
     @Override

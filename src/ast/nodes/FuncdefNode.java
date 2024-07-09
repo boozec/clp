@@ -44,12 +44,11 @@ public class FuncdefNode implements Node {
 
         ST.insert(funName, ft, _nesting + 1, "");
 
+        // Offset is increased for the possible return value
         if (paramlist != null) {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
 
-        // TODO: think to the offset
-        // Offset is increased for the possible return value
         ST.increaseoffset();
 
         errors.addAll(block.checkSemantics(ST, _nesting + 1));
@@ -67,14 +66,18 @@ public class FuncdefNode implements Node {
         return new VoidType();
     }
 
-    // taken from slide 56 of CodeGeneration.pdf 
+    // taken from slide 56 of CodeGeneration.pdf
     @Override
     public String codeGeneration() {
         Label.setFuntrace(this.name.toString());
         String blockS = block.codeGeneration();
-        String skipL = Label.newBasic("skip");
         // nel block c'è il return che mette a posto l'RA
-        return  "b " + skipL + "\n" + funLabel + ":\npushr RA\n" + blockS + skipL + ":\n";
+
+        String funS = funLabel + ":\n" +
+                "pushr RA\n" +
+                blockS;
+        Label.addFunDef(funS);
+        return "";
     }
 
     @Override

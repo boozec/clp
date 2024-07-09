@@ -17,7 +17,7 @@ public class ReturnStmtNode implements Node {
     private final Node exprList;
 
     // VERY scatchy
-    private int pm;
+    private int paramNumber;
 
     public ReturnStmtNode(Node exprList) {
         this.exprList = exprList;
@@ -30,7 +30,7 @@ public class ReturnStmtNode implements Node {
         String id = Label.getFuntrace();
         STentry ftEntry = ST.lookup(id);
         FunctionType ft = (FunctionType) ftEntry.getType();
-        this.pm = ft.getParamNumber();
+        this.paramNumber = ft.getParamNumber();
         if (this.exprList != null) {
             errors.addAll(this.exprList.checkSemantics(ST, _nesting));
         }
@@ -50,8 +50,15 @@ public class ReturnStmtNode implements Node {
     @Override
     public String codeGeneration() {
         String expS = exprList.codeGeneration();
-        String paramNS = String.valueOf(pm);
-        return expS + "popr RA\naddi SP " + paramNS + "\npopr FP\nrsub RA\n";
+        return expS +
+                "popr RA\n" +
+                "addi SP " + paramNumber + "\n" +
+                "pop\n" +
+                "store FP 0(FP)\n" +
+                "move FP AL\n" +
+                "subi AL 1\n" +
+                "pop\n" +
+                "rsub RA\n";
     }
 
     @Override
