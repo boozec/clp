@@ -30,11 +30,11 @@ public class TestlistCompNode implements Node {
             ST.insert(id, t, _nesting, "");
             // errors.addAll(comp.checkSemantics(ST, _nesting));
         } else {
-            // TODO: controllare per bene questo ramo
+            // TODO: controllare per bene questo ramo e aggiungere commenti
             // if comp is not set, then exprs is a list of 1 or more element)
             for (var param : exprs) {
-                var exp = (ExprNode) param;
-                if (exp.getId() != null) {
+                var exp = (ExprNode) param; 
+                if (exp.getId() != null && !exp.isFunctionCall()) {
                     ST.insert(exp.getId(), exp.typeCheck(), _nesting, "");
                 }
                 errors.addAll(param.checkSemantics(ST, _nesting));

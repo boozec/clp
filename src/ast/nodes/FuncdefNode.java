@@ -44,11 +44,11 @@ public class FuncdefNode implements Node {
 
         ST.insert(funName, ft, _nesting + 1, "");
 
-        // Offset is increased for the possible return value
         if (paramlist != null) {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
-
+        
+        // Offset is increased for the possible return value
         ST.increaseoffset();
 
         errors.addAll(block.checkSemantics(ST, _nesting + 1));

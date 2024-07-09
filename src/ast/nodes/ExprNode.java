@@ -3,6 +3,9 @@ package ast.nodes;
 import ast.types.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.antlr.v4.parse.ANTLRParser.id_return;
+
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -58,11 +61,8 @@ public class ExprNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
-        if(op != null) {
-            System.out.println("OP" + op);
-        }
         // check if the atom is a function
-        if (atom != null && !trailers.isEmpty()) {
+        if (isFunctionCall()) {
 
             // check if the atom is not a built-in function
             if (!Arrays.asList(bif).contains(atom.getId())) {
@@ -73,17 +73,16 @@ public class ExprNode implements Node {
                 String funName = atom.getId();
 
                 // TODO: it isnt a function, it could be a variable
+                System.out.println("vacca" + ST); 
                 STentry fun = ST.lookup(funName);
+                System.out.println(fun);
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
                     if (!(fun.getType() instanceof FunctionType)) {
-                        System.out.println("ERROR: not a function type");
-                        for (var t : trailers) {
-                            errors.addAll(t.checkSemantics(ST, _nesting));
-                        }
-
+                        System.out.println("ERROR: not a function type " + atom.getId());
                     } else {
                         FunctionType ft = (FunctionType) fun.getType();
+                        System.out.println("trovata " + ft);
                         paramNumber = ft.getParamNumber();
                         funL = ft.getLabel();
                         int argNumber = trailer.getArgumentNumber();
@@ -92,9 +91,9 @@ public class ExprNode implements Node {
                             errors.add(new SemanticError(funName + "() takes " + String.valueOf(paramNumber)
                                     + " positional arguments but " + String.valueOf(argNumber) + " were given."));
                         }
-                        for (var t : trailers) {
-                            errors.addAll(t.checkSemantics(ST, _nesting));
-                        }
+                    }
+                    for (var t : trailers) {
+                        errors.addAll(t.checkSemantics(ST, _nesting));
                     }
                 }
             } else {
@@ -127,16 +126,19 @@ public class ExprNode implements Node {
         return new VoidType();
     }
 
+    public boolean isFunctionCall() {
+        return atom != null && !trailers.isEmpty();
+    }
+
     @Override
     public String codeGeneration() {
-        
+
         // check function call
-        if (atom != null && !trailers.isEmpty()) {
+        if (isFunctionCall()) {
             TrailerNode trailer = (TrailerNode) trailers.get(0);
             String trailerS = trailer.codeGeneration();
-            // check if the atom is a built-in function
+            // if the atom is a built-in function. return the trailer's content
             if (Arrays.asList(bif).contains(atom.getId())) {
-                // TODO: AGGIUNGERE COMMENTI PER SPIEGARE GESTIONE PRINT
                 return trailerS;
             }
 

@@ -25,9 +25,9 @@ public class ArglistNode implements Node {
             if (arg instanceof ExprNode) {
                 ExprNode argExpr = (ExprNode) arg;
                 String argName = argExpr.getId();
+                errors.addAll(arg.checkSemantics(ST, _nesting));
 
-                // TODO: check fucking IntType for params
-                // TODO: remove fucking comments
+                // TODO: check IntType for params
                 if (argName != null) {
                     if (Arrays.asList(bif).contains(argName)) {
                         continue;
@@ -41,7 +41,6 @@ public class ArglistNode implements Node {
                         errors.add(new SemanticError("name '" + argName + "' is not defined."));
                     }
                 }
-                errors.addAll(arg.checkSemantics(ST, _nesting));
             }
         }
 

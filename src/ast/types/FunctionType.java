@@ -32,4 +32,9 @@ public class FunctionType extends Type {
     public String toPrint(String prefix) {
         return prefix + "Function\n";
     }
+
+    @Override
+    public String toString() {
+        return "NP: " + paramNumber + " RT: " + returnType + " L: " + label;
+    }
 }
