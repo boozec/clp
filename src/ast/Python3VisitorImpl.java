@@ -396,12 +396,24 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             op = ctx.NOT().toString();
         }
 
+        if (ctx.AND() != null) {
+            op = ctx.AND().toString();
+        }
+
+        if (ctx.OR() != null) {
+            op = ctx.OR().toString();
+        }
+
         if (ctx.STAR() != null) {
             op = ctx.STAR().toString();
         }
 
         if (ctx.DIV() != null) {
             op = ctx.DIV().toString();
+        }
+
+        if (ctx.MOD() != null) {
+            op = ctx.MOD().toString();
         }
 
         if (ctx.atom() != null) {

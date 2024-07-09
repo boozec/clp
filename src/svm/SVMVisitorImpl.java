@@ -23,7 +23,6 @@ public class SVMVisitorImpl extends SVMBaseVisitor<Void> {
                 if (code[tmp] == null) {
                 	code[tmp] =  new AssemblyClass(labelAdd.get(s), null, null, null);
                 } else {
-					System.out.println(labelRef);
                 	code[tmp].setArg1(labelAdd.get(s).toString()); 
                 }
             }

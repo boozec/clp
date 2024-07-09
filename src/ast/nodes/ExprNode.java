@@ -58,11 +58,12 @@ public class ExprNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
-
+        if(op != null) {
+            System.out.println("OP" + op);
+        }
         // check if the atom is a function
         if (atom != null && !trailers.isEmpty()) {
-            
-            System.out.println("EVAL ATOM " + atom.getId());
+
             // check if the atom is not a built-in function
             if (!Arrays.asList(bif).contains(atom.getId())) {
 
@@ -85,7 +86,6 @@ public class ExprNode implements Node {
                         FunctionType ft = (FunctionType) fun.getType();
                         paramNumber = ft.getParamNumber();
                         funL = ft.getLabel();
-                        System.out.println("FUN " + funL);
                         int argNumber = trailer.getArgumentNumber();
 
                         if (paramNumber != argNumber) {
@@ -94,7 +94,7 @@ public class ExprNode implements Node {
                         }
                         for (var t : trailers) {
                             errors.addAll(t.checkSemantics(ST, _nesting));
-                        } 
+                        }
                     }
                 }
             } else {
@@ -129,20 +129,17 @@ public class ExprNode implements Node {
 
     @Override
     public String codeGeneration() {
+        
         // check function call
-
         if (atom != null && !trailers.isEmpty()) {
             TrailerNode trailer = (TrailerNode) trailers.get(0);
             String trailerS = trailer.codeGeneration();
             // check if the atom is a built-in function
-            // if (Arrays.asList(bif).contains(atom.getId())) {
-            //     // TODO: AGGIUNGERE COMMENTI PER SPIEGARE GESTIONE PRINT
-            //     return trailerS;
-            // }
+            if (Arrays.asList(bif).contains(atom.getId())) {
+                // TODO: AGGIUNGERE COMMENTI PER SPIEGARE GESTIONE PRINT
+                return trailerS;
+            }
 
-            // taken from slide 56 of CodeGeneration.pdf
-            // String parNum = String.valueOf(paramNumber + 1);
-            System.out.println("LABEL " + funL);
             return "pushr FP\n" +
                     "move SP FP\n" +
                     "addi FP 1\n" +
@@ -283,7 +280,11 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("endAnd");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls + "storei T1 0\nbeq A0 T1 " + endl + "\n" + rs + endl + "\n";
+        return ls +
+                "storei T1 0\n" +
+                "beq A0 T1 " + endl + "\n" +
+                rs +
+                endl + ":\n";
     }
 
     // Ottimizzazione: se il valore a sinistra è vera (1), l'espressione è
@@ -292,7 +293,11 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("endOr");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls + "storei T1 1\nbeq A0 T1 " + endl + "\n" + rs + endl + "\n";
+        return ls +
+                "storei T1 1\n" +
+                "beq A0 T1 " + endl + "\n" +
+                rs +
+                endl + ":\n";
     }
 
     // Viene usata l'operazione SUB
@@ -301,7 +306,10 @@ public class ExprNode implements Node {
     // Stessa tabella di verità dell'NOT
     public String notCodeGen(Node expr) {
         String exprs = expr.codeGeneration();
-        return exprs + "storei T1 1\nsub T1 A0\npopr A0\n";
+        return exprs +
+                "storei T1 1\n" +
+                "sub T1 A0\n" +
+                "popr A0\n";
     }
 
     public String eqCodeGen(Node leftE, Node rightE) {

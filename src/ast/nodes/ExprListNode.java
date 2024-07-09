@@ -51,8 +51,8 @@ public class ExprListNode implements Node {
     public String codeGeneration() {
         String str =  "";
 
-        for (var param : exprs) {
-            str += param.codeGeneration();
+        for (var exp : exprs) {
+            str += exp.codeGeneration();
         }
 
         return str;
