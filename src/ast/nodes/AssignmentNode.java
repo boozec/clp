@@ -2,6 +2,10 @@ package ast.nodes;
 
 import ast.types.*;
 import java.util.ArrayList;
+
+import org.antlr.v4.parse.ANTLRParser.id_return;
+
+import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -14,35 +18,41 @@ public class AssignmentNode implements Node {
     private final Node assign;
     private final ExprListNode rhr;
 
+    // useful for code gen
+    private int offset;
+    private boolean alreadyDef;
+
     public AssignmentNode(Node lhr, Node assign, Node rhr) {
         this.lhr = (ExprListNode) lhr;
         this.assign = assign;
         this.rhr = (ExprListNode) rhr;
+        this.alreadyDef = false;
     }
 
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        // errors.addAll(lhr.checkSemantics(ST, _nesting));
+        // DO NOT CHECK lhr
         errors.addAll(assign.checkSemantics(ST, _nesting));
         errors.addAll(rhr.checkSemantics(ST, _nesting));
 
         int lsize = lhr.getSize();
 
-        // FIXME: unused variable
-        // int rsize = rhr.getSize();
-        // if (lsize == rsize) {
         for (int i = 0; i < lsize; i++) {
             ExprNode latom = (ExprNode) lhr.getElem(i);
-            ST.insert(latom.getId(), new AtomType(), _nesting, "");
-            // ExprNode ratom = (ExprNode) rhr.getElem(i);
+            STentry e = ST.lookup(latom.getId());
+            if (e == null) {
+                ST.insert(latom.getId(), new AtomType(), _nesting, "");
+                e = ST.lookup(latom.getId());
+            } else {
+                int ns = e.getNesting();
+                if (_nesting == ns) {
+                    alreadyDef = true;
+                }
+            }
+            offset = e.getOffset();
         }
-        // } else {
-        // FIX: sgravata, da più problemi che altro
-        // errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
-        // }
-
         return errors;
     }
 
@@ -52,10 +62,24 @@ public class AssignmentNode implements Node {
         return rhr.typeCheck();
     }
 
-    // TODO: add code generation for assignment
     @Override
     public String codeGeneration() {
-        return "";
+        String rhrString = rhr.codeGeneration();
+
+        String str = "";
+        ExprNode latom = (ExprNode) lhr.getElem(0);
+        // se si sta definendo una nuova variabile ci sarà sempre alla fine store A0
+        // 0(T1)\n quindi sostituiamo store con load
+        String whole = latom.codeGeneration();
+        // TODO: DOCUMENTARE STA ROBA
+        String withoutStore = whole.substring(0, whole.length() - 17);
+        str += withoutStore + offset;
+        if (!alreadyDef) {
+            str += "\npushr A0\n";
+        } else {
+            str += "\nload A0 0(T1)\n";
+        }
+        return rhrString + str;
     }
 
     @Override

@@ -126,7 +126,7 @@ public class ExecuteVM {
             	  		ip = ip+1 ;
             	  		break;
                 case SVMParser.LOAD:
-                	tmp = read(bytecode.getArg3()) + Integer.parseInt(bytecode.getArg2()) ;	 // was +
+                	tmp = read(bytecode.getArg3()) + Integer.parseInt(bytecode.getArg2()) ;
                     if ((tmp < 0) || (tmp >= MEMSIZE)) {
                         System.out.println("\nError: Null pointer exception1");
                         return;
@@ -140,7 +140,7 @@ public class ExecuteVM {
                       ip = ip+1 ;
                     break;
                 case SVMParser.STORE:
-                	tmp = read(bytecode.getArg3()) + Integer.parseInt(bytecode.getArg2()) ;	// was +
+                	tmp = read(bytecode.getArg3()) + Integer.parseInt(bytecode.getArg2());
                     if ((tmp < 0) || (tmp >= MEMSIZE)) {
                         System.out.println("\nError: Null pointer exception2");
                         return;

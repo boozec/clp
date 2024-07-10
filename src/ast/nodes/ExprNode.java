@@ -73,16 +73,13 @@ public class ExprNode implements Node {
                 String funName = atom.getId();
 
                 // TODO: it isnt a function, it could be a variable
-                System.out.println("vacca" + ST);
                 STentry fun = ST.lookup(funName);
-                System.out.println(fun);
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
                     if (!(fun.getType() instanceof FunctionType)) {
                         System.out.println("ERROR: not a function type " + atom.getId());
                     } else {
                         FunctionType ft = (FunctionType) fun.getType();
-                        System.out.println("trovata " + ft);
                         paramNumber = ft.getParamNumber();
                         funL = ft.getLabel();
                         int argNumber = trailer.getArgumentNumber();

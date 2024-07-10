@@ -48,7 +48,7 @@ public class RootNode implements Node {
 
     @Override
     public String codeGeneration() {
-        String str = "";
+        String str = "pushr FP\npushr AL\n"; // workaround per SP = MEM - 1
 
         for (Node child : childs) {
             str += child.codeGeneration();

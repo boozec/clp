@@ -1,5 +1,5 @@
 
-num = 29
+num = 14
 
 def prime_numBIS(div):
     if (num >=1):

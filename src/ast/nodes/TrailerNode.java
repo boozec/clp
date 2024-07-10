@@ -65,7 +65,7 @@ public class TrailerNode implements Node {
         if (arglist != null) {
             return arglist.codeGeneration();
         }
-        return "Error: todo trailers";
+        return "";
     }
 
     @Override

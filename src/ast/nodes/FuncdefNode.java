@@ -30,7 +30,10 @@ public class FuncdefNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
         ArrayList<SemanticError> errors = new ArrayList<>();
-        int paramNumber = ((ParamlistNode) paramlist).getParamNumber();
+        int paramNumber = 0;
+        if (paramlist != null) {
+            paramNumber = ((ParamlistNode) paramlist).getParamNumber();
+        }
         Type returnType = this.block.typeCheck();
         FunctionType ft = new FunctionType(paramNumber, returnType, funLabel);
 
@@ -43,13 +46,14 @@ public class FuncdefNode implements Node {
         ST.add(HM);
 
         ST.insert(funName, ft, _nesting + 1, "");
+        ST.decreaseOffset();
 
         if (paramlist != null) {
             errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
         }
-        
+
         // Offset is increased for the possible return value
-        ST.increaseoffset();
+        ST.increaseOffset();
 
         errors.addAll(block.checkSemantics(ST, _nesting + 1));
 

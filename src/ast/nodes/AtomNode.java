@@ -45,6 +45,7 @@ public class AtomNode implements Node {
                     int varNs = ST.lookup(getId()).getNesting();
                     ns = _nesting - varNs;
                     offset = ST.lookup(getId()).getOffset();
+                    // System.out.println("ST " + ST);
                 }
             }
         }
@@ -117,7 +118,7 @@ public class AtomNode implements Node {
             for (int i = 0; i < ns; i++) {
                 str += "store T1 0(T1)\n";
             }
-            str += "subi T1 " + (offset - 1) + "\nstore A0 0(T1)\n";
+            str += "subi T1 " + offset + "\nstore A0 0(T1)\n";
             return str;
         }
         return "Error: could not parse an atom\n";

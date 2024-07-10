@@ -128,18 +128,30 @@ public class SymbolTable {
         offs = offs + 1;
 
         this.offset.add(offs);
-
     }
 
     /**
      * Increase the offset level.
      */
-    public void increaseoffset() {
+    public void increaseOffset() {
         int n = this.offset.size() - 1;
         int offs = this.offset.get(n);
         this.offset.remove(n);
 
         offs = offs + 1;
+
+        this.offset.add(offs);
+    }
+
+    /**
+     * Decrease the offset level.
+     */
+    public void decreaseOffset() {
+        int n = this.offset.size() - 1;
+        int offs = this.offset.get(n);
+        this.offset.remove(n);
+
+        offs = offs - 1;
 
         this.offset.add(offs);
     }
