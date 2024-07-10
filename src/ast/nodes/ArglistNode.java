@@ -18,14 +18,14 @@ public class ArglistNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var arg : arguments) {
             if (arg instanceof ExprNode) {
                 ExprNode argExpr = (ExprNode) arg;
                 String argName = argExpr.getId();
-                errors.addAll(arg.checkSemantics(ST, _nesting));
+                errors.addAll(arg.checkSemantics(ST, _nesting, ft));
 
                 // TODO: check IntType for params
                 if (argName != null) {

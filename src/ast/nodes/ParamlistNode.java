@@ -16,12 +16,12 @@ public class ParamlistNode implements Node {
         params = _params;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var param : params) {
-            errors.addAll(param.checkSemantics(ST, _nesting));
+            errors.addAll(param.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

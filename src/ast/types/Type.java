@@ -19,8 +19,8 @@ public class Type implements Node {
         return s;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         // It is never invoked
         return null;
     }

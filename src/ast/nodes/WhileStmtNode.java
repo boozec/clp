@@ -4,7 +4,6 @@ import ast.types.*;
 import java.util.ArrayList;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import codegen.Label;
 
 /**
  * Node for the `while_stmt` statement of the grammar.
@@ -19,12 +18,12 @@ public class WhileStmtNode implements Node {
         this.block = block;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        errors.addAll(expr.checkSemantics(ST, _nesting));
-        errors.addAll(block.checkSemantics(ST, _nesting));
+        errors.addAll(expr.checkSemantics(ST, _nesting, ft));
+        errors.addAll(block.checkSemantics(ST, _nesting, ft));
 
         return errors;
     }
@@ -37,17 +36,6 @@ public class WhileStmtNode implements Node {
     @Override
     public String codeGeneration() {
         return "";
-        // String startLabel = Label.newBasic("start");
-        // String endLabel = Label.newBasic("end");
-
-        // String exprS = expr.codeGeneration();
-        // String blockS = block.codeGeneration();
-
-        // // Assumo che l'espressione sia un dato booleano o una operazione booleana che mette in AO il valore true (1) o false (0)
-        // return  startLabel + ":\n" +
-        //         exprS + "\njeq A0 0 " + endLabel + "\n" +   // Controllo che A0 sia false (0). Se vero faccio jump alla fine,
-        //         blockS + "\nb " + startLabel +  "\n" +      // altrimenti eseguo la blockBranch e, finito, jumpo alla all'inzio
-        //         endLabel + ":\n";
     }
 
     @Override

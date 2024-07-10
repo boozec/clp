@@ -16,12 +16,12 @@ public class ExprListNode implements Node {
         this.exprs = exprs;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var expr : exprs) {
-            errors.addAll(expr.checkSemantics(ST, _nesting));
+            errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

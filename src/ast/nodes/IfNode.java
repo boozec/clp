@@ -21,14 +21,14 @@ public class IfNode implements Node {
         this.elseBranch = elseBranch;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        errors.addAll(guard.checkSemantics(ST, _nesting));
-        errors.addAll(thenBranch.checkSemantics(ST, _nesting));
+        errors.addAll(guard.checkSemantics(ST, _nesting, ft));
+        errors.addAll(thenBranch.checkSemantics(ST, _nesting, ft));
         if (elseBranch != null) {
-            errors.addAll(elseBranch.checkSemantics(ST, _nesting));
+            errors.addAll(elseBranch.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

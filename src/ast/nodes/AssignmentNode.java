@@ -3,8 +3,6 @@ package ast.nodes;
 import ast.types.*;
 import java.util.ArrayList;
 
-import org.antlr.v4.parse.ANTLRParser.id_return;
-
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -29,19 +27,22 @@ public class AssignmentNode implements Node {
         this.alreadyDef = false;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         // DO NOT CHECK lhr
-        errors.addAll(assign.checkSemantics(ST, _nesting));
-        errors.addAll(rhr.checkSemantics(ST, _nesting));
+        errors.addAll(assign.checkSemantics(ST, _nesting, ft));
+        errors.addAll(rhr.checkSemantics(ST, _nesting, ft));
 
         int lsize = lhr.getSize();
 
         for (int i = 0; i < lsize; i++) {
             ExprNode latom = (ExprNode) lhr.getElem(i);
             STentry e = ST.lookup(latom.getId());
+            if (ft != null) {
+                ft.addLocalVar();
+            }
             if (e == null) {
                 ST.insert(latom.getId(), new AtomType(), _nesting, "");
                 e = ST.lookup(latom.getId());

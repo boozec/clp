@@ -14,13 +14,13 @@ public class BlockNode extends RootNode {
         super(childs);
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Check semantics for each child
         for (Node child : childs) {
-            errors.addAll(child.checkSemantics(ST, _nesting));
+            errors.addAll(child.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

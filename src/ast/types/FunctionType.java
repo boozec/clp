@@ -8,11 +8,21 @@ public class FunctionType extends Type {
     private final int paramNumber;
     private final Type returnType;
     private final String label;
+    private int localvarNum;
 
     public FunctionType(int paramNumber, Type returnType, String label) {
         this.paramNumber = paramNumber;
         this.returnType = returnType;
         this.label = label;
+        this.localvarNum = 0;
+    }
+
+    public void addLocalVar() {
+        localvarNum++;
+    }
+
+    public int getLocalvarNum() {
+        return localvarNum;
     }
 
     // Return the number of the parameters

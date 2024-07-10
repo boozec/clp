@@ -1,11 +1,9 @@
 package ast.nodes;
 
 import ast.types.*;
-import codegen.Label;
 
 import java.util.ArrayList;
 
-import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -17,22 +15,22 @@ public class ReturnStmtNode implements Node {
     private final Node exprList;
 
     // VERY scatchy
+    private int localvar;
     private int paramNumber;
 
     public ReturnStmtNode(Node exprList) {
         this.exprList = exprList;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        String id = Label.getFuntrace();
-        STentry ftEntry = ST.lookup(id);
-        FunctionType ft = (FunctionType) ftEntry.getType();
+        // se sono in un return ft è sicuramente non nullo
+        this.localvar = ft.getLocalvarNum();
         this.paramNumber = ft.getParamNumber();
         if (this.exprList != null) {
-            errors.addAll(this.exprList.checkSemantics(ST, _nesting));
+            errors.addAll(this.exprList.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -50,6 +48,9 @@ public class ReturnStmtNode implements Node {
     @Override
     public String codeGeneration() {
         String expS = exprList.codeGeneration();
+        for (int i = 0; i < localvar; i++) {
+            expS += "pop\n";
+        }
         return expS +
                 "popr RA\n" +
                 "addi SP " + paramNumber + "\n" +

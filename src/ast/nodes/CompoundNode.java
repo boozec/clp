@@ -22,24 +22,24 @@ public class CompoundNode implements Node {
         this.whileStmt = whileStmt;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (ifNode != null) {
-            errors.addAll(ifNode.checkSemantics(ST, _nesting));
+            errors.addAll(ifNode.checkSemantics(ST, _nesting, ft));
         }
 
         if (funcDef != null) {
-            errors.addAll(funcDef.checkSemantics(ST, _nesting));
+            errors.addAll(funcDef.checkSemantics(ST, _nesting, ft));
         }
 
         if (forStmt != null) {
-            errors.addAll(forStmt.checkSemantics(ST, _nesting));
+            errors.addAll(forStmt.checkSemantics(ST, _nesting, ft));
         }
 
         if (whileStmt != null) {
-            errors.addAll(whileStmt.checkSemantics(ST, _nesting));
+            errors.addAll(whileStmt.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

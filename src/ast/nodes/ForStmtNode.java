@@ -32,8 +32,8 @@ public class ForStmtNode implements Node {
      * format, so we take the left element and save it in the SymbolicTable as
      * an atom.
      */
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Save every atom in the expression's list, except the last one
@@ -52,8 +52,8 @@ public class ForStmtNode implements Node {
         // ENHANCE: check that the comp_op is the `in` keyword
         ST.insert(atomLeft.getId(), atomLeft.typeCheck(), _nesting, "");
 
-        errors.addAll(exprList.checkSemantics(ST, _nesting));
-        errors.addAll(block.checkSemantics(ST, _nesting));
+        errors.addAll(exprList.checkSemantics(ST, _nesting, ft));
+        errors.addAll(block.checkSemantics(ST, _nesting, ft));
 
         return errors;
     }

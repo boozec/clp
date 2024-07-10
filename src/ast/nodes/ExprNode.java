@@ -4,8 +4,6 @@ import ast.types.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.antlr.v4.parse.ANTLRParser.id_return;
-
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -59,7 +57,7 @@ public class ExprNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
         // check if the atom is a function
         if (isFunctionCall()) {
@@ -67,7 +65,7 @@ public class ExprNode implements Node {
             // check if the atom is not a built-in function
             if (!Arrays.asList(bif).contains(atom.getId())) {
 
-                errors.addAll(atom.checkSemantics(ST, _nesting));
+                errors.addAll(atom.checkSemantics(ST, _nesting, ft));
 
                 TrailerNode trailer = (TrailerNode) trailers.get(0);
                 String funName = atom.getId();
@@ -76,12 +74,10 @@ public class ExprNode implements Node {
                 STentry fun = ST.lookup(funName);
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
-                    if (!(fun.getType() instanceof FunctionType)) {
-                        System.out.println("ERROR: not a function type " + atom.getId());
-                    } else {
-                        FunctionType ft = (FunctionType) fun.getType();
-                        paramNumber = ft.getParamNumber();
-                        funL = ft.getLabel();
+                    if ((fun.getType() instanceof FunctionType)) {
+                        FunctionType atomFt = (FunctionType) fun.getType();
+                        paramNumber = atomFt.getParamNumber();
+                        funL = atomFt.getLabel();
                         int argNumber = trailer.getArgumentNumber();
 
                         if (paramNumber != argNumber) {
@@ -90,24 +86,24 @@ public class ExprNode implements Node {
                         }
                     }
                     for (var t : trailers) {
-                        errors.addAll(t.checkSemantics(ST, _nesting));
+                        errors.addAll(t.checkSemantics(ST, _nesting, ft));
                     }
                 }
             } else {
                 for (var trailer : trailers) {
-                    errors.addAll(trailer.checkSemantics(ST, _nesting));
+                    errors.addAll(trailer.checkSemantics(ST, _nesting, ft));
                 }
             }
         } else if (atom != null) {
-            errors.addAll(atom.checkSemantics(ST, _nesting));
+            errors.addAll(atom.checkSemantics(ST, _nesting, ft));
         }
 
         if (compOp != null) {
-            errors.addAll(compOp.checkSemantics(ST, _nesting));
+            errors.addAll(compOp.checkSemantics(ST, _nesting, ft));
         }
 
         for (var expr : exprs) {
-            errors.addAll(expr.checkSemantics(ST, _nesting));
+            errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

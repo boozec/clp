@@ -18,8 +18,8 @@ public class TestlistCompNode implements Node {
         this.comp = (CompForNode) comp;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (comp != null) {
@@ -28,7 +28,7 @@ public class TestlistCompNode implements Node {
             String id = ((ExprNode) exprs.get(0)).getId();
             Type t = ((ExprNode) exprs.get(0)).typeCheck();
             ST.insert(id, t, _nesting, "");
-            // errors.addAll(comp.checkSemantics(ST, _nesting));
+            // errors.addAll(comp.checkSemantics(ST, _nesting, ft));
         } else {
             // TODO: controllare per bene questo ramo e aggiungere commenti
             // if comp is not set, then exprs is a list of 1 or more element)
@@ -37,7 +37,7 @@ public class TestlistCompNode implements Node {
                 if (exp.getId() != null && !exp.isFunctionCall()) {
                     ST.insert(exp.getId(), exp.typeCheck(), _nesting, "");
                 }
-                errors.addAll(param.checkSemantics(ST, _nesting));
+                errors.addAll(param.checkSemantics(ST, _nesting, ft));
             }
         }
 

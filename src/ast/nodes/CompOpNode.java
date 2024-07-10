@@ -22,8 +22,8 @@ public class CompOpNode implements Node {
         return op.toString();
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         return new ArrayList<>();
     }
 

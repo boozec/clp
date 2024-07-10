@@ -2,6 +2,7 @@ package ast.nodes;
 
 import ast.types.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import semanticanalysis.SemanticError;
@@ -33,25 +34,27 @@ public class AtomNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (val != null) {
-            if ((typeCheck() instanceof AtomType) && ST.nslookup(getId()) < 0) {
-                errors.add(new SemanticError("name '" + getId() + "' is not defined."));
-            } else {
-                // System.out.println("exist " + getId());
-                if ((typeCheck() instanceof AtomType)) {
-                    int varNs = ST.lookup(getId()).getNesting();
-                    ns = _nesting - varNs;
-                    offset = ST.lookup(getId()).getOffset();
-                    // System.out.println("ST " + ST);
+            if (!Arrays.asList(bif).contains(getId())) {
+                if ((typeCheck() instanceof AtomType) && ST.nslookup(getId()) < 0) {
+                    errors.add(new SemanticError("name '" + getId() + "' is not defined."));
+                } else {
+                    // System.out.println("exist " + getId());
+                    if ((typeCheck() instanceof AtomType)) {
+                        int varNs = ST.lookup(getId()).getNesting();
+                        ns = _nesting - varNs;
+                        offset = ST.lookup(getId()).getOffset();
+                        // System.out.println("ST " + ST);
+                    }
                 }
             }
         }
 
         if (exprlist != null) {
-            errors.addAll(exprlist.checkSemantics(ST, _nesting));
+            errors.addAll(exprlist.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

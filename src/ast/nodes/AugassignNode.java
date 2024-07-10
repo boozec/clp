@@ -19,8 +19,8 @@ public class AugassignNode implements Node {
         this.val = val;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         return new ArrayList<>();
     }
 

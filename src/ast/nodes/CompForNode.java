@@ -21,14 +21,14 @@ public class CompForNode implements Node {
         this.comp_iter = (CompIterNode) comp_iter;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        errors.addAll(exprlist.checkSemantics(ST, _nesting));
-        errors.addAll(single_expr.checkSemantics(ST, _nesting));
+        errors.addAll(exprlist.checkSemantics(ST, _nesting, ft));
+        errors.addAll(single_expr.checkSemantics(ST, _nesting, ft));
         if (comp_iter != null) {
-            errors.addAll(comp_iter.checkSemantics(ST, _nesting));
+            errors.addAll(comp_iter.checkSemantics(ST, _nesting, ft));
         }
         return errors;
     }

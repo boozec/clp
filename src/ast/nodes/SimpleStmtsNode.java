@@ -16,12 +16,12 @@ public class SimpleStmtsNode implements Node {
         this.stmts = stmts;
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (Node stmt : stmts) {
-            errors.addAll(stmt.checkSemantics(ST, _nesting));
+            errors.addAll(stmt.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

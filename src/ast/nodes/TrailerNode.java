@@ -27,16 +27,16 @@ public class TrailerNode implements Node {
         this.isEmpty = (this.arglist == null && this.exprs.isEmpty() && this.methodCall == null);
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (arglist != null) {
-            errors.addAll(arglist.checkSemantics(ST, _nesting));
+            errors.addAll(arglist.checkSemantics(ST, _nesting, ft));
         }
 
         for (var expr : exprs) {
-            errors.addAll(expr.checkSemantics(ST, _nesting));
+            errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;

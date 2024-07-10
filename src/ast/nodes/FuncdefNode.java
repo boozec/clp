@@ -27,38 +27,37 @@ public class FuncdefNode implements Node {
         this.funLabel = Label.newFun("FUN");
     }
 
-    @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+        @Override
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
         int paramNumber = 0;
         if (paramlist != null) {
             paramNumber = ((ParamlistNode) paramlist).getParamNumber();
         }
         Type returnType = this.block.typeCheck();
-        FunctionType ft = new FunctionType(paramNumber, returnType, funLabel);
+        FunctionType newFt = new FunctionType(paramNumber, returnType, funLabel);
+
 
         String funName = this.name.toString();
-        Label.setFuntrace(funName);
-        ST.insert(funName, ft, _nesting, "");
+        ST.insert(funName, newFt, _nesting, "");
 
         HashMap<String, STentry> HM = new HashMap<>();
 
         ST.add(HM);
 
-        ST.insert(funName, ft, _nesting + 1, "");
+        ST.insert(funName, newFt, _nesting + 1, "");
         ST.decreaseOffset();
 
         if (paramlist != null) {
-            errors.addAll(paramlist.checkSemantics(ST, _nesting + 1));
+            errors.addAll(paramlist.checkSemantics(ST, _nesting + 1, newFt));
         }
 
         // Offset is increased for the possible return value
         ST.increaseOffset();
 
-        errors.addAll(block.checkSemantics(ST, _nesting + 1));
+        errors.addAll(block.checkSemantics(ST, _nesting + 1, newFt));
 
         // return to the outer block
-        Label.setFuntrace("root"); // only one level considered
         ST.remove();
 
         return errors;
@@ -73,7 +72,6 @@ public class FuncdefNode implements Node {
     // taken from slide 56 of CodeGeneration.pdf
     @Override
     public String codeGeneration() {
-        Label.setFuntrace(this.name.toString());
         String blockS = block.codeGeneration();
         // nel block c'è il return che mette a posto l'RA
 

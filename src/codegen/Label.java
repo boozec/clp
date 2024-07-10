@@ -2,22 +2,9 @@ package codegen;
 
 public class Label {
 
-	private static String funtrace = "root";
 	private static String funDef = "";
 	private static int labelCounter = 0;
 	private static int functionLabelCounter = 0;
-
-	public Label() {
-		funtrace = "root";
-	}
-
-	public static void setFuntrace(String funtrace) {
-		Label.funtrace = funtrace;
-	}
-
-	public static String getFuntrace() {
-		return funtrace;
-	}
 
 	public static void addFunDef(String s) {
 		funDef += s;

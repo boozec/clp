@@ -57,7 +57,7 @@ public class Main {
             Python3VisitorImpl visitor = new Python3VisitorImpl();
             SymbolTable ST = new SymbolTable();
             Node ast = visitor.visit(tree);
-            ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
+            ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
                 System.out.println("You had " + errors.size() + " errors:");
