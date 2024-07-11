@@ -59,7 +59,6 @@ public class Main {
             SymbolTable ST = new SymbolTable();
 
             Node ast = visitor.visit(tree);
-            ControlFlowGraph cfg = visitor.getCFG();
             ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
@@ -68,6 +67,7 @@ public class Main {
                     System.out.println("\t" + e);
                 }
             } else {
+                /*
                 System.out.println("Visualizing AST...");
                 System.out.println(ast.toPrint(""));
                 System.out.println("Visualizing CFG...");
@@ -97,7 +97,8 @@ public class Main {
 
                 System.out.println("Starting Virtual Machine...");
                 ExecuteVM vm = new ExecuteVM(visitorSVM.code);
-                vm.cpu();
+                vm.cpu();*/
+                
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,5 +1,10 @@
-for i in range(3):
-    a = 1
-    
-if i == 0:
-    print("First iteration")
+a = 3
+b = 4
+
+i = a + b
+
+for i in range (1, 5):
+    if (i == 3):
+        break
+
+print (i)

@@ -4,26 +4,29 @@ import java.util.*;
 
 public class ControlFlowGraph {
     private Set<CFGNode> entryNodes;
+    private Set<CFGNode> exitNodes;
     private Map<CFGNode, List<CFGNode>> nodes;
-    private CFGNode exitNode;
 
     public ControlFlowGraph() {
         this.nodes = new HashMap<>();
         this.entryNodes = new HashSet<>();
-        this.exitNode = new CFGNode("exit");
-        addNode(exitNode);
+        this.exitNodes = new HashSet<>();
     }
 
     public void setEntryNodes(Set<CFGNode> entryNodes) {
         this.entryNodes = entryNodes;
     }
 
-    public Set<CFGNode> getEntryNodes() {
-        return entryNodes;
+    public void setExitNodes(Set<CFGNode> exitNodes) {
+        this.exitNodes = exitNodes;
     }
 
-    public CFGNode getExitNode() {
-        return exitNode;
+    public Set<CFGNode> getExitNodes() {
+        return exitNodes;
+    }
+
+    public Set<CFGNode> getEntryNodes() {
+        return entryNodes;
     }
 
     public void addNode(CFGNode node) {
