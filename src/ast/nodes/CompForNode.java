@@ -22,13 +22,13 @@ public class CompForNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        errors.addAll(exprlist.checkSemantics(ST, _nesting));
-        errors.addAll(single_expr.checkSemantics(ST, _nesting));
+        errors.addAll(exprlist.checkSemantics(ST, _nesting, ft));
+        errors.addAll(single_expr.checkSemantics(ST, _nesting, ft));
         if (comp_iter != null) {
-            errors.addAll(comp_iter.checkSemantics(ST, _nesting));
+            errors.addAll(comp_iter.checkSemantics(ST, _nesting, ft));
         }
         return errors;
     }
@@ -38,7 +38,9 @@ public class CompForNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for arglist node
+    /**
+     * We do not want to provide the code generation for the for list comprehension.
+     */
     @Override
     public String codeGeneration() {
         return "";

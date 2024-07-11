@@ -17,11 +17,11 @@ public class ExprListNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (var expr : exprs) {
-            errors.addAll(expr.checkSemantics(ST, _nesting));
+            errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -47,10 +47,15 @@ public class ExprListNode implements Node {
         return new VoidType();
     }
 
-    // TODO: code generation for expr list
     @Override
     public String codeGeneration() {
-        return "";
+        String str = "";
+
+        for (var exp : exprs) {
+            str += exp.codeGeneration();
+        }
+
+        return str;
     }
 
     @Override

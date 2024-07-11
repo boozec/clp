@@ -20,19 +20,18 @@ public class AugassignNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         return new ArrayList<>();
     }
 
-    // FIXME: use the right type
     @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
-    // TODO: add code generation for augassign node
     @Override
     public String codeGeneration() {
+        // We're just considering the `=` operation for this language.
         return "";
     }
 

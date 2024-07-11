@@ -19,11 +19,11 @@ public class WhileStmtNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        errors.addAll(expr.checkSemantics(ST, _nesting));
-        errors.addAll(block.checkSemantics(ST, _nesting));
+        errors.addAll(expr.checkSemantics(ST, _nesting, ft));
+        errors.addAll(block.checkSemantics(ST, _nesting, ft));
 
         return errors;
     }
@@ -33,7 +33,7 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for while
+    // TODO: add cgen per while (but it's not requested from the exercise)
     @Override
     public String codeGeneration() {
         return "";

@@ -19,7 +19,7 @@ public class DottedNameNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (int i = 0; i < names.size(); ++i) {
@@ -34,8 +34,10 @@ public class DottedNameNode implements Node {
         return new ImportType();
     }
 
-    // NOTE: we do not provide code generation for this node in the same way
-    // we do not want to do this for the import stm.
+    /**
+     * We do not provide code generation for this node in the same way
+     * we do not want to do this for the import stm.
+     */
     @Override
     public String codeGeneration() {
         return "";

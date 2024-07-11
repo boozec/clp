@@ -1,6 +1,8 @@
 package ast.nodes;
 
 import ast.types.*;
+import codegen.Label;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import semanticanalysis.*;
@@ -19,7 +21,7 @@ public class RootNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Create a new HashMap for the current scope
@@ -30,7 +32,7 @@ public class RootNode implements Node {
 
         // Check semantics for each child
         for (Node child : childs) {
-            errors.addAll(child.checkSemantics(ST, _nesting));
+            errors.addAll(child.checkSemantics(ST, _nesting, ft));
         }
 
         // Remove the HashMap from the SymbolTable
@@ -44,10 +46,16 @@ public class RootNode implements Node {
         return new VoidType();
     }
 
-    // TODO: Code generation for RootNode
     @Override
     public String codeGeneration() {
-        return "";
+        // Workaround per SP = MEM - 1
+        String str = "pushr FP\npushr AL\n";
+
+        for (Node child : childs) {
+            str += child.codeGeneration();
+        }
+
+        return str + "halt\n" + Label.getFunDef();
     }
 
     @Override

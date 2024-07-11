@@ -88,7 +88,7 @@ public interface Node {
      * Checks semantics for a given node for a SymbolTable ST and a level of
      * nesting. Returns a list of `SemanticError`.
      */
-    ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting);
+    ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft);
 
     /**
      * Checks the type for a given node. If there's any error, returns an

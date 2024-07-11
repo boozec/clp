@@ -19,22 +19,23 @@ public class TestlistCompNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (comp != null) {
-            // if comp is set, then we save the atom in the ST (we assume the first expr is
-            // an atom)
+            // If comp is set, then we save the atom in the ST (we assume the first expr is
+            // an atom). We ignore the `comp.checkSemantics()`.
             String id = ((ExprNode) exprs.get(0)).getId();
             Type t = ((ExprNode) exprs.get(0)).typeCheck();
             ST.insert(id, t, _nesting, "");
-            // errors.addAll(comp.checkSemantics(ST, _nesting));
         } else {
-            // if comp is not set, then exprs is a list of 1 or more element
+            // If comp is not set, then exprs is a list of 1 or more element
             for (var param : exprs) {
                 var exp = (ExprNode) param;
-                ST.insert(exp.getId(), exp.typeCheck(), _nesting, "");
-                errors.addAll(param.checkSemantics(ST, _nesting));
+                if (exp.getId() != null && !exp.isFunctionCall()) {
+                    ST.insert(exp.getId(), exp.typeCheck(), _nesting, "");
+                }
+                errors.addAll(param.checkSemantics(ST, _nesting, ft));
             }
         }
 
@@ -61,10 +62,13 @@ public class TestlistCompNode implements Node {
         return new VoidType();
     }
 
-    // TODO: code generation for expr list
     @Override
     public String codeGeneration() {
-        return "";
+        String str = "";
+        for (var param : exprs) {
+            str += param.codeGeneration();
+        }
+        return str;
     }
 
     @Override

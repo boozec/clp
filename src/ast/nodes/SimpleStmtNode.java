@@ -23,23 +23,23 @@ public class SimpleStmtNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (assignment != null) {
-            errors.addAll(assignment.checkSemantics(ST, _nesting));
+            errors.addAll(assignment.checkSemantics(ST, _nesting, ft));
         }
 
         if (expr != null) {
-            errors.addAll(expr.checkSemantics(ST, _nesting));
+            errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         }
 
         if (returnStmt != null) {
-            errors.addAll(returnStmt.checkSemantics(ST, _nesting));
+            errors.addAll(returnStmt.checkSemantics(ST, _nesting, ft));
         }
 
         if (importStmt != null) {
-            errors.addAll(importStmt.checkSemantics(ST, _nesting));
+            errors.addAll(importStmt.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -50,10 +50,26 @@ public class SimpleStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for SimpleStmtNode
     @Override
     public String codeGeneration() {
-        return "";
+        if (assignment != null) {
+            return assignment.codeGeneration();
+        }
+
+        if (expr != null) {
+            return expr.codeGeneration();
+        }
+
+        if (returnStmt != null) {
+            return returnStmt.codeGeneration();
+        }
+
+        // Not supported
+        // if (importStmt != null) {
+        // return importStmt.codeGeneration();
+        // }
+
+        return "Error: everything is null in Compound node";
     }
 
     @Override
