@@ -1,13 +1,12 @@
 package ast.nodes;
 
 import ast.types.*;
+import codegen.Label;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
-import codegen.Label;
 
 /**
  * Node for the `expr` statement of the grammar.
@@ -133,21 +132,22 @@ public class ExprNode implements Node {
 
             // If the atom is a built-in function. return the trailer's content
             if (Arrays.asList(bif).contains(atom.getId())) {
-                return trailerS;
+                // remove "pushr A0\n" at the end of the trailer because it's useless
+                return trailerS.substring(0, trailerS.length() - 9);
             }
 
             // We're not considering nested functions, so despite of slide 62
             // we do not have a forloop for nesting_level -
             // loopkup(..).nesting_level here.
-            return "pushr FP\n" +
-                    "move SP FP\n" +
-                    "addi FP 1\n" +
-                    "move AL T1\n" +
-                    "pushr T1\n" +
-                    trailerS +
-                    "move FP AL\n" +
-                    "subi AL 1\n" +
-                    "jsub " + funL + "\n";
+            return "pushr FP\n"
+                    + "move SP FP\n"
+                    + "addi FP 1\n"
+                    + "move AL T1\n"
+                    + "pushr T1\n"
+                    + trailerS
+                    + "move FP AL\n"
+                    + "subi AL 1\n"
+                    + "jsub " + funL + "\n";
         }
 
         // Check operation
@@ -156,8 +156,8 @@ public class ExprNode implements Node {
                 case "+":
                 case "-":
                 case "*":
-                    // In real Python `/` is a float division but we'll consider the
-                    // int division here below.
+                // In real Python `/` is a float division but we'll consider the
+                // int division here below.
                 case "/":
                     return intOpCodeGen(exprs.get(0), exprs.get(1), op);
                 case "%":
@@ -263,12 +263,12 @@ public class ExprNode implements Node {
                 ops = "Error: cannot manage op " + op;
         }
 
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                ops + " T1 A0\n" +
-                "popr A0\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + ops + " T1 A0\n"
+                + "popr A0\n";
     }
 
     private String modCodeGen(Node leftE, Node rightE) {
@@ -280,38 +280,38 @@ public class ExprNode implements Node {
         // 7 / 2 = 3
         // 3 * 2 = 6
         // 7 - 6 = 1 <--- result
-        return ls +
-                "pushr A0\n" +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                // Divide the two numbers
-                "div T1 A0\n" +
-                "popr T1\n" +
-                // Multiply the division result for the number at the left
-                "mul T1 A0\n" +
-                "popr A0\n" +
-                // Get the previous number at the left from the stack
-                "popr T1\n" +
-                // Subtracting the two numbers we have the module value
-                "sub T1 A0\n" +
-                "popr A0\n";
+        return ls
+                + "pushr A0\n"
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + // Divide the two numbers
+                "div T1 A0\n"
+                + "popr T1\n"
+                + // Multiply the division result for the number at the left
+                "mul T1 A0\n"
+                + "popr A0\n"
+                + // Get the previous number at the left from the stack
+                "popr T1\n"
+                + // Subtracting the two numbers we have the module value
+                "sub T1 A0\n"
+                + "popr A0\n";
     }
 
     /**
-     * NOTE: for the boolean operation we assume that False = 0, True = 1
-     * NOTE: we should optimize ignoring the the right value if the left value
-     * is false.
+     * NOTE: for the boolean operation we assume that False = 0, True = 1 NOTE:
+     * we should optimize ignoring the the right value if the left value is
+     * false.
      */
     private String andCodeGen(Node leftE, Node rightE) {
         String endl = Label.newBasic("endAnd");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "storei T1 0\n" +
-                "beq A0 T1 " + endl + "\n" +
-                rs +
-                endl + ":\n";
+        return ls
+                + "storei T1 0\n"
+                + "beq A0 T1 " + endl + "\n"
+                + rs
+                + endl + ":\n";
     }
 
     /**
@@ -322,11 +322,11 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("endOr");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "storei T1 1\n" +
-                "beq A0 T1 " + endl + "\n" +
-                rs +
-                endl + ":\n";
+        return ls
+                + "storei T1 1\n"
+                + "beq A0 T1 " + endl + "\n"
+                + rs
+                + endl + ":\n";
     }
 
     private String notCodeGen(Node expr) {
@@ -334,10 +334,10 @@ public class ExprNode implements Node {
         // We use the `sub` because:
         // not True = 1 - 1 = 0 = False
         // not False = 1 - 0 = 1 = True
-        return exprs +
-                "storei T1 1\n" +
-                "sub T1 A0\n" +
-                "popr A0\n";
+        return exprs
+                + "storei T1 1\n"
+                + "sub T1 A0\n"
+                + "popr A0\n";
     }
 
     private String eqCodeGen(Node leftE, Node rightE) {
@@ -345,16 +345,16 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                "beq T1 A0 " + truel + "\n" +
-                "storei A0 0\n" +
-                "b " + endl + "\n" +
-                truel + ":\n" +
-                "storei A0 1\n" +
-                endl + ":\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + "beq T1 A0 " + truel + "\n"
+                + "storei A0 0\n"
+                + "b " + endl + "\n"
+                + truel + ":\n"
+                + "storei A0 1\n"
+                + endl + ":\n";
     }
 
     private String neqCodeGen(Node leftE, Node rightE) {
@@ -362,18 +362,18 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                "beq T1 A0 " + truel + "\n" +
-                "storei A0 1\n" +
-                // storei A0 1 instead of storei A0 0
-                "b " + endl + "\n" +
-                truel + ":\n" +
-                // storei A0 0 instead of storei A0 1
-                "storei A0 0\n" +
-                endl + ":\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + "beq T1 A0 " + truel + "\n"
+                + "storei A0 1\n"
+                + // storei A0 1 instead of storei A0 0
+                "b " + endl + "\n"
+                + truel + ":\n"
+                + // storei A0 0 instead of storei A0 1
+                "storei A0 0\n"
+                + endl + ":\n";
     }
 
     private String lsCodeGen(Node leftE, Node rightE) {
@@ -382,21 +382,21 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                "bleq T1 A0 " + truel + "\n" +
-                "storei A0 0\n" +
-                "b " + endl + "\n" +
-                truel + ":\n" +
-                "beq T1 A0 " + truel2 + "\n" +
-                "storei A0 1\n" +
-                "b " + endl + "\n" +
-                truel2 + ":\n" +
-                "storei A0 0\n" +
-                "b " + endl + "\n" +
-                endl + ":\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + "bleq T1 A0 " + truel + "\n"
+                + "storei A0 0\n"
+                + "b " + endl + "\n"
+                + truel + ":\n"
+                + "beq T1 A0 " + truel2 + "\n"
+                + "storei A0 1\n"
+                + "b " + endl + "\n"
+                + truel2 + ":\n"
+                + "storei A0 0\n"
+                + "b " + endl + "\n"
+                + endl + ":\n";
     }
 
     private String leqCodeGen(Node leftE, Node rightE) {
@@ -404,16 +404,16 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                "bleq T1 A0 " + truel + "\n" +
-                "storei A0 0\n" +
-                "b " + endl + "\n" +
-                truel + ":\n" +
-                "storei A0 1\n" +
-                endl + ":\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + "bleq T1 A0 " + truel + "\n"
+                + "storei A0 0\n"
+                + "b " + endl + "\n"
+                + truel + ":\n"
+                + "storei A0 1\n"
+                + endl + ":\n";
     }
 
     private String gtCodeGen(Node leftE, Node rightE) {
@@ -421,17 +421,17 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                // Invert A0 and T1 (different than leq)
-                "bleq A0 T1 " + truel + "\n" +
-                "storei A0 0\n" +
-                "b " + endl + "\n" +
-                truel + ":\n" +
-                "storei A0 1\n" +
-                endl + ":\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + // Invert A0 and T1 (different than leq)
+                "bleq A0 T1 " + truel + "\n"
+                + "storei A0 0\n"
+                + "b " + endl + "\n"
+                + truel + ":\n"
+                + "storei A0 1\n"
+                + endl + ":\n";
     }
 
     private String gteCodeGen(Node leftE, Node rightE) {
@@ -440,21 +440,21 @@ public class ExprNode implements Node {
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
-        return ls +
-                "pushr A0\n" +
-                rs +
-                "popr T1\n" +
-                "bleq T1 A0 " + truel + "\n" +
-                "storei A0 1\n" +
-                "b " + endl + "\n" +
-                truel + ":\n" +
-                "beq T1 A0 " + truel2 + "\n" +
-                "storei A0 0\n" +
-                "b " + endl + "\n" +
-                truel2 + ":\n" +
-                "storei A0 1\n" +
-                "b " + endl + "\n" +
-                endl + ":\n";
+        return ls
+                + "pushr A0\n"
+                + rs
+                + "popr T1\n"
+                + "bleq T1 A0 " + truel + "\n"
+                + "storei A0 1\n"
+                + "b " + endl + "\n"
+                + truel + ":\n"
+                + "beq T1 A0 " + truel2 + "\n"
+                + "storei A0 0\n"
+                + "b " + endl + "\n"
+                + truel2 + ":\n"
+                + "storei A0 1\n"
+                + "b " + endl + "\n"
+                + endl + ":\n";
     }
 
 }

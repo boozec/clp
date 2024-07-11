@@ -4,6 +4,7 @@ public class Label {
 
     private static String funDef = "";
     private static int labelCounter = 0;
+	private static int globalVarNum = 0;
     private static int functionLabelCounter = 0;
 
     public static void addFunDef(String s) {
@@ -13,6 +14,14 @@ public class Label {
     public static String getFunDef() {
         return funDef;
     }
+
+	public static void addGlobalVar() {
+		globalVarNum++;
+	}
+
+	public static int getGlobalVarNum() {
+		return globalVarNum;
+	}
 
     /**
      * Create a new basic label. Use this method to define labels for if, while and

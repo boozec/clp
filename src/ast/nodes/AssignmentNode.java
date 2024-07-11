@@ -1,8 +1,8 @@
 package ast.nodes;
 
 import ast.types.*;
+import codegen.Label;
 import java.util.ArrayList;
-
 import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
@@ -42,6 +42,8 @@ public class AssignmentNode implements Node {
             STentry e = ST.lookup(leftAtom.getId());
             if (ft != null) {
                 ft.addLocalVar();
+            } else {
+                Label.addGlobalVar();
             }
 
             if (e == null) {

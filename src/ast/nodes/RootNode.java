@@ -2,7 +2,6 @@ package ast.nodes;
 
 import ast.types.*;
 import codegen.Label;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import semanticanalysis.*;
@@ -55,7 +54,11 @@ public class RootNode implements Node {
             str += child.codeGeneration();
         }
 
-        return str + "halt\n" + Label.getFunDef();
+        for (int i = 0; i < Label.getGlobalVarNum(); i++) {
+            str += "pop\n";
+        }
+
+        return str + "pop\npop\nhalt\n" + Label.getFunDef();
     }
 
     @Override
