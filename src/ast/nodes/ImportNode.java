@@ -26,7 +26,7 @@ public class ImportNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (isFrom) {
@@ -34,7 +34,7 @@ public class ImportNode implements Node {
                 ST.insert(names.get(i), this.typeCheck(), _nesting, null);
             }
         } else {
-            errors.addAll(dottedName.checkSemantics(ST, _nesting));
+            errors.addAll(dottedName.checkSemantics(ST, _nesting, ft));
         }
 
         if (importAs) {
@@ -49,7 +49,9 @@ public class ImportNode implements Node {
         return new ImportType();
     }
 
-    // NOTE: we do not want to provide a code generation for this statement
+    /**
+     * NOTE: we do not want to provide a code generation for this statement
+     */
     @Override
     public String codeGeneration() {
         return "";

@@ -1,7 +1,9 @@
 package ast.nodes;
 
 import ast.types.*;
+
 import java.util.ArrayList;
+
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -12,16 +14,23 @@ public class ReturnStmtNode implements Node {
 
     private final Node exprList;
 
+    // VERY scatchy
+    private int localvar;
+    private int paramNumber;
+
     public ReturnStmtNode(Node exprList) {
         this.exprList = exprList;
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
+        // If I am in a "return", `ft` will be null.
+        this.localvar = ft.getLocalvarNum();
+        this.paramNumber = ft.getParamNumber();
         if (this.exprList != null) {
-            errors.addAll(this.exprList.checkSemantics(ST, _nesting));
+            errors.addAll(this.exprList.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -36,10 +45,21 @@ public class ReturnStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for return stmt
     @Override
     public String codeGeneration() {
-        return "";
+        String expS = exprList.codeGeneration();
+        for (int i = 0; i < localvar; i++) {
+            expS += "pop\n";
+        }
+        return expS +
+                "popr RA\n" +
+                "addi SP " + paramNumber + "\n" +
+                "pop\n" +
+                "store FP 0(FP)\n" +
+                "move FP AL\n" +
+                "subi AL 1\n" +
+                "pop\n" +
+                "rsub RA\n";
     }
 
     @Override

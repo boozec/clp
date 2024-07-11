@@ -440,7 +440,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     /**
-     * Returns a `CompNode`. It should never be null.
+     * Returns a `CompOpNode`. It should never be null.
      *
      * ``` comp_op : '<' | '>' | '==' | '>=' | '<=' | '<>' | '!=' | 'in' | 'not'
      * 'in' | 'is' | 'is' 'not' ; ```
@@ -487,6 +487,38 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         ArrayList<Node> exprs = new ArrayList<Node>();
         ArrayList<Node> trailers = new ArrayList<Node>();
         String op = null;
+
+        if (ctx.ADD(0) != null) {
+            op = ctx.ADD(0).toString();
+        }
+
+        if (ctx.MINUS(0) != null) {
+            op = ctx.MINUS(0).toString();
+        }
+
+        if (ctx.NOT() != null) {
+            op = ctx.NOT().toString();
+        }
+
+        if (ctx.AND() != null) {
+            op = ctx.AND().toString();
+        }
+
+        if (ctx.OR() != null) {
+            op = ctx.OR().toString();
+        }
+
+        if (ctx.STAR() != null) {
+            op = ctx.STAR().toString();
+        }
+
+        if (ctx.DIV() != null) {
+            op = ctx.DIV().toString();
+        }
+
+        if (ctx.MOD() != null) {
+            op = ctx.MOD().toString();
+        }
 
         if (ctx.atom() != null) {
             atom = visit(ctx.atom());

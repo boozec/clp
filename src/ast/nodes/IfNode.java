@@ -4,6 +4,7 @@ import ast.types.*;
 import java.util.ArrayList;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
+import codegen.Label;
 
 /**
  * Node for the `if` statement of the grammar.
@@ -11,23 +12,23 @@ import semanticanalysis.SymbolTable;
 public class IfNode implements Node {
 
     private final Node guard;
-    private final Node thenbranch;
-    private final Node elsebranch;
+    private final Node thenBranch;
+    private final Node elseBranch;
 
-    public IfNode(Node guard, Node thenbranch, Node elsebranch) {
+    public IfNode(Node guard, Node thenBranch, Node elseBranch) {
         this.guard = guard;
-        this.thenbranch = thenbranch;
-        this.elsebranch = elsebranch;
+        this.thenBranch = thenBranch;
+        this.elseBranch = elseBranch;
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        errors.addAll(guard.checkSemantics(ST, _nesting));
-        errors.addAll(thenbranch.checkSemantics(ST, _nesting));
-        if (elsebranch != null) {
-            errors.addAll(elsebranch.checkSemantics(ST, _nesting));
+        errors.addAll(guard.checkSemantics(ST, _nesting, ft));
+        errors.addAll(thenBranch.checkSemantics(ST, _nesting, ft));
+        if (elseBranch != null) {
+            errors.addAll(elseBranch.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -37,11 +38,11 @@ public class IfNode implements Node {
     @Override
     public Type typeCheck() {
         if (guard.typeCheck() instanceof BoolType) {
-            Type thenexp = thenbranch.typeCheck();
-            Type elseexp = elsebranch.typeCheck();
+            Type thenexp = thenBranch.typeCheck();
+            Type elseexp = elseBranch.typeCheck();
             if (thenexp.getClass().equals(elseexp.getClass())) {
-                return thenexp; 
-            }else {
+                return thenexp;
+            } else {
                 System.out.println("Type Error: incompatible types in then and else branches.");
                 return new ErrorType();
             }
@@ -51,18 +52,37 @@ public class IfNode implements Node {
         }
     }
 
-    // TODO: add code generation for if
     @Override
     public String codeGeneration() {
-        return "";
+        String thenLabel = Label.newBasic("then");
+        String endLabel = Label.newBasic("end");
+
+        String guardS = guard.codeGeneration();
+        String thenS = thenBranch.codeGeneration();
+        String elseS = "";
+        if (elseBranch != null) {
+            elseS = elseBranch.codeGeneration();
+        }
+
+        // We're assuming that the guard is boolean or an operation which puts a
+        // true (1) or false (0) into A0.
+        return guardS +
+                "storei T1 1\n" +
+                // Check if A0 = true
+                "beq A0 T1 " + thenLabel + "\n" +
+                elseS +
+                "b " + endLabel + "\n" +
+                thenLabel + ":\n" +
+                thenS +
+                endLabel + ":\n";
     }
 
     @Override
     public String printAST(String prefix) {
-        String str = prefix + "If\n" + guard.printAST(prefix + "  ") + thenbranch.printAST(prefix + "  ");
+        String str = prefix + "If\n" + guard.printAST(prefix + "  ") + thenBranch.printAST(prefix + "  ");
 
-        if (elsebranch != null) {
-            str += elsebranch.printAST(prefix + "  ");
+        if (elseBranch != null) {
+            str += elseBranch.printAST(prefix + "  ");
         }
 
         return str;
@@ -72,10 +92,10 @@ public class IfNode implements Node {
     public String toPrint(String prefix) {
         String str = prefix + "if ";
         str += guard.toPrint("") + ":\n";
-        str += thenbranch.toPrint(prefix + "\t") + "\n";
-        if (elsebranch != null) {
+        str += thenBranch.toPrint(prefix + "\t") + "\n";
+        if (elseBranch != null) {
             str += prefix + "else:\n";
-            str += elsebranch.toPrint(prefix + "\t") + "\n";
+            str += elseBranch.toPrint(prefix + "\t") + "\n";
         }
         return str;
     }

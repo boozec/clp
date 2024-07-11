@@ -15,12 +15,12 @@ public class BlockNode extends RootNode {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         // Check semantics for each child
         for (Node child : childs) {
-            errors.addAll(child.checkSemantics(ST, _nesting));
+            errors.addAll(child.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -29,6 +29,17 @@ public class BlockNode extends RootNode {
     @Override
     public Type typeCheck() {
         return new VoidType();
+    }
+
+    @Override
+    public String codeGeneration() {
+        String str = "";
+
+        for (Node child : childs) {
+            str += child.codeGeneration();
+        }
+
+        return str;
     }
 
     @Override
@@ -42,6 +53,7 @@ public class BlockNode extends RootNode {
 
         return str;
     }
+
 
     @Override
     public String toPrint(String prefix) {

@@ -34,12 +34,11 @@ public class ParseAll {
 
                 Python3Parser.RootContext tree = parser.root();
                 String treeStr = tree.toStringTree();
-                // System.out.println(treeStr);
 
                 Python3VisitorImpl visitor = new Python3VisitorImpl();
                 SymbolTable ST = new SymbolTable();
                 Node ast = visitor.visit(tree);
-                ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0);
+                ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
                 ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
                 if (!errors.isEmpty()) {
                     System.out.println();

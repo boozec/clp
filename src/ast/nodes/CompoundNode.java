@@ -23,23 +23,23 @@ public class CompoundNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (ifNode != null) {
-            errors.addAll(ifNode.checkSemantics(ST, _nesting));
+            errors.addAll(ifNode.checkSemantics(ST, _nesting, ft));
         }
 
         if (funcDef != null) {
-            errors.addAll(funcDef.checkSemantics(ST, _nesting));
+            errors.addAll(funcDef.checkSemantics(ST, _nesting, ft));
         }
 
         if (forStmt != null) {
-            errors.addAll(forStmt.checkSemantics(ST, _nesting));
+            errors.addAll(forStmt.checkSemantics(ST, _nesting, ft));
         }
 
         if (whileStmt != null) {
-            errors.addAll(whileStmt.checkSemantics(ST, _nesting));
+            errors.addAll(whileStmt.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -50,10 +50,25 @@ public class CompoundNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for CompoundNode
     @Override
     public String codeGeneration() {
-        return "";
+        if (ifNode != null) {
+            return ifNode.codeGeneration();
+        }
+
+        if (funcDef != null) {
+            return funcDef.codeGeneration();
+        }
+
+        if (forStmt != null) {
+            return forStmt.codeGeneration();
+        }
+
+        if (whileStmt != null) {
+            return whileStmt.codeGeneration();
+        }
+
+        return "Error: everything is null in Compound node\n";
     }
 
     @Override

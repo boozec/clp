@@ -17,11 +17,11 @@ public class ParamlistNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        for (Node param : params) {
-            errors.addAll(param.checkSemantics(ST, _nesting));
+        for (var param : params) {
+            errors.addAll(param.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -36,7 +36,6 @@ public class ParamlistNode implements Node {
         return new VoidType();
     }
 
-    // TODO: code generation for param list
     @Override
     public String codeGeneration() {
         return "";

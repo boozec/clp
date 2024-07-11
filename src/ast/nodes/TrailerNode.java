@@ -30,15 +30,15 @@ public class TrailerNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         if (arglist != null) {
-            errors.addAll(arglist.checkSemantics(ST, _nesting));
+            errors.addAll(arglist.checkSemantics(ST, _nesting, ft));
         }
 
         for (var expr : exprs) {
-            errors.addAll(expr.checkSemantics(ST, _nesting));
+            errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -57,9 +57,11 @@ public class TrailerNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for trailer node
     @Override
     public String codeGeneration() {
+        if (arglist != null) {
+            return arglist.codeGeneration();
+        }
         return "";
     }
 

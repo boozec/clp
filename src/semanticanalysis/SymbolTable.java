@@ -128,13 +128,12 @@ public class SymbolTable {
         offs = offs + 1;
 
         this.offset.add(offs);
-
     }
 
     /**
      * Increase the offset level.
      */
-    public void increaseoffset() {
+    public void increaseOffset() {
         int n = this.offset.size() - 1;
         int offs = this.offset.get(n);
         this.offset.remove(n);
@@ -144,10 +143,23 @@ public class SymbolTable {
         this.offset.add(offs);
     }
 
+    /**
+     * Decrease the offset level.
+     */
+    public void decreaseOffset() {
+        int n = this.offset.size() - 1;
+        int offs = this.offset.get(n);
+        this.offset.remove(n);
+
+        offs = offs - 1;
+
+        this.offset.add(offs);
+    }
+
     @Override
     public String toString() {
         // Print the symbol table
-        String str = "";
+        String str = "ST ";
         for (int i = 0; i < this.symbolTable.size(); i++) {
             str += "Level " + i + "\n";
             HashMap<String, STentry> H = this.symbolTable.get(i);
@@ -159,4 +171,10 @@ public class SymbolTable {
         return str;
     }
 
+
+    @Override
+    public SymbolTable clone() throws CloneNotSupportedException {
+        Object obj = super.clone();
+        return (SymbolTable) obj;
+    }
 }

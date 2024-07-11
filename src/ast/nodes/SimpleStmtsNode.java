@@ -17,11 +17,11 @@ public class SimpleStmtsNode implements Node {
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         for (Node stmt : stmts) {
-            errors.addAll(stmt.checkSemantics(ST, _nesting));
+            errors.addAll(stmt.checkSemantics(ST, _nesting, ft));
         }
 
         return errors;
@@ -32,10 +32,15 @@ public class SimpleStmtsNode implements Node {
         return new VoidType();
     }
 
-    // TODO: Code generation for SimpleStmtsNode
     @Override
     public String codeGeneration() {
-        return "";
+        String str = "";
+
+        for (Node stmt : stmts) {
+            str += stmt.codeGeneration();
+        }
+
+        return str;
     }
 
     @Override

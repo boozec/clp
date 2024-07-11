@@ -1,7 +1,9 @@
 package ast.nodes;
 
 import ast.types.*;
+import codegen.Label;
 import java.util.ArrayList;
+import semanticanalysis.STentry;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -14,35 +16,47 @@ public class AssignmentNode implements Node {
     private final Node assign;
     private final ExprListNode rhr;
 
+    // Useful for code gen
+    private int offset;
+    private boolean alreadyDef;
+
     public AssignmentNode(Node lhr, Node assign, Node rhr) {
         this.lhr = (ExprListNode) lhr;
         this.assign = assign;
         this.rhr = (ExprListNode) rhr;
+        this.alreadyDef = false;
     }
 
     @Override
-    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting) {
+    public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        // errors.addAll(lhr.checkSemantics(ST, _nesting));
-        errors.addAll(assign.checkSemantics(ST, _nesting));
-        errors.addAll(rhr.checkSemantics(ST, _nesting));
+        // DO NOT CHECK lhr
+        errors.addAll(assign.checkSemantics(ST, _nesting, ft));
+        errors.addAll(rhr.checkSemantics(ST, _nesting, ft));
 
         int lsize = lhr.getSize();
 
-        // FIXME: unused variable
-        // int rsize = rhr.getSize();
-        // if (lsize == rsize) {
         for (int i = 0; i < lsize; i++) {
-            ExprNode latom = (ExprNode) lhr.getElem(i);
-            ST.insert(latom.getId(), new AtomType(), _nesting, "");
-            // ExprNode ratom = (ExprNode) rhr.getElem(i);
-        }
-        // } else {
-        // FIX: sgravata da più problemi che altro
-        // errors.add(new SemanticError("ValueError: different size of left or right side assignment"));
-        // }
+            ExprNode leftAtom = (ExprNode) lhr.getElem(i);
+            STentry e = ST.lookup(leftAtom.getId());
+            if (ft != null) {
+                ft.addLocalVar();
+            } else {
+                Label.addGlobalVar();
+            }
 
+            if (e == null) {
+                ST.insert(leftAtom.getId(), new AtomType(), _nesting, "");
+                e = ST.lookup(leftAtom.getId());
+            } else {
+                int ns = e.getNesting();
+                if (_nesting == ns) {
+                    this.alreadyDef = true;
+                }
+            }
+            offset = e.getOffset();
+        }
         return errors;
     }
 
@@ -52,10 +66,29 @@ public class AssignmentNode implements Node {
         return rhr.typeCheck();
     }
 
-    // TODO: add code generation for assignment
     @Override
     public String codeGeneration() {
-        return "";
+        String rhrString = rhr.codeGeneration();
+
+        String lhrString = "";
+        ExprNode leftAtom = (ExprNode) lhr.getElem(0);
+
+        // The code generation for the left atom returns a `store A0 0(T1)` at
+        // the end but we do not want that command.
+        // So, we'll have a string with the substring + the offset.
+        String leftAtomCode = leftAtom.codeGeneration();
+        lhrString += leftAtomCode.substring(0, leftAtomCode.length() - 17) + offset;
+
+        // If the variable name is previously defined it'll load the variable
+        // from the `0(T1)`, otherwise it'll push the `A0` register at the top
+        // of the stack.
+        if (!this.alreadyDef) {
+            lhrString += "\npushr A0\n";
+        } else {
+            lhrString += "\nload A0 0(T1)\n";
+        }
+
+        return rhrString + lhrString;
     }
 
     @Override
