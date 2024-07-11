@@ -11,13 +11,12 @@ import semanticanalysis.SymbolTable;
 public class CompIterNode implements Node {
 
     protected CompForNode comp_for;
-    // protected CompIfNode compIfNode;
 
     public CompIterNode(Node comp_for) {
         this.comp_for = (CompForNode) comp_for;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -32,7 +31,9 @@ public class CompIterNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for comp_iter node
+    /**
+     * We do not want to provide the code generation for this stuff.
+     */
     @Override
     public String codeGeneration() {
         return "";

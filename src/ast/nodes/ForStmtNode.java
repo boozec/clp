@@ -32,7 +32,7 @@ public class ForStmtNode implements Node {
      * format, so we take the left element and save it in the SymbolicTable as
      * an atom.
      */
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -63,7 +63,10 @@ public class ForStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for while
+    /**
+     * We do not provide the cgen for the `for_stm` because we do not have the
+     * iterators idea that the real Python has.
+     */
     @Override
     public String codeGeneration() {
         return "";

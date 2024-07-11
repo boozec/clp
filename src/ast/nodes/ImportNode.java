@@ -25,7 +25,7 @@ public class ImportNode implements Node {
         this.names = names;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -49,7 +49,9 @@ public class ImportNode implements Node {
         return new ImportType();
     }
 
-    // NOTE: we do not want to provide a code generation for this statement
+    /**
+     * NOTE: we do not want to provide a code generation for this statement
+     */
     @Override
     public String codeGeneration() {
         return "";

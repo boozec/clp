@@ -21,7 +21,7 @@ public class CompForNode implements Node {
         this.comp_iter = (CompIterNode) comp_iter;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -38,7 +38,9 @@ public class CompForNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for comp_for node
+    /**
+     * We do not want to provide the code generation for the for list comprehension.
+     */
     @Override
     public String codeGeneration() {
         return "";

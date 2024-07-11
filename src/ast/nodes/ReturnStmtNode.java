@@ -22,11 +22,11 @@ public class ReturnStmtNode implements Node {
         this.exprList = exprList;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
-        // se sono in un return ft è sicuramente non nullo
+        // If I am in a "return", `ft` will be null.
         this.localvar = ft.getLocalvarNum();
         this.paramNumber = ft.getParamNumber();
         if (this.exprList != null) {

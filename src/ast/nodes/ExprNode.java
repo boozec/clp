@@ -59,10 +59,10 @@ public class ExprNode implements Node {
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
-        // check if the atom is a function
+        // Check if the atom is a function
         if (isFunctionCall()) {
 
-            // check if the atom is not a built-in function
+            // Check if the atom is not a built-in function
             if (!Arrays.asList(bif).contains(atom.getId())) {
 
                 errors.addAll(atom.checkSemantics(ST, _nesting, ft));
@@ -126,34 +126,39 @@ public class ExprNode implements Node {
     @Override
     public String codeGeneration() {
 
-        // check function call
+        // A function call
         if (isFunctionCall()) {
             TrailerNode trailer = (TrailerNode) trailers.get(0);
             String trailerS = trailer.codeGeneration();
-            // if the atom is a built-in function. return the trailer's content
+
+            // If the atom is a built-in function. return the trailer's content
             if (Arrays.asList(bif).contains(atom.getId())) {
                 return trailerS;
             }
 
+            // We're not considering nested functions, so despite of slide 62
+            // we do not have a forloop for nesting_level -
+            // loopkup(..).nesting_level here.
             return "pushr FP\n" +
                     "move SP FP\n" +
                     "addi FP 1\n" +
                     "move AL T1\n" +
-                    "pushr T1\n" + // slide 62, non implementiamo il for loop perché non supportiamo funzioni
-                                   // annidate
+                    "pushr T1\n" +
                     trailerS +
                     "move FP AL\n" +
                     "subi AL 1\n" +
                     "jsub " + funL + "\n";
         }
 
-        // check operation
+        // Check operation
         if (op != null) {
             switch (op) {
                 case "+":
                 case "-":
                 case "*":
-                case "/": // divisione intera
+                    // In real Python `/` is a float division but we'll consider the
+                    // int division here below.
+                case "/":
                     return intOpCodeGen(exprs.get(0), exprs.get(1), op);
                 case "%":
                     return modCodeGen(exprs.get(0), exprs.get(1));
@@ -168,7 +173,7 @@ public class ExprNode implements Node {
             }
         }
 
-        // check comp operation
+        // Check comp operation
         if (compOp != null) {
             CompOpNode cmpOp = (CompOpNode) compOp;
             String op = cmpOp.getOp();
@@ -236,10 +241,11 @@ public class ExprNode implements Node {
         return str;
     }
 
-    public String intOpCodeGen(Node leftE, Node rightE, String op) {
+    private String intOpCodeGen(Node leftE, Node rightE, String op) {
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
         String ops;
+
         switch (op) {
             case "+":
                 ops = "add";
@@ -256,6 +262,7 @@ public class ExprNode implements Node {
             default:
                 ops = "Error: cannot manage op " + op;
         }
+
         return ls +
                 "pushr A0\n" +
                 rs +
@@ -264,29 +271,39 @@ public class ExprNode implements Node {
                 "popr A0\n";
     }
 
-    public String modCodeGen(Node leftE, Node rightE) {
+    private String modCodeGen(Node leftE, Node rightE) {
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
+
+        // Push the register twice because, for instance,
+        // 7 % 2 =
+        // 7 / 2 = 3
+        // 3 * 2 = 6
+        // 7 - 6 = 1 <--- result
         return ls +
                 "pushr A0\n" +
-                "pushr A0\n" + // lo metto due volte perché mi serve per dopo
+                "pushr A0\n" +
                 rs +
                 "popr T1\n" +
-                "div T1 A0\n" + // divido i due numeri
+                // Divide the two numbers
+                "div T1 A0\n" +
                 "popr T1\n" +
-                "mul T1 A0\n" + // moltiplico il risultato della divisione con il numero a
-                "popr A0\n" + // destra dell'operazione e lo metto in A0
-                "popr T1\n" + // recupero il numero a sinistra messo nella stack in precedenza
-                "sub T1 A0\n" + // sottraggo i due numeri ottenendo il modulo
+                // Multiply the division result for the number at the left
+                "mul T1 A0\n" +
+                "popr A0\n" +
+                // Get the previous number at the left from the stack
+                "popr T1\n" +
+                // Subtracting the two numbers we have the module value
+                "sub T1 A0\n" +
                 "popr A0\n";
     }
 
-    // ATTENZIONE: per le operazioni booleane assumiammo che False sia sempre 0 e
-    // che True sia sempre 1
-
-    // Ottimizzazione: se il valore a sinistra è falso (0), l'espressione è
-    // sicuramente falsa, altrimenti sarà il valore della espressione a destra
-    public String andCodeGen(Node leftE, Node rightE) {
+    /**
+     * NOTE: for the boolean operation we assume that False = 0, True = 1
+     * NOTE: we should optimize ignoring the the right value if the left value
+     * is false.
+     */
+    private String andCodeGen(Node leftE, Node rightE) {
         String endl = Label.newBasic("endAnd");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
@@ -297,9 +314,11 @@ public class ExprNode implements Node {
                 endl + ":\n";
     }
 
-    // Ottimizzazione: se il valore a sinistra è vera (1), l'espressione è
-    // sicuramente vera, altrimenti sarà il valore della espressione a destra
-    public String orCodeGen(Node leftE, Node rightE) {
+    /**
+     * NOTE: we should optimize ignoring the right value if the left value is
+     * true.
+     */
+    private String orCodeGen(Node leftE, Node rightE) {
         String endl = Label.newBasic("endOr");
         String ls = leftE.codeGeneration();
         String rs = rightE.codeGeneration();
@@ -310,19 +329,18 @@ public class ExprNode implements Node {
                 endl + ":\n";
     }
 
-    // Viene usata l'operazione SUB
-    // not True = 1 - 1 = 0 = False
-    // not False = 1 - 0 = 1 = True
-    // Stessa tabella di verità dell'NOT
-    public String notCodeGen(Node expr) {
+    private String notCodeGen(Node expr) {
         String exprs = expr.codeGeneration();
+        // We use the `sub` because:
+        // not True = 1 - 1 = 0 = False
+        // not False = 1 - 0 = 1 = True
         return exprs +
                 "storei T1 1\n" +
                 "sub T1 A0\n" +
                 "popr A0\n";
     }
 
-    public String eqCodeGen(Node leftE, Node rightE) {
+    private String eqCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
@@ -339,7 +357,7 @@ public class ExprNode implements Node {
                 endl + ":\n";
     }
 
-    public String neqCodeGen(Node leftE, Node rightE) {
+    private String neqCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
@@ -350,13 +368,15 @@ public class ExprNode implements Node {
                 "popr T1\n" +
                 "beq T1 A0 " + truel + "\n" +
                 "storei A0 1\n" +
-                "b " + endl + "\n" + // storei A0 1 instead of storei A0 0
+                // storei A0 1 instead of storei A0 0
+                "b " + endl + "\n" +
                 truel + ":\n" +
-                "storei A0 0\n" + // storei A0 0 instead of storei A0 1
+                // storei A0 0 instead of storei A0 1
+                "storei A0 0\n" +
                 endl + ":\n";
     }
 
-    public String lsCodeGen(Node leftE, Node rightE) {
+    private String lsCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String truel2 = Label.newBasic("true");
         String endl = Label.newBasic("end");
@@ -379,7 +399,7 @@ public class ExprNode implements Node {
                 endl + ":\n";
     }
 
-    public String leqCodeGen(Node leftE, Node rightE) {
+    private String leqCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
@@ -396,7 +416,7 @@ public class ExprNode implements Node {
                 endl + ":\n";
     }
 
-    public String gtCodeGen(Node leftE, Node rightE) {
+    private String gtCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String endl = Label.newBasic("end");
         String ls = leftE.codeGeneration();
@@ -405,7 +425,8 @@ public class ExprNode implements Node {
                 "pushr A0\n" +
                 rs +
                 "popr T1\n" +
-                "bleq A0 T1 " + truel + "\n" + // inverto A0 e T1 rispetto a leq
+                // Invert A0 and T1 (different than leq)
+                "bleq A0 T1 " + truel + "\n" +
                 "storei A0 0\n" +
                 "b " + endl + "\n" +
                 truel + ":\n" +
@@ -413,7 +434,7 @@ public class ExprNode implements Node {
                 endl + ":\n";
     }
 
-    public String gteCodeGen(Node leftE, Node rightE) {
+    private String gteCodeGen(Node leftE, Node rightE) {
         String truel = Label.newBasic("true");
         String truel2 = Label.newBasic("true");
         String endl = Label.newBasic("end");

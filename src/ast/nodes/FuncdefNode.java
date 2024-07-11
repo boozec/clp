@@ -27,7 +27,7 @@ public class FuncdefNode implements Node {
         this.funLabel = Label.newFun("FUN");
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
         int paramNumber = 0;
@@ -36,7 +36,6 @@ public class FuncdefNode implements Node {
         }
         Type returnType = this.block.typeCheck();
         FunctionType newFt = new FunctionType(paramNumber, returnType, funLabel);
-
 
         String funName = this.name.toString();
         ST.insert(funName, newFt, _nesting, "");
@@ -69,15 +68,17 @@ public class FuncdefNode implements Node {
         return new VoidType();
     }
 
-    // taken from slide 56 of CodeGeneration.pdf
+    /**
+     * Taken from slide 56 of CodeGeneration.pdf
+     */
     @Override
     public String codeGeneration() {
         String blockS = block.codeGeneration();
-        // nel block c'è il return che mette a posto l'RA
-
+        // The "return" which fix the RA is inside the block
         String funS = funLabel + ":\n" +
                 "pushr RA\n" +
                 blockS;
+
         Label.addFunDef(funS);
         return "";
     }

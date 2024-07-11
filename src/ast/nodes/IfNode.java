@@ -21,7 +21,7 @@ public class IfNode implements Node {
         this.elseBranch = elseBranch;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -64,12 +64,12 @@ public class IfNode implements Node {
             elseS = elseBranch.codeGeneration();
         }
 
-        // Assumo che la guardia sia un dato booleano o una operazione booleana che
-        // mette in A0 il valore true (1) o false (0)
+        // We're assuming that the guard is boolean or an operation which puts a
+        // true (1) or false (0) into A0.
         return guardS +
                 "storei T1 1\n" +
-                "beq A0 T1 " + thenLabel + "\n" + // Controllo che A0 sia true (1). Se vero faccio jump alla
-                                                  // thenBranch, altrimenti eseguo la elseBranch e jumpo alla fine
+                // Check if A0 = true
+                "beq A0 T1 " + thenLabel + "\n" +
                 elseS +
                 "b " + endLabel + "\n" +
                 thenLabel + ":\n" +

@@ -22,7 +22,7 @@ public class SimpleStmtNode implements Node {
         this.importStmt = importStmt;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -64,9 +64,9 @@ public class SimpleStmtNode implements Node {
             return returnStmt.codeGeneration();
         }
 
-        // not supported
+        // Not supported
         // if (importStmt != null) {
-        //     return importStmt.codeGeneration();
+        // return importStmt.codeGeneration();
         // }
 
         return "Error: everything is null in Compound node";

@@ -18,7 +18,7 @@ public class WhileStmtNode implements Node {
         this.block = block;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -33,6 +33,7 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
+    // TODO: add cgen per while (but it's not requested from the exercise)
     @Override
     public String codeGeneration() {
         return "";

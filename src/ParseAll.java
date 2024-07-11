@@ -34,7 +34,6 @@ public class ParseAll {
 
                 Python3Parser.RootContext tree = parser.root();
                 String treeStr = tree.toStringTree();
-                // System.out.println(treeStr);
 
                 Python3VisitorImpl visitor = new Python3VisitorImpl();
                 SymbolTable ST = new SymbolTable();

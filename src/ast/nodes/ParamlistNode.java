@@ -12,11 +12,11 @@ public class ParamlistNode implements Node {
 
     private final ArrayList<Node> params;
 
-    public ParamlistNode(ArrayList<Node> _params) {
-        params = _params;
+    public ParamlistNode(ArrayList<Node> params) {
+        this.params = params;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -36,7 +36,6 @@ public class ParamlistNode implements Node {
         return new VoidType();
     }
 
-    // TODO: code generation for param list
     @Override
     public String codeGeneration() {
         return "";

@@ -42,12 +42,10 @@ public class AtomNode implements Node {
                 if ((typeCheck() instanceof AtomType) && ST.nslookup(getId()) < 0) {
                     errors.add(new SemanticError("name '" + getId() + "' is not defined."));
                 } else {
-                    // System.out.println("exist " + getId());
                     if ((typeCheck() instanceof AtomType)) {
                         int varNs = ST.lookup(getId()).getNesting();
-                        ns = _nesting - varNs;
+                        this.ns = _nesting - varNs;
                         offset = ST.lookup(getId()).getOffset();
-                        // System.out.println("ST " + ST);
                     }
                 }
             }
@@ -104,26 +102,30 @@ public class AtomNode implements Node {
 
     @Override
     public String codeGeneration() {
-        String baseData = "storei A0 ";
-        // String baseAccess = "load A0 ";
-
         if (exprlist != null) {
             return exprlist.codeGeneration();
         }
+
         if (typeCheck() instanceof IntType) {
-            return baseData + getId() + "\n";
+            return "storei A0 " + getId() + "\n";
         }
+
         if (typeCheck() instanceof BoolType) {
-            return baseData + boolValue(getId()) + "\n";
+            return "storei A0 " + boolValue(getId()) + "\n";
         }
+
         if (typeCheck() instanceof AtomType) {
+            // We need to ascend the access-link chain to the top (or bottom,
+            // who knows).
             String str = "move AL T1\n";
-            for (int i = 0; i < ns; i++) {
+            for (int i = 0; i < this.ns; i++) {
                 str += "store T1 0(T1)\n";
             }
+
             str += "subi T1 " + offset + "\nstore A0 0(T1)\n";
             return str;
         }
+
         return "Error: could not parse an atom\n";
     }
 

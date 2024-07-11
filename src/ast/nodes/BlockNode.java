@@ -14,7 +14,7 @@ public class BlockNode extends RootNode {
         super(childs);
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -34,7 +34,7 @@ public class BlockNode extends RootNode {
     @Override
     public String codeGeneration() {
         String str = "";
-        
+
         for (Node child : childs) {
             str += child.codeGeneration();
         }

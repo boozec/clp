@@ -16,7 +16,7 @@ public class AssignmentNode implements Node {
     private final Node assign;
     private final ExprListNode rhr;
 
-    // useful for code gen
+    // Useful for code gen
     private int offset;
     private boolean alreadyDef;
 
@@ -27,7 +27,7 @@ public class AssignmentNode implements Node {
         this.alreadyDef = false;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -38,18 +38,19 @@ public class AssignmentNode implements Node {
         int lsize = lhr.getSize();
 
         for (int i = 0; i < lsize; i++) {
-            ExprNode latom = (ExprNode) lhr.getElem(i);
-            STentry e = ST.lookup(latom.getId());
+            ExprNode leftAtom = (ExprNode) lhr.getElem(i);
+            STentry e = ST.lookup(leftAtom.getId());
             if (ft != null) {
                 ft.addLocalVar();
             }
+
             if (e == null) {
-                ST.insert(latom.getId(), new AtomType(), _nesting, "");
-                e = ST.lookup(latom.getId());
+                ST.insert(leftAtom.getId(), new AtomType(), _nesting, "");
+                e = ST.lookup(leftAtom.getId());
             } else {
                 int ns = e.getNesting();
                 if (_nesting == ns) {
-                    alreadyDef = true;
+                    this.alreadyDef = true;
                 }
             }
             offset = e.getOffset();
@@ -67,20 +68,25 @@ public class AssignmentNode implements Node {
     public String codeGeneration() {
         String rhrString = rhr.codeGeneration();
 
-        String str = "";
-        ExprNode latom = (ExprNode) lhr.getElem(0);
-        // se si sta definendo una nuova variabile ci sarà sempre alla fine store A0
-        // 0(T1)\n quindi sostituiamo store con load
-        String whole = latom.codeGeneration();
-        // TODO: DOCUMENTARE STA ROBA
-        String withoutStore = whole.substring(0, whole.length() - 17);
-        str += withoutStore + offset;
-        if (!alreadyDef) {
-            str += "\npushr A0\n";
+        String lhrString = "";
+        ExprNode leftAtom = (ExprNode) lhr.getElem(0);
+
+        // The code generation for the left atom returns a `store A0 0(T1)` at
+        // the end but we do not want that command.
+        // So, we'll have a string with the substring + the offset.
+        String leftAtomCode = leftAtom.codeGeneration();
+        lhrString += leftAtomCode.substring(0, leftAtomCode.length() - 17) + offset;
+
+        // If the variable name is previously defined it'll load the variable
+        // from the `0(T1)`, otherwise it'll push the `A0` register at the top
+        // of the stack.
+        if (!this.alreadyDef) {
+            lhrString += "\npushr A0\n";
         } else {
-            str += "\nload A0 0(T1)\n";
+            lhrString += "\nload A0 0(T1)\n";
         }
-        return rhrString + str;
+
+        return rhrString + lhrString;
     }
 
     @Override

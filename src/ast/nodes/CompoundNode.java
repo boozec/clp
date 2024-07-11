@@ -22,7 +22,7 @@ public class CompoundNode implements Node {
         this.whileStmt = whileStmt;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 

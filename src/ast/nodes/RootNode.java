@@ -20,7 +20,7 @@ public class RootNode implements Node {
         this.childs = childs;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -48,7 +48,8 @@ public class RootNode implements Node {
 
     @Override
     public String codeGeneration() {
-        String str = "pushr FP\npushr AL\n"; // workaround per SP = MEM - 1
+        // Workaround per SP = MEM - 1
+        String str = "pushr FP\npushr AL\n";
 
         for (Node child : childs) {
             str += child.codeGeneration();

@@ -16,7 +16,7 @@ public class ExprListNode implements Node {
         this.exprs = exprs;
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class ExprListNode implements Node {
 
     @Override
     public String codeGeneration() {
-        String str =  "";
+        String str = "";
 
         for (var exp : exprs) {
             str += exp.codeGeneration();

@@ -27,7 +27,7 @@ public class TrailerNode implements Node {
         this.isEmpty = (this.arglist == null && this.exprs.isEmpty() && this.methodCall == null);
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
@@ -59,7 +59,6 @@ public class TrailerNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for trailer node
     @Override
     public String codeGeneration() {
         if (arglist != null) {

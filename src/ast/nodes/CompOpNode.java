@@ -22,7 +22,7 @@ public class CompOpNode implements Node {
         return op.toString();
     }
 
-        @Override
+    @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         return new ArrayList<>();
     }
@@ -33,7 +33,9 @@ public class CompOpNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add code generation for CompOpNode
+    /**
+     * The code generation for this operation is in `ExprNode`.
+     */
     @Override
     public String codeGeneration() {
         return "";
