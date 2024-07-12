@@ -29,7 +29,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     private boolean optimize;
 
     public Python3VisitorImpl(CommonTokenStream tokens, boolean optimize) {
-        this.rewriter = new TokenStreamRewriter(tokens);
+        rewriter = new TokenStreamRewriter(tokens);
         this.optimize = optimize;
     }
 
@@ -328,68 +328,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         // Block 1 is for the while-else statement
         BlockNode block = (BlockNode) visit(ctx.block(0));
 
+        WhileStmtNode whileStmt = new WhileStmtNode(expr, block);
         if (!optimize) {
-            WhileStmtNode whileStmt = new WhileStmtNode(expr, block);
-
             return whileStmt;
         }
 
         int lineStart = ctx.getStart().getLine();
         int lineStop = ctx.getStop().getLine();
         int index = ctx.getStart().getTokenIndex();
+        optimizeBlock(block, lineStart, lineStop, index);
 
-        this.rewriter.insertAfter(index, " ");
-        ArrayList<AssignmentNode> assignments = new ArrayList<>();
-        for (var child : block.getChilds()) {
-            if (child instanceof SimpleStmtsNode) {
-                var stmts = (SimpleStmtsNode) child;
-                for (var stmt : stmts.getStmts()) {
-                    var assignment = (AssignmentNode) ((SimpleStmtNode) stmt).getAssignment();
-                    if (assignment != null) {
-                        assignments
-                                .add(assignment);
-                    }
-                }
-            }
-        }
-
-        System.out.println("text1\n----\n" + this.rewriter.getText());
-        // g , x + 2 * y
-        // m , m + n + g
-        // n , n + 1
-        for (var assignment : assignments) {
-
-            var lhr = (ExprNode) assignment.getLhr().getElem(0);
-            var rhr = (ExprNode) assignment.getRhr().getElem(0);
-            ArrayList<String> al = findAtomPresent(rhr, new ArrayList<>());
-            if (!al.isEmpty()) {
-                boolean constant = true;
-                for (String a : al) {
-                    int n = R.get(a);
-                    if (n > lineStart && n <= lineStop) {
-                        constant = false;
-                        break;
-                    }
-                }
-                this.rewriter.insertAfter(assignment.getRhrIndex(), "\n");
-                if (constant) {
-                    rewriter.insertBefore(index, lhr.toPrint("") + "=" + rhr.toPrint("") + "\n");
-                    this.rewriter.replace(assignment.getLhrIndex(), assignment.getRhrIndex(), "");
-                    // int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
-                    // int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
-                    // this.rewriter.replace(firstToken, lastToken, newVar);
-                }
-            }
-        }
-
-        // Add the new tokens before the "while" statement
-        // updatedTokens.addAll(index, newTokens);
-        // this.tokens = new CommonTokenStream(new ListTokenSource(updatedTokens));
-        System.out.println(R);
-
+        // optimize while's guard
         int counter = 0;
         var exprs = expr.getExprs();
-        // check nella guardia
         for (var e : exprs) {
             ArrayList<String> al = findAtomPresent(e, new ArrayList<>());
             if (!al.isEmpty()) {
@@ -406,14 +357,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                     rewriter.insertBefore(index, newVar + "=" + e.toPrint("") + "\n");
                     int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
                     int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
-                    this.rewriter.replace(firstToken, lastToken, newVar);
+                    rewriter.replace(firstToken, lastToken, newVar);
                 }
             }
             counter++;
         }
-        System.out.println("text2\n-----\n" + this.rewriter.getText());
-
-        WhileStmtNode whileStmt = new WhileStmtNode(expr, block);
 
         return whileStmt;
     }
@@ -436,6 +384,50 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return Acc;
     }
 
+    private void optimizeBlock(BlockNode block, int lineStart, int lineStop, int index) {
+        rewriter.insertAfter(index, " ");
+        ArrayList<AssignmentNode> assignments = new ArrayList<>();
+        for (var child : block.getChilds()) {
+            if (child instanceof SimpleStmtsNode) {
+                var stmts = (SimpleStmtsNode) child;
+                for (var stmt : stmts.getStmts()) {
+                    var assignment = (AssignmentNode) ((SimpleStmtNode) stmt).getAssignment();
+                    if (assignment != null) {
+                        assignments.add(assignment);
+                    }
+                }
+            }
+        }
+
+        // g , x + 2 * y
+        // m , m + n + g
+        // n , n + 1
+        for (var assignment : assignments) {
+
+            var lhr = (ExprNode) assignment.getLhr().getElem(0);
+            var rhr = (ExprNode) assignment.getRhr().getElem(0);
+            ArrayList<String> al = findAtomPresent(rhr, new ArrayList<>());
+            if (!al.isEmpty()) {
+                boolean constant = true;
+                for (String a : al) {
+                    int n = R.get(a);
+                    if (n > lineStart && n <= lineStop) {
+                        constant = false;
+                        break;
+                    }
+                }
+                rewriter.insertAfter(assignment.getRhrIndex(), "\n");
+                if (constant) {
+                    rewriter.insertBefore(index, lhr.toPrint("") + "=" + rhr.toPrint("") + "\n");
+                    rewriter.replace(assignment.getLhrIndex(), assignment.getRhrIndex(), "");
+                    // int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
+                    // int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
+                    // rewriter.replace(firstToken, lastToken, newVar);
+                }
+            }
+        }
+    }
+
     /**
      * Returns a `ForSmtNode`. We do not provide 'else' branch.
      *
@@ -449,7 +441,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         int dimGetExpr = ((ExprListNode) exprList).getExprs().size();
 
         for (int e = 0; e < dimGetExpr; e++) {
-
             if (e == dimGetExpr - 1) {
                 R.remove(((ExprNode) ((ExprNode) ((ExprListNode) exprList).getElem(e)).getExpr(0)).getId());
             } else {
@@ -458,9 +449,26 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         }
 
         // Block 1 is for the for-else statement
-        Node block = visit(ctx.block(0));
+        BlockNode block = (BlockNode) visit(ctx.block(0));
 
-        return new ForStmtNode(exprList, block);
+        Node forNode = new ForStmtNode(exprList, block);
+        if (!optimize) {
+            return forNode;
+        }
+
+        int lineStart = ctx.getStart().getLine();
+        int lineStop = ctx.getStop().getLine();
+        int index = ctx.getStart().getTokenIndex();
+
+        rewriter.insertAfter(index, " ");
+        // TODO: generalize this to support multi-definition
+        // inserting spaces to correctly parse the new input
+        // `foriinlists` becomes `for i in lists`
+        rewriter.insertAfter(index + 1, " ");
+        rewriter.insertAfter(index + 2, " ");
+        optimizeBlock(block, lineStart, lineStop, index);
+
+        return forNode;
     }
 
     /**

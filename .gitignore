@@ -4,3 +4,4 @@ trees/
 .vscode/
 src/parser/.antlr/
 code.asm
+optimized.py

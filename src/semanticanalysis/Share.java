@@ -1,6 +1,10 @@
 package semanticanalysis;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class Share {
@@ -54,5 +58,17 @@ public class Share {
             }
         }
         return content.toString();
+    }
+
+    public static void saveFile(String fileName, String content) {
+        try {
+            Path file = Paths.get(fileName);
+            if (!Files.exists(file)) {
+                Files.createFile(file);
+            }
+            Files.write(file, content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
