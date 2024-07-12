@@ -60,11 +60,10 @@ public class Main {
 
             Node ast = visitor.visit(tree);
             CommonTokenStream updatedTokens = visitor.getTokens();
-            System.out.println("AAA");
+            System.out.println("Tokens:");
             for (Token token : updatedTokens.getTokens()) {
                 System.out.print(token.getText() + " ");
             }
-            System.out.println("AAA");
             ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
@@ -73,9 +72,9 @@ public class Main {
                     System.out.println("\t" + e);
                 }
             } else {
+                System.out.println("Visualizing AST...");
+                System.out.println(ast.toPrint(""));
                 /*
-                 * System.out.println("Visualizing AST...");
-                 * System.out.println(ast.toPrint(""));
                  * System.out.println("Visualizing CFG...");
                  * System.out.println(cfg.printCode());
                  * System.out.println("Creating VM code...");

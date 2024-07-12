@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import ast.nodes.*;
+import ast.types.*;
+import codegen.Label;
+import java.lang.reflect.Array;
 import parser.Python3Lexer;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
@@ -22,9 +25,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
     Map<String, Integer> R;
     private CommonTokenStream tokens;
+    private TokenStreamRewriter rewriter;
 
     public Python3VisitorImpl(CommonTokenStream tokens) {
         this.tokens = tokens;
+        this.rewriter = new TokenStreamRewriter(tokens);
     }
 
     public CommonTokenStream getTokens() {
@@ -52,10 +57,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             }
         }
 
-        System.out.println(R);
-
         // cfg.addEdge(cfg.getExitNode());
-
         return new RootNode(childs);
     }
 
@@ -323,35 +325,62 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         // Block 1 is for the while-else statement
         Node block = visit(ctx.block(0));
 
-        Token newToken = new CommonToken(Python3Lexer.NAME, "x");
-        Token equalsToken = new CommonToken(Python3Lexer.ASSIGN, "=");
-        Token fiveToken = new CommonToken(Python3Lexer.NUMBER, "5");
-
-        List<Token> newTokens = new ArrayList<>();
-        newTokens.add(newToken);
-        newTokens.add(equalsToken);
-        newTokens.add(fiveToken);
-
-        List<Token> updatedTokens = new ArrayList<>(tokens.getTokens());
+        int lineStart = ctx.getStart().getLine();
+        int lineStop = ctx.getStop().getLine();
         int index = ctx.getStart().getTokenIndex();
 
         // Add the new tokens before the "while" statement
-        updatedTokens.addAll(index, newTokens);
-        tokens = new CommonTokenStream(new ListTokenSource(updatedTokens));
-
-        System.out.println(tokens);
-
+        // updatedTokens.addAll(index, newTokens);
+        // this.tokens = new CommonTokenStream(new ListTokenSource(updatedTokens));
         System.out.println(R);
-        System.out
-                .println(ctx.getParent().getChild(0) + " " + ctx.getStart().getLine() + " " + ctx.getStop().getLine());
-        for (var e : expr.getExprs()) {
-            AtomNode a = ((ExprNode) e).getAtom();
-            System.out.println(a.toPrint("->"));
+        var exprs = expr.getExprs();
+        System.out.println("text1 " + this.rewriter.getText());
+        int counter = 0;
+        // check nella guardia
+        for (var e : exprs) {
+            ArrayList<String> al = findAtomPresent(e, new ArrayList<>());
+            if (!al.isEmpty()) {
+                boolean constant = true;
+                for (String a : al) {
+                    int n = R.get(a);
+                    if (n > lineStart && n <= lineStop) {
+                        constant = false;
+                        break;
+                    }
+                }
+                if (constant) {
+                    String newVar = Label.newVar();
+                    rewriter.insertBefore(index, newVar + "=" + e.toPrint("") + "\n");
+                    int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
+                    int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
+                    this.rewriter.replace(firstToken, lastToken, newVar);
+                }
+            }
+            counter++;
         }
+        System.out.println("text2 " + this.rewriter.getText());
 
         WhileStmtNode whileStmt = new WhileStmtNode(expr, block);
 
         return whileStmt;
+    }
+
+    private ArrayList<String> findAtomPresent(Node e, ArrayList<String> Acc) {
+        if (e instanceof ExprNode) {
+            ExprNode expNode = (ExprNode) e;
+            ArrayList<Node> exprs = expNode.getExprs();
+            if (!exprs.isEmpty()) {
+                for (Node i : exprs) {
+                    findAtomPresent(i, Acc);
+                }
+            } else {
+                AtomNode a = (AtomNode) expNode.getAtom();
+                if (a.typeCheck() instanceof AtomType) {
+                    Acc.add(a.getId());
+                }
+            }
+        }
+        return Acc;
     }
 
     /**

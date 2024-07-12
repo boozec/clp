@@ -6,6 +6,7 @@ public class Label {
     private static int labelCounter = 0;
 	private static int globalVarNum = 0;
     private static int functionLabelCounter = 0;
+    private static int varDefCount = 0;
 
     public static void addFunDef(String s) {
         funDef += s;
@@ -38,4 +39,8 @@ public class Label {
         return base + (functionLabelCounter++);
     }
 
+
+    public static String newVar() {
+        return "_tmp" + (varDefCount++);
+    }
 }
