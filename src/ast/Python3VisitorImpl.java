@@ -2,12 +2,16 @@ package ast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ast.nodes.*;
+import parser.Python3Lexer;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
 
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
@@ -17,6 +21,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
     Map<String, Integer> R;
+    private CommonTokenStream tokens;
+
+    public Python3VisitorImpl(CommonTokenStream tokens) {
+        this.tokens = tokens;
+    }
+
+    public CommonTokenStream getTokens() {
+        return tokens;
+    }
 
     /**
      * Since a root can be a simple_stmts or a compound_stmt, this method
@@ -31,7 +44,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         for (int i = 0; i < ctx.getChildCount(); i++) {
             var child = ctx.getChild(i);
-            
+
             if (child instanceof Simple_stmtsContext) {
                 childs.add(visit((Simple_stmtsContext) child));
             } else if (child instanceof Compound_stmtContext) {
@@ -41,7 +54,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         System.out.println(R);
 
-        //cfg.addEdge(cfg.getExitNode());
+        // cfg.addEdge(cfg.getExitNode());
 
         return new RootNode(childs);
     }
@@ -132,7 +145,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         AssignmentNode assignmentNode = new AssignmentNode(lhr, assign, rhr);
 
-        R.put(((ExprNode)((ExprListNode) lhr).getElem(0)).getId(), ctx.getStart().getLine());
+        R.put(((ExprNode) ((ExprListNode) lhr).getElem(0)).getId(), ctx.getStart().getLine());
 
         return assignmentNode;
     }
@@ -287,14 +300,14 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     public Node visitIf_stmt(If_stmtContext ctx) {
         var blocks = ctx.block();
         Node condExp = visit(ctx.expr(0));
-        
+
         Node thenExp = visit(blocks.get(0));
-        
+
         Node elseExp = null;
         if (blocks.size() > 1) {
             elseExp = visit(blocks.get(1));
         }
-        
+
         return new IfNode(condExp, thenExp, elseExp);
     }
 
@@ -305,12 +318,40 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
      */
     public Node visitWhile_stmt(While_stmtContext ctx) {
         // Do the same for the while expression and the block
-        Node expr = visit(ctx.expr());
+        ExprNode expr = (ExprNode) visit(ctx.expr());
 
         // Block 1 is for the while-else statement
         Node block = visit(ctx.block(0));
 
-        return new WhileStmtNode(expr, block);
+        Token newToken = new CommonToken(Python3Lexer.NAME, "x");
+        Token equalsToken = new CommonToken(Python3Lexer.ASSIGN, "=");
+        Token fiveToken = new CommonToken(Python3Lexer.NUMBER, "5");
+
+        List<Token> newTokens = new ArrayList<>();
+        newTokens.add(newToken);
+        newTokens.add(equalsToken);
+        newTokens.add(fiveToken);
+
+        List<Token> updatedTokens = new ArrayList<>(tokens.getTokens());
+        int index = ctx.getStart().getTokenIndex();
+
+        // Add the new tokens before the "while" statement
+        updatedTokens.addAll(index, newTokens);
+        tokens = new CommonTokenStream(new ListTokenSource(updatedTokens));
+
+        System.out.println(tokens);
+
+        System.out.println(R);
+        System.out
+                .println(ctx.getParent().getChild(0) + " " + ctx.getStart().getLine() + " " + ctx.getStop().getLine());
+        for (var e : expr.getExprs()) {
+            AtomNode a = ((ExprNode) e).getAtom();
+            System.out.println(a.toPrint("->"));
+        }
+
+        WhileStmtNode whileStmt = new WhileStmtNode(expr, block);
+
+        return whileStmt;
     }
 
     /**
@@ -328,9 +369,9 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         for (int e = 0; e < dimGetExpr; e++) {
 
             if (e == dimGetExpr - 1) {
-                R.remove(((ExprNode)((ExprNode)((ExprListNode) exprList).getElem(e)).getExpr(0)).getId());
+                R.remove(((ExprNode) ((ExprNode) ((ExprListNode) exprList).getElem(e)).getExpr(0)).getId());
             } else {
-                R.remove(((ExprNode)((ExprListNode) exprList).getElem(e)).getId());
+                R.remove(((ExprNode) ((ExprListNode) exprList).getElem(e)).getId());
             }
         }
 
@@ -453,19 +494,19 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         } else {
             if (ctx.ADD(0) != null) {
                 op = ctx.ADD(0).toString();
-            
+
             } else if (ctx.MINUS(0) != null) {
                 op = ctx.MINUS(0).toString();
-            
+
             } else if (ctx.NOT() != null) {
                 op = ctx.NOT().toString();
-            
+
             } else if (ctx.STAR() != null) {
                 op = ctx.STAR().toString();
-            
+
             } else if (ctx.DIV() != null) {
                 op = ctx.DIV().toString();
-            
+
             }
 
             if (ctx.comp_op() != null) {
@@ -548,7 +589,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         } else if (ctx.DOT() != null) {
             prefix = ".";
         }
-            
+
         if (ctx.arglist() != null) {
             arglist = visit(ctx.arglist());
         }

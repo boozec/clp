@@ -60,5 +60,4 @@ public class WhileStmtNode implements Node {
         return expr;
     }
 
-    
 }

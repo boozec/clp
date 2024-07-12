@@ -29,8 +29,8 @@ public class Main {
 
         try {
             String fileStr = args[0];
-            //System.out.println(fileStr);
-            //System.out.println(Share.readFile(fileStr));
+            // System.out.println(fileStr);
+            // System.out.println(Share.readFile(fileStr));
             CharStream cs = CharStreams.fromFileName(fileStr);
             Python3Lexer lexer = new Python3Lexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -55,10 +55,16 @@ public class Main {
                 System.err.println("Error on program parsing.");
                 return;
             }
-            Python3VisitorImpl visitor = new Python3VisitorImpl();
+            Python3VisitorImpl visitor = new Python3VisitorImpl(tokens);
             SymbolTable ST = new SymbolTable();
 
             Node ast = visitor.visit(tree);
+            CommonTokenStream updatedTokens = visitor.getTokens();
+            System.out.println("AAA");
+            for (Token token : updatedTokens.getTokens()) {
+                System.out.print(token.getText() + " ");
+            }
+            System.out.println("AAA");
             ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
@@ -68,37 +74,39 @@ public class Main {
                 }
             } else {
                 /*
-                System.out.println("Visualizing AST...");
-                System.out.println(ast.toPrint(""));
-                System.out.println("Visualizing CFG...");
-                System.out.println(cfg.printCode());
-                System.out.println("Creating VM code...");
-                String prog = ast.codeGeneration();
-                String asmFile = "code.asm";
-                Path file = Paths.get(asmFile);
-                if (!Files.exists(file)) {
-                    Files.createFile(file);
-                }
-                Files.write(file, prog.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-                System.out.println("Done!");
+                 * System.out.println("Visualizing AST...");
+                 * System.out.println(ast.toPrint(""));
+                 * System.out.println("Visualizing CFG...");
+                 * System.out.println(cfg.printCode());
+                 * System.out.println("Creating VM code...");
+                 * String prog = ast.codeGeneration();
+                 * String asmFile = "code.asm";
+                 * Path file = Paths.get(asmFile);
+                 * if (!Files.exists(file)) {
+                 * Files.createFile(file);
+                 * }
+                 * Files.write(file, prog.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+                 * System.out.println("Done!");
+                 * 
+                 * CharStream inputASM = CharStreams.fromFileName(asmFile);
+                 * SVMLexer lexerASM = new SVMLexer(inputASM);
+                 * CommonTokenStream tokensASM = new CommonTokenStream(lexerASM);
+                 * SVMParser parserASM = new SVMParser(tokensASM);
+                 * 
+                 * SVMVisitorImpl visitorSVM = new SVMVisitorImpl();
+                 * visitorSVM.visit(parserASM.assembly());
+                 * 
+                 * System.out.println("You had: " + lexerASM.lexicalErrors +
+                 * " lexical errors and "
+                 * + parserASM.getNumberOfSyntaxErrors() + " syntax errors.");
+                 * if (lexerASM.lexicalErrors > 0 || parserASM.getNumberOfSyntaxErrors() > 0)
+                 * System.exit(1);
+                 * 
+                 * System.out.println("Starting Virtual Machine...");
+                 * ExecuteVM vm = new ExecuteVM(visitorSVM.code);
+                 * vm.cpu();
+                 */
 
-                CharStream inputASM = CharStreams.fromFileName(asmFile);
-                SVMLexer lexerASM = new SVMLexer(inputASM);
-                CommonTokenStream tokensASM = new CommonTokenStream(lexerASM);
-                SVMParser parserASM = new SVMParser(tokensASM);
-
-                SVMVisitorImpl visitorSVM = new SVMVisitorImpl();
-                visitorSVM.visit(parserASM.assembly());
-
-                System.out.println("You had: " + lexerASM.lexicalErrors + " lexical errors and "
-                        + parserASM.getNumberOfSyntaxErrors() + " syntax errors.");
-                if (lexerASM.lexicalErrors > 0 || parserASM.getNumberOfSyntaxErrors() > 0)
-                    System.exit(1);
-
-                System.out.println("Starting Virtual Machine...");
-                ExecuteVM vm = new ExecuteVM(visitorSVM.code);
-                vm.cpu();*/
-                
             }
         } catch (Exception e) {
             e.printStackTrace();
