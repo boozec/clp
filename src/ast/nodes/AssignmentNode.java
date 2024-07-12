@@ -16,15 +16,20 @@ public class AssignmentNode implements Node {
     private final Node assign;
     private final ExprListNode rhr;
 
+    private final int startIndex;
+    private final int endIndex;
+
     // Useful for code gen
     private int offset;
     private boolean alreadyDef;
 
-    public AssignmentNode(Node lhr, Node assign, Node rhr) {
+    public AssignmentNode(Node lhr, Node assign, Node rhr, int startIndex, int endIndex) {
         this.lhr = (ExprListNode) lhr;
         this.assign = assign;
         this.rhr = (ExprListNode) rhr;
         this.alreadyDef = false;
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
     }
 
     @Override
@@ -110,5 +115,13 @@ public class AssignmentNode implements Node {
 
     public ExprListNode getRhr() {
         return rhr;
+    }
+
+    public int getLhrIndex() {
+        return this.startIndex;
+    }
+
+    public int getRhrIndex() {
+        return this.endIndex;
     }
 }

@@ -55,15 +55,24 @@ public class Main {
                 System.err.println("Error on program parsing.");
                 return;
             }
-            Python3VisitorImpl visitor = new Python3VisitorImpl(tokens);
+            Python3VisitorImpl visitor = new Python3VisitorImpl(tokens, true);
             SymbolTable ST = new SymbolTable();
 
             Node ast = visitor.visit(tree);
-            CommonTokenStream updatedTokens = visitor.getTokens();
-            System.out.println("Tokens:");
-            for (Token token : updatedTokens.getTokens()) {
-                System.out.print(token.getText() + " ");
-            }
+            cs = CharStreams.fromString(visitor.getRewriter());
+            lexer = new Python3Lexer(cs);
+            tokens = new CommonTokenStream(lexer);
+            parser = new Python3Parser(tokens);
+            tree = parser.root();
+            visitor = new Python3VisitorImpl(tokens, false);
+            ST = new SymbolTable();
+
+            ast = visitor.visit(tree);
+            // CommonTokenStream updatedTokens = visitor.getTokens();
+            // System.out.println("Tokens:");
+            // for (Token token : updatedTokens.getTokens()) {
+            // System.out.print(token.getText() + " ");
+            // }
             ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
