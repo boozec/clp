@@ -41,7 +41,7 @@ public class WhileStmtNode implements Node {
 
     @Override
     public String printAST(String prefix) {
-        return prefix + "While\n" + expr.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
+        return prefix + "While\n" + expr.printAST(prefix + "  ") + block.printAST(prefix + "  ");
     }
 
     @Override
