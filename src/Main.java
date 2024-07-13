@@ -52,43 +52,37 @@ public class Main {
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             Python3Parser parser = new Python3Parser(tokens);
             Python3Parser.RootContext tree = parser.root();
-            if (treeFlag) {
-                JFrame frame = new JFrame("Parse Tree");
-                JPanel panel = new JPanel();
-                TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
-                        tree);
-                viewer.setScale(1); // Zoom factor
-                panel.add(viewer);
-                frame.add(panel);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(800, 600);
-                frame.setVisible(true);
-            }
+
             if (tree == null) {
                 System.err.println("The tree is null.");
                 return;
             }
+
             if (parser.getNumberOfSyntaxErrors() > 0) {
                 System.err.println("Error on program parsing.");
                 return;
             }
+
             Python3VisitorImpl visitor = new Python3VisitorImpl(tokens, optimize);
+            Node ast = visitor.visit(tree);
             SymbolTable ST = new SymbolTable();
 
-            // first visit to optimize
-            Node ast = visitor.visit(tree);
-            cs = CharStreams.fromString(visitor.getRewriter());
-            lexer = new Python3Lexer(cs);
-            tokens = new CommonTokenStream(lexer);
-            parser = new Python3Parser(tokens);
-            tree = parser.root();
-            visitor = new Python3VisitorImpl(tokens, false);
-            ST = new SymbolTable();
-
-            // second visit with optimized tree
             if (optimize) {
+                // first visit to optimize
+                cs = CharStreams.fromString(visitor.getRewriter());
+                lexer = new Python3Lexer(cs);
+                tokens = new CommonTokenStream(lexer);
+                parser = new Python3Parser(tokens);
+                tree = parser.root();
+                ST = new SymbolTable();
+
                 ast = visitor.visit(tree);
+
+                System.out.println("Saving optimized file...");
+                String astToPrint = ast.toPrint("");
+                Share.saveFile("optimized.py", astToPrint);
             }
+
             ArrayList<SemanticError> errorsWithDup = ast.checkSemantics(ST, 0, null);
             ArrayList<SemanticError> errors = Share.removeDuplicates(errorsWithDup);
             if (!errors.isEmpty()) {
@@ -97,26 +91,35 @@ public class Main {
                     System.out.println("\t" + e);
                 }
             } else {
-                System.out.println("Saving optimized file...");
-                String astToPrint = ast.toPrint("");
-                Share.saveFile("optimized.py", astToPrint);
+                if (treeFlag) {
+                    JFrame frame = new JFrame("Parse Tree");
+                    JPanel panel = new JPanel();
+                    TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),
+                            tree);
+                    viewer.setScale(1); // Zoom factor
+                    panel.add(viewer);
+                    frame.add(panel);
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.setSize(800, 600);
+                    frame.setVisible(true);
+                }
 
                 if (execute) {
                     System.out.println("Creating VM code...");
                     String asmFile = "code.asm";
                     String prog = ast.codeGeneration();
                     Share.saveFile(asmFile, prog);
-                    executeVmFile(asmFile);
+                    executeVMFile(asmFile);
                 }
 
-                System.out.println("Done!");
+                System.out.println("Everything is OK!");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void executeVmFile(String fileName) {
+    private static void executeVMFile(String fileName) {
         try {
             CharStream inputASM = CharStreams.fromFileName(fileName);
             SVMLexer lexerASM = new SVMLexer(inputASM);
