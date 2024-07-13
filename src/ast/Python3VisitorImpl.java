@@ -338,6 +338,8 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             return whileStmt;
         }
 
+        rewriter.insertAfter(ctx.COLON(0).getSymbol().getTokenIndex(), "\n");
+
         int lineStart = ctx.getStart().getLine();
         int lineStop = ctx.getStop().getLine();
         int index = ctx.getStart().getTokenIndex();
@@ -429,6 +431,10 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                     // int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
                     // int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
                     // rewriter.replace(firstToken, lastToken, newVar);
+                    System.out.println("1 " + assignment.toPrint(""));
+                } else {
+
+                    rewriter.insertBefore(assignment.getLhrIndex(), "\t");
                 }
             }
         }

@@ -1,9 +1,9 @@
-n = 1
-x = 2
-y = 3
+n = int(input())
+x = int(input())
 m = 1
-while n < (2 * x - 3 * y + 5):
-    m = m + n
-    n = n + 1
-
-print(m)
+tmp = 0
+while n > 1:
+    m = m * tmp
+    tmp = 2 * x
+    n = n - 1
+print(m + tmp)
