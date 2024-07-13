@@ -47,11 +47,10 @@ public class AssignmentNode implements Node {
             STentry e = ST.lookup(leftAtom.getId());
             if (ft != null) {
                 ft.addLocalVar();
-            } else {
-                Label.addGlobalVar();
             }
 
             if (e == null) {
+                Label.addGlobalVar();
                 ST.insert(leftAtom.getId(), new AtomType(), _nesting, "");
                 e = ST.lookup(leftAtom.getId());
             } else {
@@ -63,6 +62,7 @@ public class AssignmentNode implements Node {
             offset = e.getOffset();
         }
         return errors;
+
     }
 
     // TODO: check it out for this type

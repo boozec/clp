@@ -54,7 +54,7 @@ public class RootNode implements Node {
             str += child.codeGeneration();
         }
 
-        for (int i = 0; i < Label.getGlobalVarNum(); i++) {
+        for (int i = 0; i < Label.getGlobalVarNum() - 1; i++) {
             str += "pop\n";
         }
 

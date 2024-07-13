@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import ast.*;
 import ast.nodes.*;
-import reachingDefinition.*;
 import parser.*;
 import semanticanalysis.*;
 import svm.*;
@@ -70,6 +69,7 @@ public class Main {
             if (optimize) {
                 // first visit to optimize
                 cs = CharStreams.fromString(visitor.getRewriter());
+                System.out.println(cs);
                 lexer = new Python3Lexer(cs);
                 tokens = new CommonTokenStream(lexer);
                 parser = new Python3Parser(tokens);

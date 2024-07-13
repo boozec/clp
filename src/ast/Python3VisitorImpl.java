@@ -152,6 +152,8 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         R.put(((ExprNode) ((ExprListNode) lhr).getElem(0)).getId(), ctx.getStart().getLine());
 
+        // rewriter.insertAfter(assignmentNode.getRhrIndex(), "\n");
+
         return assignmentNode;
     }
 
@@ -220,6 +222,8 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         }
 
         Node block = visit(ctx.block());
+        rewriter.insertAfter(ctx.getStart().getTokenIndex(), " ");
+        rewriter.insertBefore(ctx.CLOSE_PAREN().getSymbol().getStartIndex() - 1, "\n    ");
 
         return new FuncdefNode(ctx.NAME(), paramlist, block);
     }
@@ -313,6 +317,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             elseExp = visit(blocks.get(1));
         }
 
+        rewriter.insertAfter(ctx.getStart().getTokenIndex(), " ");
         return new IfNode(condExp, thenExp, elseExp);
     }
 
@@ -416,6 +421,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                         break;
                     }
                 }
+
                 rewriter.insertAfter(assignment.getRhrIndex(), "\n");
                 if (constant) {
                     rewriter.insertBefore(index, lhr.toPrint("") + "=" + rhr.toPrint("") + "\n");
