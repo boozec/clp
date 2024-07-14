@@ -73,28 +73,56 @@ public class SimpleStmtNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "SimpleStmt\n";
 
         prefix += "  ";
 
         if (assignment != null) {
-            str += assignment.toPrint(prefix);
-        }
-
-        if (expr != null) {
-            str += expr.toPrint(prefix);
-        }
-
-        if (returnStmt != null) {
-            str += returnStmt.toPrint(prefix);
-        }
-
-        if (importStmt != null) {
-            str += importStmt.toPrint(prefix);
+            str += assignment.printAST(prefix);
+        } else if (expr != null) {
+            str += expr.printAST(prefix);
+        } else if (returnStmt != null) {
+            str += returnStmt.printAST(prefix);
+        } else if (importStmt != null) {
+            str += importStmt.printAST(prefix);
         }
 
         return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        
+        String str = prefix;
+
+        if (assignment != null) {
+            str += assignment.toPrint("");
+        } else if (expr != null) {
+            str += expr.toPrint("");
+        } else if (returnStmt != null) {
+            str += returnStmt.toPrint("");
+        } else if (importStmt != null) {
+            str += importStmt.toPrint("");
+        }
+
+        return str;
+    }
+
+    public Node getImportStmt() {
+        return importStmt;
+    }
+
+    public Node getReturnStmt() {
+        return returnStmt;
+    }
+    
+    public Node getAssignment() {
+        return assignment;
+    }
+
+    public Node getExpr() {
+        return expr;
     }
 
 }

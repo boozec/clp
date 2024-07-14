@@ -42,14 +42,28 @@ public class ParamlistNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Paramlist\n";
 
         prefix += "  ";
-        for (var param : params) {
-            str += param.toPrint(prefix);
+        for (Node param : params) {
+            str += param.printAST(prefix);
         }
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix;
+
+        for (int i = 0; i < params.size(); i++) {
+            str += params.get(i).toPrint("");
+            if (i != params.size() - 1) {
+                str += ", ";
+            }
+        }
+        
         return str;
     }
 

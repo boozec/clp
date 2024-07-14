@@ -33,14 +33,33 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add cgen per while (but it's not requested from the exercise)
+    /**
+     * NOTE: It is not a part for this project.
+     */
     @Override
     public String codeGeneration() {
         return "";
     }
 
     @Override
-    public String toPrint(String prefix) {
-        return prefix + "While\n" + expr.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
+    public String printAST(String prefix) {
+        return prefix + "While\n" + expr.printAST(prefix + "  ") + block.printAST(prefix + "  ");
     }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "while ";
+        str += expr.toPrint("") + ":\n";
+        str += block.toPrint(prefix + "\t") + "\n";
+        return str;
+    }
+
+    public Node getBlock() {
+        return block;
+    }
+
+    public Node getExpr() {
+        return expr;
+    }
+
 }

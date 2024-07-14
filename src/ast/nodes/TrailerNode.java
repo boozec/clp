@@ -12,17 +12,19 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  */
 public class TrailerNode implements Node {
 
+    private String prefix;
+    private String suffix;
     private final Node arglist;
     private final ArrayList<Node> exprs;
     private final TerminalNode methodCall;
-    private final boolean isParenthesis;
     private final boolean isEmpty;
 
-    public TrailerNode(Node arglist, ArrayList<Node> exprs, TerminalNode methodCall, boolean isParenthesis) {
+    public TrailerNode(Node arglist, ArrayList<Node> exprs, TerminalNode methodCall, String prefix, String suffix){
         this.arglist = arglist;
         this.exprs = exprs;
         this.methodCall = methodCall;
-        this.isParenthesis = isParenthesis;
+        this.prefix = prefix;
+        this.suffix = suffix;
 
         this.isEmpty = (this.arglist == null && this.exprs.isEmpty() && this.methodCall == null);
     }
@@ -50,10 +52,6 @@ public class TrailerNode implements Node {
         return ((ArglistNode) arglist).getArgumentNumber();
     }
 
-    public boolean isParenthesis() {
-        return this.isParenthesis;
-    }
-
     @Override
     public Type typeCheck() {
         return new VoidType();
@@ -68,17 +66,17 @@ public class TrailerNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "TrailerNode\n";
 
         prefix += "  ";
 
         if (arglist != null) {
-            str += arglist.toPrint(prefix);
+            str += arglist.printAST(prefix);
         }
 
         for (var expr : exprs) {
-            str += expr.toPrint(prefix);
+            str += expr.printAST(prefix);
         }
 
         if (methodCall != null) {
@@ -89,6 +87,27 @@ public class TrailerNode implements Node {
             str += prefix + "()\n";
         }
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + this.prefix;
+
+        if (arglist != null) {
+            str += arglist.toPrint("");
+        } else if (methodCall != null) {
+            str += methodCall.getText();
+        } else {
+            for (var expr : exprs) {
+                str += expr.toPrint("");
+                if (exprs.indexOf(expr) != exprs.size() - 1) {
+                    str += ", ";
+                }
+            }
+        }
+
+        str += this.suffix;
         return str;
     }
 

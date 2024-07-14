@@ -29,14 +29,18 @@ public class ParamdefNode extends AtomNode {
         return errors;
     }
 
-    // FIXME: it should returns the param' type
     @Override
     public Type typeCheck() {
         return new VoidType();
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         return prefix + "Paramdef(" + val + ")\n";
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + val;
     }
 }

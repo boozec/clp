@@ -1,8 +1,6 @@
 // Generated from /home/gabri/Desktop/clp_project/src/svm/SVM.g4 by ANTLR 4.13.1
 package svm;
 
-import java.util.HashMap;
-
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**

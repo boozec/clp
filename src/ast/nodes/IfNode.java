@@ -34,7 +34,6 @@ public class IfNode implements Node {
         return errors;
     }
 
-    // FIXME: fix the if statement
     @Override
     public Type typeCheck() {
         if (guard.typeCheck() instanceof BoolType) {
@@ -78,13 +77,25 @@ public class IfNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
-        String str = prefix + "If\n" + guard.toPrint(prefix + "  ") + thenBranch.toPrint(prefix + "  ");
+    public String printAST(String prefix) {
+        String str = prefix + "If\n" + guard.printAST(prefix + "  ") + thenBranch.printAST(prefix + "  ");
 
         if (elseBranch != null) {
-            str += elseBranch.toPrint(prefix + "  ");
+            str += elseBranch.printAST(prefix + "  ");
         }
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "if ";
+        str += guard.toPrint("") + ":\n";
+        str += thenBranch.toPrint(prefix + "\t") + "\n";
+        if (elseBranch != null) {
+            str += prefix + "else:\n";
+            str += elseBranch.toPrint(prefix + "\t") + "\n";
+        }
         return str;
     }
 

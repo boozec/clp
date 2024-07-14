@@ -44,16 +44,31 @@ public class SimpleStmtsNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "SimpleStmts\n";
 
         prefix += "  ";
 
         for (Node stmt : stmts) {
-            str += stmt.toPrint(prefix);
+            str += stmt.printAST(prefix);
         }
 
         return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
+        
+        for (Node stmt : stmts) {
+            str += stmt.toPrint(prefix) + "\n";
+        }
+
+        return str;
+    }
+
+    public ArrayList<Node> getStmts() {
+        return stmts;
     }
 
 }

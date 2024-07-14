@@ -22,6 +22,7 @@ public class CompoundNode implements Node {
         this.whileStmt = whileStmt;
     }
 
+
     @Override
     public ArrayList<SemanticError> checkSemantics(SymbolTable ST, int _nesting, FunctionType ft) {
         ArrayList<SemanticError> errors = new ArrayList<>();
@@ -72,10 +73,33 @@ public class CompoundNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "CompoundNode\n";
 
         prefix += "  ";
+
+        if (ifNode != null) {
+            str += ifNode.printAST(prefix);
+        }
+
+        if (funcDef != null) {
+            str += funcDef.printAST(prefix);
+        }
+
+        if (forStmt != null) {
+            str += forStmt.printAST(prefix);
+        }
+
+        if (whileStmt != null) {
+            str += whileStmt.printAST(prefix);
+        }
+
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
 
         if (ifNode != null) {
             str += ifNode.toPrint(prefix);
@@ -94,6 +118,22 @@ public class CompoundNode implements Node {
         }
 
         return str;
+
     }
 
+    public Node getForStmt() {
+        return forStmt;
+    }
+
+    public Node getFuncDef() {
+        return funcDef;
+    }
+
+    public Node getIfNode() {
+        return ifNode;
+    }
+
+    public Node getWhileStmt() {
+        return whileStmt;
+    }
 }

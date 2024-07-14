@@ -2,6 +2,8 @@ package ast.nodes;
 
 import ast.types.*;
 import java.util.ArrayList;
+import java.util.List;
+
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
 
@@ -10,9 +12,9 @@ import semanticanalysis.SymbolTable;
  */
 public class ExprListNode implements Node {
 
-    private final ArrayList<Node> exprs;
+    private final List<Node> exprs;
 
-    public ExprListNode(ArrayList<Node> exprs) {
+    public ExprListNode(List<Node> exprs) {
         this.exprs = exprs;
     }
 
@@ -59,15 +61,31 @@ public class ExprListNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "ExprList\n";
 
         prefix += "  ";
         for (var param : exprs) {
-            str += param.toPrint(prefix);
+            str += param.printAST(prefix);
         }
 
         return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+
+        String str = prefix + exprs.get(0).toPrint("");
+
+        for (int i = 1; i < exprs.size(); ++i) {
+            str += ", " + exprs.get(i).toPrint("");
+        }
+
+        return str;
+    }
+
+    public List<Node> getExprs() {
+        return exprs;
     }
 
 }

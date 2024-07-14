@@ -15,6 +15,11 @@ public class Type implements Node {
     }
 
     @Override
+    public String printAST(String s) {
+        return s;
+    }
+
+    @Override
     public String toPrint(String s) {
         return s;
     }

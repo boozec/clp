@@ -27,7 +27,6 @@ public class CompOpNode implements Node {
         return new ArrayList<>();
     }
 
-    // TODO: it should be boolean, right?
     @Override
     public Type typeCheck() {
         return new VoidType();
@@ -42,7 +41,12 @@ public class CompOpNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         return prefix + "CompOpNode(" + op + ")\n";
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        return prefix + op;
     }
 }

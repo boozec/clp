@@ -73,8 +73,23 @@ public class ForStmtNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
-        return prefix + "For\n" + exprList.toPrint(prefix + "  ") + block.toPrint(prefix + "  ");
+    public String printAST(String prefix) {
+        return prefix + "For\n" + exprList.printAST(prefix + "  ") + block.printAST(prefix + "  ");
     }
 
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "for ";
+        str += exprList.toPrint("") + ":\n";
+        str += block.toPrint(prefix + "\t");
+        return str;
+    }
+
+    public Node getBlock() {
+        return block;
+    }
+
+    public Node getExprList() {
+        return exprList;
+    }
 }

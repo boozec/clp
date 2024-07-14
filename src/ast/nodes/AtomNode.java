@@ -13,6 +13,8 @@ import semanticanalysis.SymbolTable;
  */
 public class AtomNode implements Node {
 
+    private String prefix;
+    private String suffix;
     protected String val;
     protected TestlistCompNode exprlist;
 
@@ -21,8 +23,14 @@ public class AtomNode implements Node {
     protected int offset;
 
     public AtomNode(String val, Node exprlist) {
+        this(val, exprlist, "", "");
+    }
+
+    public AtomNode(String val, Node exprlist, String prefix, String suffix) {
         this.val = val;
         this.exprlist = (TestlistCompNode) exprlist;
+        this.prefix = prefix;
+        this.suffix = suffix;
     }
 
     /**
@@ -31,6 +39,10 @@ public class AtomNode implements Node {
      */
     public String getId() {
         return val;
+    }
+
+    public void setId(String id) {
+        this.val = id;
     }
 
     @Override
@@ -134,13 +146,25 @@ public class AtomNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
-        // FIXME: can be a testlist_comp with two expr and two atoms
+    public String printAST(String prefix) {
         if (val != null) {
-            return prefix + "Atom(" + val + ")\n";
+            return prefix + "AtomNode: " + val + "\n";
+        } else {
+            return prefix + "AtomNode\n" + exprlist.printAST(prefix + "  ");
+        }
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + this.prefix;
+
+        if (val != null) {
+            str += val;
+        } else {
+            str += this.exprlist.toPrint("");
         }
 
-        return prefix + "Atom(null)\n";
-
+        str += this.suffix;
+        return str;
     }
 }

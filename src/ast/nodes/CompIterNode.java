@@ -40,10 +40,17 @@ public class CompIterNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "CompIterNode\n";
 
         prefix += "  ";
+        str += comp_for.printAST(prefix);
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
         str += comp_for.toPrint(prefix);
         return str;
     }

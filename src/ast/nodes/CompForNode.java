@@ -12,12 +12,12 @@ import semanticanalysis.SymbolTable;
 public class CompForNode implements Node {
 
     protected ExprListNode exprlist;
-    protected ExprNode single_expr;
+    protected ExprNode expr;
     protected CompIterNode comp_iter;
 
-    public CompForNode(Node exprlist, Node single_expr, Node comp_iter) {
+    public CompForNode(Node exprlist, Node expr, Node comp_iter) {
         this.exprlist = (ExprListNode) exprlist;
-        this.single_expr = (ExprNode) single_expr;
+        this.expr = (ExprNode) expr;
         this.comp_iter = (CompIterNode) comp_iter;
     }
 
@@ -26,7 +26,7 @@ public class CompForNode implements Node {
         ArrayList<SemanticError> errors = new ArrayList<>();
 
         errors.addAll(exprlist.checkSemantics(ST, _nesting, ft));
-        errors.addAll(single_expr.checkSemantics(ST, _nesting, ft));
+        errors.addAll(expr.checkSemantics(ST, _nesting, ft));
         if (comp_iter != null) {
             errors.addAll(comp_iter.checkSemantics(ST, _nesting, ft));
         }
@@ -47,13 +47,27 @@ public class CompForNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "CompForNode\n";
 
         prefix += "  ";
-        str += exprlist.toPrint(prefix);
-        str += single_expr.toPrint(prefix);
-        str += comp_iter.toPrint(prefix);
+        str += exprlist.printAST(prefix);
+        str += expr.printAST(prefix);
+        str += comp_iter.printAST(prefix);
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix + "for";
+
+        for (int i = 0; i < exprlist.getExprs().size(); i++) {
+            str += exprlist.getExprs().get(i).toPrint("");
+        }
+
+        str += " in " + expr.toPrint("") + "\n";
+        str += comp_iter.toPrint(prefix + "\t");
+
         return str;
     }
 

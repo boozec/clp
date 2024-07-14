@@ -105,5 +105,11 @@ public interface Node {
      * Returns a string for a given node with a prefix. It used when an AST
      * wants to be visualized on screen.
      */
+    String printAST(String prefix);
+
+    /**
+     * Returns a string for a given node with a prefix. It used when the code
+     * wants to be visualized on screen.
+     */
     String toPrint(String prefix);
 }

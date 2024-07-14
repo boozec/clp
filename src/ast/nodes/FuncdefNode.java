@@ -22,7 +22,11 @@ public class FuncdefNode implements Node {
 
     public FuncdefNode(TerminalNode name, Node paramlist, Node block) {
         this.name = name;
-        this.paramlist = paramlist;
+        if (paramlist != null) {
+            this.paramlist = paramlist;
+        } else {
+            this.paramlist = new ParamlistNode(new ArrayList<Node>());
+        }
         this.block = block;
         this.funLabel = Label.newFun("FUN");
     }
@@ -62,7 +66,6 @@ public class FuncdefNode implements Node {
         return errors;
     }
 
-    // FIXME: this type must be the same of the return stmt variable
     @Override
     public Type typeCheck() {
         return new VoidType();
@@ -84,17 +87,29 @@ public class FuncdefNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Funcdef(" + name + ")\n";
 
         prefix += "  ";
 
         if (paramlist != null) {
-            str += paramlist.toPrint(prefix);
+            str += paramlist.printAST(prefix);
         }
 
-        str += block.toPrint(prefix);
+        str += block.printAST(prefix);
 
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "\n" + prefix + "def " + this.name + '(';
+        if (paramlist != null) {
+            str += paramlist.toPrint("");
+        }
+
+        str += "):\n";
+        str += block.toPrint(prefix + "\t") + "\n";
         return str;
     }
 

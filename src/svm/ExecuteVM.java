@@ -1,7 +1,5 @@
 package svm;
 
-import java.util.concurrent.TimeUnit;
-
 public class ExecuteVM {
     
     public static final int CODESIZE = 1000 ;

@@ -16,15 +16,20 @@ public class AssignmentNode implements Node {
     private final Node assign;
     private final ExprListNode rhr;
 
+    private final int startIndex;
+    private final int endIndex;
+
     // Useful for code gen
     private int offset;
     private boolean alreadyDef;
 
-    public AssignmentNode(Node lhr, Node assign, Node rhr) {
+    public AssignmentNode(Node lhr, Node assign, Node rhr, int startIndex, int endIndex) {
         this.lhr = (ExprListNode) lhr;
         this.assign = assign;
         this.rhr = (ExprListNode) rhr;
         this.alreadyDef = false;
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
     }
 
     @Override
@@ -42,11 +47,10 @@ public class AssignmentNode implements Node {
             STentry e = ST.lookup(leftAtom.getId());
             if (ft != null) {
                 ft.addLocalVar();
-            } else {
-                Label.addGlobalVar();
             }
 
             if (e == null) {
+                Label.addGlobalVar();
                 ST.insert(leftAtom.getId(), new AtomType(), _nesting, "");
                 e = ST.lookup(leftAtom.getId());
             } else {
@@ -58,9 +62,9 @@ public class AssignmentNode implements Node {
             offset = e.getOffset();
         }
         return errors;
+
     }
 
-    // TODO: check it out for this type
     @Override
     public Type typeCheck() {
         return rhr.typeCheck();
@@ -92,9 +96,31 @@ public class AssignmentNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
-        return prefix + "Assignment\n" + lhr.toPrint(prefix + "  ") + assign.toPrint(prefix + "  ")
-                + rhr.toPrint(prefix + "  ");
+    public String printAST(String prefix) {
+        return prefix + "Assignment\n" + lhr.printAST(prefix + "  ") + assign.printAST(prefix + "  ")
+                + rhr.printAST(prefix + "  ");
     }
 
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix;
+        str += lhr.toPrint("") + " " + assign.toPrint("") + " " + rhr.toPrint("");
+        return str;
+    }
+
+    public ExprListNode getLhr() {
+        return lhr;
+    }
+
+    public ExprListNode getRhr() {
+        return rhr;
+    }
+
+    public int getLhrIndex() {
+        return this.startIndex;
+    }
+
+    public int getRhrIndex() {
+        return this.endIndex;
+    }
 }

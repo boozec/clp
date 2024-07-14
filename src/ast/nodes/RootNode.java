@@ -54,7 +54,7 @@ public class RootNode implements Node {
             str += child.codeGeneration();
         }
 
-        for (int i = 0; i < Label.getGlobalVarNum(); i++) {
+        for (int i = 0; i < Label.getGlobalVarNum() - 1; i++) {
             str += "pop\n";
         }
 
@@ -62,16 +62,32 @@ public class RootNode implements Node {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = "Root\n";
 
         prefix += "  ";
 
         for (Node child : childs) {
-            str += child.toPrint(prefix);
+            str += child.printAST(prefix);
         }
 
         return str;
     }
 
+    @Override
+    public String toPrint(String prefix) {
+        String str = prefix;
+        for (Node child : childs) {
+            str += child.toPrint("");
+        }
+        return str;
+    }
+
+    public ArrayList<Node> getChilds() {
+        return childs;
+    }
+
+    public Node getChild(int i) {
+        return childs.get(i);
+    }
 }

@@ -43,15 +43,25 @@ public class BlockNode extends RootNode {
     }
 
     @Override
-    public String toPrint(String prefix) {
+    public String printAST(String prefix) {
         String str = prefix + "Block\n";
 
         prefix += "  ";
+        for (Node child : childs) {
+            str += child.printAST(prefix);
+        }
+
+        return str;
+    }
+
+    @Override
+    public String toPrint(String prefix) {
+        String str = "";
+
         for (Node child : childs) {
             str += child.toPrint(prefix);
         }
 
         return str;
     }
-
 }
