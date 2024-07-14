@@ -6,11 +6,12 @@ while y > 0:
     c = y * n + g
     y = y - 1
 y = 10
+g = 1
 for i in range(y):
     g = i * y
     c = c + i + g
 while c > 0:
     g = 4 * y
-    n = n + c + f
+    n = n + c + g
     c = c - 1
 print(g)
