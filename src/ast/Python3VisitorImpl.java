@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
 
 import ast.nodes.*;
 import ast.types.*;
 import codegen.Label;
-import java.lang.reflect.Array;
 import parser.Python3Lexer;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
@@ -347,12 +345,18 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         int lineStart = ctx.getStart().getLine();
         int lineStop = ctx.getStop().getLine();
         int index = ctx.getStart().getTokenIndex();
-        optimizeBlock(block, lineStart, lineStop, index);
+        optimizeWithSecond(block, lineStart, lineStop, index);
 
         // optimize while's guard
         int counter = 0;
         var exprs = expr.getExprs();
         for (var e : exprs) {
+            if (e instanceof ExprNode) {
+                ExprNode exprNode = (ExprNode) e;
+                if (exprNode.typeCheck() instanceof AtomType) {
+                    continue;
+                }
+            }
             ArrayList<String> al = findAtomPresent(e, new ArrayList<>());
             if (!al.isEmpty()) {
                 boolean constant = true;
@@ -373,6 +377,8 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             }
             counter++;
         }
+
+        optimizeWithThird(block, lineStart, lineStop, index);
 
         return whileStmt;
     }
@@ -395,7 +401,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         return Acc;
     }
 
-    private void optimizeBlock(BlockNode block, int lineStart, int lineStop, int index) {
+    private void optimizeWithSecond(BlockNode block, int lineStart, int lineStop, int index) {
         rewriter.insertAfter(index, " ");
         ArrayList<AssignmentNode> assignments = new ArrayList<>();
         for (var child : block.getChilds()) {
@@ -439,10 +445,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                     rewriter.insertBefore(index, lhr.toPrint("") + "=" + rhr.toPrint("") + "\n");
                     rewriter.replace(assignment.getLhrIndex(), assignment.getRhrIndex(), "");
                     optimizationDone = true;
-                    // int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
-                    // int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
-                    // rewriter.replace(firstToken, lastToken, newVar);
-                    // System.out.println("1 " + assignment.toPrint(""));
                 } else {
                     rewriter.insertBefore(assignment.getLhrIndex(), "\t");
                 }
@@ -493,9 +495,59 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         // `foriinlists` becomes `for i in lists`
         rewriter.insertAfter(index + 1, " ");
         rewriter.insertAfter(index + 2, " ");
-        optimizeBlock(block, lineStart, lineStop, index);
+        optimizeWithSecond(block, lineStart, lineStop, index);
+        optimizeWithThird(block, lineStart, lineStop, index);
 
         return forNode;
+    }
+
+    private void optimizeWithThird(BlockNode block, int lineStart, int lineStop, int index) {
+        int counter = 0;
+        ArrayList<Node> stms = block.getChilds();
+        for (var e : stms) {
+            if (e instanceof SimpleStmtsNode) {
+                SimpleStmtsNode stmss = (SimpleStmtsNode) e;
+                for (Node stm : stmss.getStmts()) {
+                    SimpleStmtNode singleStm = (SimpleStmtNode) stm;
+                    AssignmentNode ass = (AssignmentNode) singleStm.getAssignment();
+                    if (ass != null) {
+                        ExprListNode rhr = ass.getRhr();
+                        ExprNode rExpr = (ExprNode) rhr.getElem(0);
+                        ArrayList<Node> exprsList = rExpr.getExprs();
+                        if (exprsList.size() > 1) {
+                            List<Node> exprsLists = exprsList.subList(0, exprsList.size() - 1);
+                            for (var elem : exprsLists) {
+                                if (elem instanceof ExprNode) {
+                                    ExprNode exprNode = (ExprNode) elem;
+                                    if (exprNode.typeCheck() instanceof AtomType) {
+                                        continue;
+                                    }
+                                }
+                                ArrayList<String> al = findAtomPresent(elem, new ArrayList<>());
+                                if (!al.isEmpty()) {
+                                    boolean constant = true;
+                                    for (String a : al) {
+                                        int n = R.get(a);
+                                        if (n > lineStart && n <= lineStop) {
+                                            constant = false;
+                                            break;
+                                        }
+                                    }
+                                    if (constant) {
+                                        String newVar = Label.newVar();
+                                        rewriter.insertBefore(index, newVar + "=" + elem.toPrint("") + "\n");
+                                        int firstToken = ass.getLhrIndex() + 2;
+                                        int lastToken = ass.getRhrIndex() - 2;
+                                        rewriter.replace(firstToken, lastToken, newVar);
+                                    }
+                                }
+                                counter++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

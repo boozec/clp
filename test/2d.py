@@ -6,6 +6,7 @@ while y > 0:
     c = y * n + g
     y = y - 1
 
+y = 5
 for i in range(y):
     g = 2 * y
     c = c + i + g
