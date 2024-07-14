@@ -6,7 +6,7 @@ while n > 1:
     m = m * tmp
     n = n - 1
 c = 0
-for i in m:
+for i in range(m):
     g = 2 * m
     c = c + i + g
 print(m + c)

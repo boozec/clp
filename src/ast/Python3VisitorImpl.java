@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
 
 import ast.nodes.*;
 import ast.types.*;
 import codegen.Label;
-import java.lang.reflect.Array;
-import java.security.interfaces.EdECKey;
 import parser.Python3Lexer;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
