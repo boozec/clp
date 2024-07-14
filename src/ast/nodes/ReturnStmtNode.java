@@ -49,7 +49,7 @@ public class ReturnStmtNode implements Node {
     public String codeGeneration() {
         String expS = exprList.codeGeneration();
         if(localvar > 0) {
-            expS += "subi SP " + localvar + "\n";
+            expS += "addi SP " + localvar + "\n";
         }
         return expS +
                 "popr RA\n" +
