@@ -152,8 +152,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
         R.put(((ExprNode) ((ExprListNode) lhr).getElem(0)).getId(), ctx.getStart().getLine());
 
-        // rewriter.insertAfter(assignmentNode.getRhrIndex(), "\n");
-
         return assignmentNode;
     }
 
@@ -431,11 +429,14 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                     // int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
                     // int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
                     // rewriter.replace(firstToken, lastToken, newVar);
-                    System.out.println("1 " + assignment.toPrint(""));
                 } else {
-
                     rewriter.insertBefore(assignment.getLhrIndex(), "\t");
                 }
+            } else {
+                String newVar = Label.newVar();
+                rewriter.insertBefore(index, newVar + "=" + rhr.toPrint("") + "\n");
+                rewriter.replace(assignment.getLhrIndex(), assignment.getRhrIndex(),
+                        "\t" + lhr.toPrint("") + "=" + newVar + "\n");
             }
         }
     }
