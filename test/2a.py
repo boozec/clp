@@ -5,5 +5,8 @@ while n > 1:
     tmp = 2 * x
     m = m * tmp
     n = n - 1
-
-print(m + tmp)
+c = 0
+for i in m:
+    g = 2 * m
+    c = c + i + g
+print(m + c)
