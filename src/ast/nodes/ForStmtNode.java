@@ -79,13 +79,11 @@ public class ForStmtNode implements Node {
 
     @Override
     public String toPrint(String prefix) {
-        
-        // TODO: indicare che diamo per assunto il for su più righe
         String str = prefix + "for ";
         str += exprList.toPrint("") + ":\n";
         str += block.toPrint(prefix + "\t");
         return str;
-    } 
+    }
 
     public Node getBlock() {
         return block;

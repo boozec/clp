@@ -65,7 +65,6 @@ public class AssignmentNode implements Node {
 
     }
 
-    // TODO: check it out for this type
     @Override
     public Type typeCheck() {
         return rhr.typeCheck();

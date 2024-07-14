@@ -34,7 +34,6 @@ public class IfNode implements Node {
         return errors;
     }
 
-    // FIXME: fix the if statement
     @Override
     public Type typeCheck() {
         if (guard.typeCheck() instanceof BoolType) {

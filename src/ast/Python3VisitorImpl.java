@@ -303,7 +303,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     /**
-     * Returns a `IfNode`. FIXME: add support for elif statement.
+     * Returns a `IfNode`.
      *
      * ``` if_stmt : 'if' expr ':' block ('elif' expr ':' block)* ('else' ':'
      * block)? ; ```
@@ -490,9 +490,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         int index = ctx.getStart().getTokenIndex();
 
         rewriter.insertAfter(index, " ");
-        // TODO: generalize this to support multi-definition
-        // inserting spaces to correctly parse the new input
-        // `foriinlists` becomes `for i in lists`
+        // NOTE: works only for one argument
         rewriter.insertAfter(index + 1, " ");
         rewriter.insertAfter(index + 2, " ");
         optimizeWithSecond(block, lineStart, lineStop, index);
@@ -778,7 +776,7 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     /**
-     * Returns a `Node`. FIXME: what to do in case of list??
+     * Returns a `Node`.
      *
      * ``` exprlist : expr (',' expr )* ','? ; ```
      */
@@ -845,12 +843,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
 
     /**
      * Returns a `CompIterNode`.
+     * NOTE: We ignore `comp_if`.
      *
      * ``` comp_iter : comp_for | comp_if ; ;```
      */
     public Node visitComp_iter(Comp_iterContext ctx) {
-        // TODO: Implement comp_if
-        // Node iter = visit(ctx.comp_if());
         Comp_forContext cfc = ctx.comp_for();
         Node forNode = null;
         if (cfc != null) {

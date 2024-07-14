@@ -33,7 +33,9 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
-    // TODO: add cgen per while (but it's not requested from the exercise)
+    /**
+     * NOTE: It is not a part for this project.
+     */
     @Override
     public String codeGeneration() {
         return "";

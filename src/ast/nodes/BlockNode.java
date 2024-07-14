@@ -54,16 +54,14 @@ public class BlockNode extends RootNode {
         return str;
     }
 
-
     @Override
     public String toPrint(String prefix) {
         String str = "";
 
-        // TODO: scrivere nella documentazione che diamo per assunto che il blocco sia sempre un blocco su più righe
         for (Node child : childs) {
             str += child.toPrint(prefix);
         }
-        
+
         return str;
     }
 }

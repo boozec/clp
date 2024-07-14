@@ -27,7 +27,6 @@ public class CompOpNode implements Node {
         return new ArrayList<>();
     }
 
-    // TODO: it should be boolean, right?
     @Override
     public Type typeCheck() {
         return new VoidType();

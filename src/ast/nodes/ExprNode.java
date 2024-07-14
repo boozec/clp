@@ -93,7 +93,6 @@ public class ExprNode implements Node {
                 TrailerNode trailer = (TrailerNode) trailers.get(0);
                 String funName = atom.getId();
 
-                // TODO: it isnt a function, it could be a variable
                 STentry fun = ST.lookup(funName);
 
                 if (fun != null && !(fun.getType() instanceof ImportType)) {
@@ -132,7 +131,6 @@ public class ExprNode implements Node {
         return errors;
     }
 
-    // FIXME: type for the expr
     @Override
     public Type typeCheck() {
         if (this.atom != null) {
@@ -180,8 +178,8 @@ public class ExprNode implements Node {
                 case "+":
                 case "-":
                 case "*":
-                // In real Python `/` is a float division but we'll consider the
-                // int division here below.
+                    // In real Python `/` is a float division but we'll consider the
+                    // int division here below.
                 case "/":
                     return intOpCodeGen(exprs.get(0), exprs.get(1), op);
                 case "%":
@@ -241,7 +239,7 @@ public class ExprNode implements Node {
         prefix += "  ";
         if (atom != null) {
             str += atom.printAST(prefix);
-            
+
             for (var trailer : trailers) {
                 str += trailer.printAST(prefix);
             }

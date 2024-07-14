@@ -66,7 +66,6 @@ public class FuncdefNode implements Node {
         return errors;
     }
 
-    // FIXME: this type must be the same of the return stmt variable
     @Override
     public Type typeCheck() {
         return new VoidType();

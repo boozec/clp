@@ -29,7 +29,6 @@ public class ParamdefNode extends AtomNode {
         return errors;
     }
 
-    // FIXME: it should returns the param' type
     @Override
     public Type typeCheck() {
         return new VoidType();
