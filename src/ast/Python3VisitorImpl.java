@@ -27,14 +27,20 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     Map<String, Integer> R;
     private TokenStreamRewriter rewriter;
     private boolean optimize;
+    private boolean optimizationDone;
 
     public Python3VisitorImpl(CommonTokenStream tokens, boolean optimize) {
         rewriter = new TokenStreamRewriter(tokens);
         this.optimize = optimize;
+        optimizationDone = false;
     }
 
     public String getRewriter() {
         return rewriter.getText();
+    }
+
+    public boolean getOptimizationDone() {
+        return optimizationDone;
     }
 
     /**
@@ -415,6 +421,12 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             if (!al.isEmpty()) {
                 boolean constant = true;
                 for (String a : al) {
+                    if (R.get(a) == null) {
+                        rewriter.insertBefore(assignment.getLhrIndex(), "\n");
+                        rewriter.insertAfter(assignment.getLhrIndex() - 1, "\t");
+                        constant = false;
+                        break;
+                    }
                     int n = R.get(a);
                     if (n > lineStart && n <= lineStop) {
                         constant = false;
@@ -426,9 +438,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                 if (constant) {
                     rewriter.insertBefore(index, lhr.toPrint("") + "=" + rhr.toPrint("") + "\n");
                     rewriter.replace(assignment.getLhrIndex(), assignment.getRhrIndex(), "");
+                    optimizationDone = true;
                     // int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
                     // int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
                     // rewriter.replace(firstToken, lastToken, newVar);
+                    // System.out.println("1 " + assignment.toPrint(""));
                 } else {
                     rewriter.insertBefore(assignment.getLhrIndex(), "\t");
                 }
