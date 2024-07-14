@@ -48,8 +48,8 @@ public class ReturnStmtNode implements Node {
     @Override
     public String codeGeneration() {
         String expS = exprList.codeGeneration();
-        for (int i = 0; i < localvar; i++) {
-            expS += "pop\n";
+        if(localvar > 0) {
+            expS += "subi SP " + localvar + "\n";
         }
         return expS +
                 "popr RA\n" +
