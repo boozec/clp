@@ -348,9 +348,10 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
         optimizeWithSecond(block, lineStart, lineStop, index);
 
         // optimize while's guard
-        int counter = 0;
+        int counter = -1;
         var exprs = expr.getExprs();
         for (var e : exprs) {
+            counter++;
             if (e instanceof ExprNode) {
                 ExprNode exprNode = (ExprNode) e;
                 if (exprNode.typeCheck() instanceof AtomType) {
@@ -361,6 +362,10 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
             if (!al.isEmpty()) {
                 boolean constant = true;
                 for (String a : al) {
+                    if(R.get(a) == null) {
+                        constant = false;
+                        break;
+                    }
                     int n = R.get(a);
                     if (n > lineStart && n <= lineStop) {
                         constant = false;
@@ -370,12 +375,11 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                 if (constant) {
                     String newVar = Label.newVar();
                     rewriter.insertBefore(index, newVar + "=" + e.toPrint("") + "\n");
-                    int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
                     int firstToken = ctx.expr().expr(counter).getStart().getTokenIndex();
+                    int lastToken = ctx.expr().expr(counter).getStop().getTokenIndex();
                     rewriter.replace(firstToken, lastToken, newVar);
                 }
             }
-            counter++;
         }
 
         optimizeWithThird(block, lineStart, lineStop, index);
