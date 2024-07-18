@@ -504,7 +504,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
     }
 
     private void optimizeWithThird(BlockNode block, int lineStart, int lineStop, int index) {
-        int counter = 0;
         ArrayList<Node> stms = block.getChilds();
         for (var e : stms) {
             if (e instanceof SimpleStmtsNode) {
@@ -543,7 +542,6 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                                         rewriter.replace(firstToken, lastToken, newVar);
                                     }
                                 }
-                                counter++;
                             }
                         }
                     }

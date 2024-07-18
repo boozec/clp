@@ -4,6 +4,7 @@ import ast.types.*;
 import java.util.ArrayList;
 import semanticanalysis.SemanticError;
 import semanticanalysis.SymbolTable;
+import codegen.Label;
 
 /**
  * Node for the `while_stmt` statement of the grammar.
@@ -33,12 +34,21 @@ public class WhileStmtNode implements Node {
         return new VoidType();
     }
 
-    /**
-     * NOTE: It is not a part for this project.
-     */
     @Override
     public String codeGeneration() {
-        return "";
+        String startLabel = Label.newBasic("start");
+        String endLabel = Label.newBasic("end");
+
+        String exprS = expr.codeGeneration();
+        String blockS = block.codeGeneration();
+
+        return startLabel + ":\n" +
+                exprS +
+                "storei T1 0\n" +
+                "beq A0 T1 " + endLabel + "\n" +
+                blockS +
+                "b " + startLabel + "\n" +
+                endLabel + ":\n";
     }
 
     @Override

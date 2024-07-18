@@ -41,6 +41,6 @@ public class Label {
 
 
     public static String newVar() {
-        return "_tmp" + (varDefCount++);
+        return "tmp" + (varDefCount++);
     }
 }
