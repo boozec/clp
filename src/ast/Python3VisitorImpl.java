@@ -528,6 +528,10 @@ public class Python3VisitorImpl extends Python3ParserBaseVisitor<Node> {
                                 if (!al.isEmpty()) {
                                     boolean constant = true;
                                     for (String a : al) {
+                                         if (R.get(a) == null) {
+                                            constant = false;
+                                            break;
+                                        }
                                         int n = R.get(a);
                                         if (n > lineStart && n <= lineStop) {
                                             constant = false;
