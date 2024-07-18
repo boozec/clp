@@ -8,12 +8,10 @@ import java.util.Map;
 import ast.nodes.*;
 import ast.types.*;
 import codegen.Label;
-import parser.Python3Lexer;
 import parser.Python3ParserBaseVisitor;
 import parser.Python3Parser.*;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
